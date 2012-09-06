@@ -1,0 +1,53 @@
+#!/bin/bash
+
+source ~/.dotfiles/bin/lib/interaction.sh
+
+function symlink {
+    ln -s "$1" "$2" && info -h "Symlinked $1 to $2"
+}
+
+function rmlink {
+    rm "$1" && info -h "Removed symlink $1"
+}
+
+cd ~
+
+info "=> Removing dangling links pointing to .dotfiles..."
+
+for danglingLink in $(find -L . -maxdepth 1 -type l -print); do
+    if [[ $(readlink "$danglingLink") =~ ^\.dotfiles/ ]]; then
+        rmlink "$danglingLink"
+    fi
+done
+
+info "=> Symlinking .dotfiles to home directory..."
+
+OS=$(uname)
+targetRegExp='[^ ]+'
+sourceRegExp='(^'$targetRegExp')([ ]*\('$OS'\))?$'
+
+function print-sources {
+    echo find .dotfiles -depth 1 \
+        "-not -name '"{'\.*',README'*'}"'" \
+        -print | bash | egrep "$sourceRegExp"
+}
+
+print-sources | while read source; do
+    target=.$(basename $source | egrep -o "$targetRegExp")
+    if [ ! -e $target ]; then
+        symlink "$source" "$target"
+    else
+        info "Skipped existent target '$target'"
+    fi
+done
+
+info "=> Running custom updates..."
+
+dotfilesUpdateLocal=~/.dotfiles/bin/dotfiles-update.d
+
+if [ -d "$dotfilesUpdateLocal" ]; then
+    cd "$dotfilesUpdateLocal"
+    for dotfileUpdate in *.sh; do
+        source $dotfileUpdate
+    done
+fi

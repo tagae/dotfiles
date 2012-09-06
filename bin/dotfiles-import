@@ -1,0 +1,46 @@
+#!/bin/bash
+
+source ~/.dotfiles/bin/lib/interaction.sh
+source ~/.dotfiles/bin/lib/files.sh
+
+OS=$(uname)
+
+usage="Usage: $(basename "$0") [-p] <path>"
+
+while getopts ":p" opt; do
+    case $opt in
+        p)
+            suffix=" ($OS)"
+            ;;
+        \?)
+            error "Unknown option -$OPTARG." "$usage"
+            ;;
+    esac
+    shift
+done
+
+dotfile=$1
+
+[ -e "$dotfile" ] || \
+    error "File '$dotfile' does not exist."
+
+[[ $(basename $dotfile) =~ ^\.?(.+) ]]
+basename=${BASH_REMATCH[1]}
+
+[ "$basename" = "$(basename "$dotfile")" ] && \
+    warning "File '$dotfile' does not seem to be a dotfile."
+
+[ "$(realdir "$dotfile")" != $HOME ] && \
+    warning "Dotfile '$dotfile' does not reside in your home directory."
+
+targetFile=$basename$suffix
+
+mv -i "$dotfile" ~/.dotfiles/"$targetFile"
+
+cd ~/.dotfiles/
+shouldStash=false
+[ -n "$(git status -suno)" ] && shouldStash=true
+$shouldStash && git stash save --quiet "Prior to importing $basename."
+git add "$targetFile"
+git commit -m "Imported $basename."
+$shouldStash && git stash pop --quiet
