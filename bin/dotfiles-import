@@ -3,17 +3,22 @@
 source ~/.dotfiles/bin/lib/interaction.sh
 source ~/.dotfiles/bin/lib/files.sh
 
-OS=$(uname)
+usage="Usage: $(basename "$0") [-p <platform>] <path>"
 
-usage="Usage: $(basename "$0") [-p] <path>"
-
-while getopts ":p" opt; do
+while getopts ":p:" opt; do
     case $opt in
         p)
-            suffix=" ($OS)"
+            [[ "$OPTARG" =~ ^(Linux|Darwin)$ ]] || \
+                error "Unknown platform '$OPTARG'."
+
+            suffix=" ($OPTARG)"
+            shift
             ;;
         \?)
             error "Unknown option -$OPTARG." "$usage"
+            ;;
+        :)
+            error "Option -$OPTARG requires an argument." "$usage"
             ;;
     esac
     shift

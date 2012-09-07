@@ -54,13 +54,13 @@ is meant for Linux only, and should not be symlinked in other
 platforms. The platform name is determined through `uname`.
 
 When importing a platform-specific dotfile with `dotfiles-import`, you
-can pass the `-p` option to add the current platform name as indicated
-previously. For example, the previous dotfile could have been created
-by executing the following command in a Linux platform:
+can use the `-p <platform>` option to specify the platform name that
+will go within parenthesis. For example, the previous dotfile could
+have been created by executing
 
-    ~/.dotfiles/bin/dotfiles-import -p ~/.AppleVolumes
+    ~/.dotfiles/bin/dotfiles-import -p Linux ~/.AppleVolumes
 
-If you forget to pass the `-p` option when importing a
+If you forget to use the `-p` option when importing a
 platform-specific dotfile, you can still fix the commit by renaming
 the file through `git mv` and then doing a `git commit --amend -C
 HEAD`.
