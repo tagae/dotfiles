@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SUBJ_LIB</key>
+	<string>/Users/tagae/Desktop/Subjective-C/context_iOS</string>
+	<key>SUBJ_LIB_MAC</key>
+	<string>/Users/tagae/Desktop/Subjective-C/context_Mac</string>
+	<key>SUBJ_PARSER</key>
+	<string>/Users/tagae/Desktop/SubjC/SubCRelease/SubjectiveParser/build/Debug</string>
+	<key>SUBJ_PARSER2</key>
+	<string>/Users/tagae/Desktop/Subjective-C/SubjectiveParser2/build/Debug/SubjectiveParser2</string>
+</dict>
+</plist>
