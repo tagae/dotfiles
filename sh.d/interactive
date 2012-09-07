@@ -44,7 +44,7 @@ MANPATH="$MANPATH:"
 ### User-specific configuration
 
 ## Paths
-prependpath PATH $HOME/bin
+prependpath PATH $HOME/.bin
 prependpath PATH $HOME/Applications/bin
 prependpath PATH $HOME/Applications/opt/npm/bin
 prependpath CDPATH $HOME/Work/UCL
