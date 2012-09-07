@@ -1,0 +1,9 @@
+# Unison preferences file
+
+servercmd = bin/unison-sparc
+
+root = /home/tagae
+root = ssh://sisley-mirza/var/backup
+
+include common
+include work

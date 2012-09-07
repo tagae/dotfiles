@@ -1,0 +1,30 @@
+#-*- mode: shell-script -*-
+# Unison preferences file
+
+path = Library/Application Support/AddressBook
+path = Library/Application Support/Adium 2.0
+path = Library/Application Support/Camino
+path = Library/Application Support/Font Book
+path = Library/Calendars
+path = Library/FontCollections
+path = Library/Fonts
+path = Library/Keychains
+path = Library/Mail/AvailableFeeds
+path = Library/Mail/MessageRules.plist
+path = Library/Mail/OpenedAttachments.plist
+path = Library/Mail/Signatures
+path = Library/Preferences/AddressBookMe.plist
+path = Library/Preferences/com.adiumX.adiumX.plist
+path = Library/Preferences/com.apple.AddressBook.abd.plist
+path = Library/Preferences/com.apple.AddressBook.plist
+path = Library/Preferences/com.apple.Labels.plist
+path = Library/Preferences/com.apple.Safari.plist
+path = Library/Preferences/com.apple.Terminal.plist
+path = Library/Preferences/com.apple.TextEdit.plist
+path = Library/Preferences/com.apple.iCal.plist
+path = Library/Preferences/com.apple.mail.plist
+path = Library/Preferences/edu.upenn.cis.Unison.plist
+path = Library/Preferences/org.x.X11.plist
+path = Library/Preferences/org.x.X11_launcher.plist
+path = Library/Safari
+path = Library/StickiesDatabase

@@ -1,0 +1,10 @@
+# Unison preferences file
+
+servercmd = bin/unison-sparc
+
+root = /Users/tagae
+root = ssh://ssh3-mirza/var/backup
+
+include common
+include mac
+include work

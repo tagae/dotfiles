@@ -1,0 +1,6 @@
+#-*- mode: shell-script -*-
+# Unison preferences file
+
+path = Pictures/Desktop Backgrounds
+path = Projects
+path = Souvenirs

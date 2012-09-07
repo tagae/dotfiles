@@ -1,0 +1,9 @@
+# -*- mode: shell-script -*-
+# Unison preferences file
+
+root = /Users/tagae
+root = ssh://guajira.local
+
+include common
+include work
+include personal

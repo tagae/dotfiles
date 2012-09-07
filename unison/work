@@ -1,0 +1,9 @@
+#-*- mode: shell-script -*-
+# Unison preferences file
+
+path = Admin
+path = Backup
+path = Desktop
+ignore = Name Desktop/.*
+path = Documents
+path = Work

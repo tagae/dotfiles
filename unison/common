@@ -1,0 +1,7 @@
+#-*- mode: shell-script -*-
+# Unison preferences file
+
+addprefsto = common
+log = false
+#confirmbigdeletes = yes
+#contactquietly = yes
