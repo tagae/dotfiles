@@ -24,8 +24,6 @@ while getopts ":p:" opt; do
     shift
 done
 
-[ $# -eq 0 ] && info "Nothing to do."
-
 while [ $# -gt 0 ]; do
     dotfile="$1"
     shift

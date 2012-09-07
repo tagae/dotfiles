@@ -7,7 +7,7 @@
 if [[ -d ~/.oh-my-zsh ]]; then
     export ZSH=$HOME/.oh-my-zsh
     if [[ -r $ZSH/oh-my-zsh.sh ]]; then
-        export ZSH_THEME="tagae"
+        #export ZSH_THEME="tagae"
         export REPORTTIME=5
         plugins=(
             osx
@@ -20,6 +20,15 @@ if [[ -d ~/.oh-my-zsh ]]; then
         source $ZSH/oh-my-zsh.sh
     fi
 fi
+
+### Look & feel
+
+# Default host color
+sh-theme-hostcolor () { echo $bg[black]$fg[white] }
+
+# Prompt
+PROMPT="%{\$(sh-theme-hostcolor)%} %n@%B%m %b%f%k %j%(?.. %B%K{red}[⚡ %?]%f%k%b) %~
+%(!.# .➜ ) "
 
 ### Zsh behaviour
 

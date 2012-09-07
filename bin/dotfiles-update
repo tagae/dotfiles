@@ -23,8 +23,8 @@ done
 info "=> Symlinking .dotfiles to home directory..."
 
 OS=$(uname)
-targetRegExp='[^ ]+'
-sourceRegExp='(^'$targetRegExp')([ ]*\('$OS'\))?$'
+sourceRegExp='^[^ ]+([ ]*\('$OS'\))?$'
+targetRegExp='^[^ ]+'
 
 function print-sources {
     echo find .dotfiles -depth 1 \

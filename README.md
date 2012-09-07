@@ -36,9 +36,8 @@ This will add the file to the git repository, and place the
 corresponding symlink in your home directory.
 
 You can safely import dotfiles even if your `~/.dotfile` repository
-has uncommitted changes, since the command `dotfiles-import` stashes
-away those changes before doing its job, and restores the changes once
-finished.
+has uncommitted changes, since `dotfiles-import` stashes away those
+changes before doing its job, and restores the changes once finished.
 
 
 Platfrom-Specific Dotfiles
@@ -47,7 +46,7 @@ Platfrom-Specific Dotfiles
 The names of dotfiles can be complemented with a platform name between
 parenthesis, as in
 
-    ~/.dotfiles/AppleVolumes (Linux)
+    ~/.dotfiles/lircrc (Linux)
 
 This will let the dotfile framework know that this particular dotfile
 is meant for Linux only, and should not be symlinked in other
@@ -58,12 +57,14 @@ can use the `-p <platform>` option to specify the platform name that
 will go within parenthesis. For example, the previous dotfile could
 have been created by executing
 
-    ~/.dotfiles/bin/dotfiles-import -p Linux ~/.AppleVolumes
+    ~/.dotfiles/bin/dotfiles-import -p Linux ~/.lircrc
+
+Mind that the `-p` option will apply to _all_ imports specified in the
+command line.
 
 If you forget to use the `-p` option when importing a
 platform-specific dotfile, you can still fix the commit by renaming
-the file through `git mv` and then doing a `git commit --amend -C
-HEAD`.
+the file through `git mv` and doing a `git commit --amend -C HEAD`.
 
 Custom Updates
 --------------
@@ -72,7 +73,7 @@ You can place custom updates as `.sh` bash scripts in the
 `~/.dotfiles/bin/dotfiles-update.d` directory. These will be run as
 the last steps performed by `dotfiles-update`.
 
-The scripts are source directly by `dotfiles-update`, which means you
+The scripts are sourced directly by `dotfiles-update`, which means you
 can reuse the environment already setup by that script. This is the
 main reason for sourcing the scripts rather than executing them as
 independent programs.
