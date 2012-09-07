@@ -1,0 +1,29 @@
+[user]
+	name = Sebastián González
+	email = s.gonzalez@uclouvain.be
+[core]
+	editor = emacs
+	quotepath = false
+[credential]
+	helper = osxkeychain
+[alias]
+	co = checkout
+	ci = commit
+	st = status
+	br = branch
+[github]
+	user = tagae
+	token = d90a580ac8fcf58848b90c32f9f42fc2
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+	ui = true
+[disabled-merge]
+	tool = osx-file-merge
+[disabled-diff]
+	external = osx-file-diff
+[disabled-mergetool "osx-file-merge"]
+	cmd = osx-file-merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+	trustExitCode = true
