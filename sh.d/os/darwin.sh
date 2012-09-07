@@ -1,10 +1,4 @@
-# -*- mode: shell-script -*-
-
 # Common shell initialisation for bash and zsh on the Darwin platform
-
-### Local host configuration
-
-#prependpath PATH /usr/texbin #not needed
 
 ### Development
 

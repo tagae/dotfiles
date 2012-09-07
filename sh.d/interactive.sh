@@ -1,36 +1,9 @@
-# -*- mode: shell-script -*-
-
 ### i18n
 
 export LANG="en_GB.UTF-8"
 export LC_CTYPE="en_GB.UTF-8"
 export LC_ALL="en_GB.UTF-8"
 export LANGUAGE="en_GB"
-
-### Tools
-
-## standard
-prefcmd PAGER less
-prefcmd LISTER ls
-prefcmd EDITOR ~/Applications/bin/edit
-prefcmd VISUAL ~/Applications/bin/edit
-prefcmd ALTERNATE_EDITOR emacs
-#~/Applications/bin/edit
-
-## man
-prefcmd MANPAGER less
-# prefcmd MANPAGER less -+$LESS -iRSw
-
-## less
-export LESSHISTFILE="-"
-# export LESS="FiRSwX"
-
-## grep
-export GREP_OPTIONS='--color=auto'
-export GREP_COLOR='1;32'
-
-## files
-#FIGNORE="~:.pyc:.swp:.swa:.git" # things to ignore during tab completion
 
 ### Local host configuration
 
@@ -64,42 +37,30 @@ prependpath INFOPATH $HOME/Applications/share/info
 ## Environment
 export MAIL='Sebastian Gonzalez <s.gonzalez@uclouvain.be>'
 export EMAIL=$MAIL
-
-### Aliases
-
-## Command customisations
-alias l='ls -lh'
-alias ll='ls -lah'
-alias ls='ls -G'
-alias df='df -h'
-alias rm='rm -i'
-alias cp='cp -i'
-alias du='du -h'
-alias bc='bc -l'
-alias debfoster='sudo debfoster -v'
-#alias screen="screen -U"
-
-## Silence cdspell and $CDPATH echo
-function cd () {
-    builtin cd "$@" 1> /dev/null
-}
-
-## New commands
-
-alias edit=$EDITOR
-
-## Fast directory change
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-
-## Remove cruft
-alias rmold='rm -vf .*~ *~ \#*\#'
-alias rmtex='rm -vf .*~ *~ *log *.nav *.snm *.toc  *.cp *.fn *.tp *.vr *.pg *.ky \#* *blg *ilg *.dvi *.aux'
-alias rmcruft='find . -name .DS_Store -type f -delete'
-
+prefcmd PAGER less
+prefcmd MANPAGER less
+# prefcmd MANPAGER less -+$LESS -iRSw
+prefcmd LISTER ls
+prefcmd EDITOR ~/Applications/bin/edit
+prefcmd VISUAL ~/Applications/bin/edit
+prefcmd ALTERNATE_EDITOR emacs
+#~/Applications/bin/edit
 
 ### Tool configuration
+
+## less
+export LESSHISTFILE="-"
+# export LESS="FiRSwX"
+
+## grep
+export GREP_OPTIONS='--color=auto'
+export GREP_COLOR='1;32'
+
+## files
+#FIGNORE="~:.pyc:.swp:.swa:.git" # things to ignore during tab completion
+
+## grc
+testcmd brew && load "`brew --prefix grc`/etc/grc.bashrc"
 
 ## OpenSSL
 setpath OPENSSL_CONF $HOME/.ssl/openssl.cnf
@@ -140,6 +101,8 @@ prependpath MANPATH $HOME/.cabal/share/man
 export CLOJURESCRIPT_HOME=$HOME/Applications/opt/clojurescript
 
 ### Specific initialisation
+
+load ~/.sh.d/aliases
 
 load ~/.sh.d/os/${PLATFORM:=$(uname | tr "[:upper:]" "[:lower:]")} # platform specific
 load ~/.sh.d/host/${HOSTNAME%%.*} # host specific

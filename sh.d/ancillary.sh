@@ -1,9 +1,6 @@
-# -*- mode: shell-script -*-
-
-### Ancillary functions
-
 load () {
-    [ -r $1 ] && source "$1"
+    [ -r "$1" ] && source "$1"
+    [ -r "$1.sh" ] && source "$1.sh"
 }
 
 testcmd () {
