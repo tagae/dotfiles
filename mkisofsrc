@@ -1,0 +1,50 @@
+# The  application identifier should describe the application that
+# will be on the disc.  There is space on the disc for 128 charac-
+# ters  of  information.   May  be overridden using the -A command
+# line option.
+#APPI=None
+#
+# The copyright information, often the name of a file on the  disc
+# containing the copyright notice.  There is space in the disc for
+# 37 characters of  information.   May  be  overridden  using  the
+# -copyright command line option.
+COPY=See LICENSE file
+#
+# The  abstract  information, often the name of a file on the disc
+# containing an abstract.  There is space in the disc for 37 char-
+# acters  of  information.   May be overridden using the -abstract
+# command line option.
+#ABST=
+#
+# The bibliographic information, often the name of a file  on  the
+# disc  containing a bibliography.  There is space in the disc for
+# 37 characters of  information.   May  be  overridden  using  the
+# -bilio command line option.
+#BIBL=
+#
+# This  should  describe the preparer of the CDROM, usually with a
+# mailing address and phone number.  There is space  on  the  disc
+# for  128 characters of information.  May be overridden using the
+# -p command line option.
+PREP=Sebastián González (sgm@acm.org)
+#
+# This should describe the publisher of the CDROM, usually with  a
+# address  and  phone number.  There is space on the disc
+# for 128 characters of information.  May be overridden using  the
+# -P command line option.
+PUBL=The Therapy Productions
+#
+# The  System Identifier.  There is space on the disc for 32 char-
+# acters of information.  May be overridden using the -sysid  com-
+# mand line option.
+#SYSI=
+#
+# The  Volume Identifier.  There is space on the disc for 32 char-
+# acters of information.  May be overridden using the  -V  command
+# line option.
+VOLI=Backup
+#
+# The Volume Set Name.  There is space on the disc for 128 charac-
+# ters of information.  May be overridden using the  -volset  com-
+# mand line option.
+VOLS=Personal Backup Set
