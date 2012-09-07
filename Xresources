@@ -1,0 +1,101 @@
+!- Xft settings ----------------------------------------------------------------
+
+      Xft.dpi: 96
+Xft.antialias: true
+     Xft.rgba: rgb
+  Xft.hinting: true
+Xft.hintstyle: hintslight
+
+!- emacs resources ------------------------------------------------------------
+
+emacs*geometry: 80x70+0+0
+ emacs*menuBar: off
+ emacs*toolBar: 0
+    emacs*font: -*-terminus-*-*-*-*-12-*-*-*-*-*-*-*
+
+! emacs*pointerColor: lightgray
+! emacs*cursorColor: Yellow
+! emacs*foreground: #fff8dc
+! emacs*background: #233b5a
+
+!- xdvi resources -------------------------------------------------------------
+
+       xdvi*geometry: 830x800+308+0
+   xdvi*shrinkFactor: 6
+	      xdvi*paper: a4
+	     xdvi*expert: 0
+      xdvi*underLink: true
+     xdvi*wwwBrowser: open
+	       xdvi*font: -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+xdvi*statusline*font: -*-helvetica-medium-r-*-*-11-*-*-*-*-*-*-*
+
+!     xdvi*background: LightYellow
+
+!- xterm resources ------------------------------------------------------------
+
+	   xterm*geometry: 80x45
+	  xterm*saveLines: 10000
+	       xterm*utf8: 1
+xterm*scrollTtyOutput: false
+	       xterm*font: -*-terminus-*-*-*-*-12-*-*-*-*-*-*-*
+    xterm*cursorBlink: true
+  xterm*cursorOffTime: 300
+   xterm*cursorOnTime: 1500
+
+!	xterm*foreground: Gray65
+!	xterm*background: Black
+!       xterm*cursorColor: Orange
+! 	    xterm*color0: Black
+! 	    xterm*color1: Red3
+! 	    xterm*color2: Green3
+! 	    xterm*color3: Yellow3
+! 	    xterm*color4: RoyalBlue
+! 	    xterm*color5: Magenta3
+! 	    xterm*color6: Cyan3
+! 	    xterm*color7: AntiqueWhite
+! 	    xterm*color8: Grey25
+! 	    xterm*color9: LightCoral
+! 	   xterm*color10: LightGreen
+! 	   xterm*color11: Gold
+! 	   xterm*color12: CornflowerBlue
+! 	   xterm*color13: LightPink
+! 	   xterm*color14: DeepSkyBlue
+! 	   xterm*color15: White
+!     xterm*highlightColor: SlateGray
+! xterm*highlightTextColor: PowderBlue
+
+! ----------------
+! urxvt resources:
+
+	     urxvt*geometry: 80x45
+	    urxvt*saveLines: 10000
+	         urxvt*utf8: 1
+  urxvt*scrollTtyOutput: false
+	         urxvt*font: xft:terminus:bold:pixelsize=14
+      urxvt*cursorBlink: true
+    urxvt*cursorOffTime: 300
+     urxvt*cursorOnTime: 1500
+	    urxvt*scrollBar: false
+urxvt*scrollTtyKeypress: true
+
+!      urxvt*cursorColor: Orange
+! 	urxvt*foreground: Gray65
+! 	urxvt*background: Black
+! 	    urxvt*color0: Black
+! 	    urxvt*color1: Red3
+! 	    urxvt*color2: Green3
+! 	    urxvt*color3: Yellow3
+! 	    urxvt*color4: RoyalBlue
+! 	    urxvt*color5: Magenta3
+! 	    urxvt*color6: Cyan3
+! 	    urxvt*color7: AntiqueWhite
+! 	    urxvt*color8: Grey25
+! 	    urxvt*color9: LightCoral
+! 	   urxvt*color10: LightGreen
+! 	   urxvt*color11: Gold
+! 	   urxvt*color12: CornflowerBlue
+! 	   urxvt*color13: LightPink
+! 	   urxvt*color14: DeepSkyBlue
+! 	   urxvt*color15: White
+!     urxvt*highlightColor: SlateGray
+! urxvt*highlightTextColor: PowderBlue
