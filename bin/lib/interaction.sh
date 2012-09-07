@@ -1,7 +1,7 @@
 source ~/.dotfiles/bin/lib/colors.sh
 
 termInfo=$(tput setaf 7)
-termStrong=$(tput setaf 7)
+termHighlight=$(tput setaf 7)
 termWarn=$(tput setaf 3)
 termError=${termBold}$(tput setaf 1)
 termStep=$(tput setaf 4)
@@ -11,24 +11,28 @@ warningLabel="[${termWarn}Warn${termPlain}] "
 errorLabel="[${termError}Error${termPlain}] "
 stepLabel="[${termStep}Step${termPlain}] "
 
+infoHighlight=$termBold
+infoStrong=$termHighlight
+
 function info {
+    local messageAttrs
     while [[ "$1" =~ ^-([a-z])$ ]]; do
         case ${BASH_REMATCH[1]} in
             h)
-                messageAttrs=$termBold
+                messageAttrs=$infoHighlight
                 ;;
             s)
                 # Strong
-                messageAttrs=$termStrong
+                messageAttrs=$infoStrong
                 ;;
             *)
-                echo "${infoLabel}[ Unknown info switch $1 ]" >&2
+                echo "${infoLabel}[ Unknown switch $1 ]" >&2
                 ;;
         esac
         shift
     done
     while test $# -gt 0; do
-        echo "${infoLabel}${messageAttrs}"$1"${termPlain}"
+        echo "${infoLabel}${messageAttrs}$1${termPlain}"
         shift
     done
 }
@@ -37,13 +41,12 @@ function warning {
     local prompt
     prompt=true
     while [[ "$1" =~ ^-([a-z])$ ]]; do
-        echo "got $1"
         case ${BASH_REMATCH[1]} in
             c)
                 prompt=false
                 ;;
             *)
-                echo "${warningLabel}[ Unknown warning switch $1 ]" >&2
+                echo "${warningLabel}[ Unknown switch $1 ]" >&2
                 ;;
         esac
         shift

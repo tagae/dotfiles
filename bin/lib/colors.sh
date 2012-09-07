@@ -12,4 +12,5 @@ function show-term-colors {
 
 termUnderline=$(tput sgr 0 1)
 termBold=$(tput bold)
-termPlain=$(tput sgr0)
+termStrong=$(tput smso)
+termPlain=$(tput sgr0)$(tput rmso)
