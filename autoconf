@@ -1,0 +1,18 @@
+with_inc_dir=/sw/include
+with_lib_dir=/sw/lib
+
+# Oz
+oz_enable_contrib=no
+oz_enable_doc=yes
+oz_enable_wish=yes
+
+# Oz / Wish
+#with_tkinclude=/Library/Frameworks/Tk.framework/Versions/8.4/Headers
+#with_tk=/Library/Frameworks/Tk.framework/Versions/8.4
+#with_tcl=/Library/Frameworks/Tcl.framework/Versions/8.4
+#with_tclinclude=/Library/Frameworks/Tcl.framework/Versions/8.4/Headers
+
+with_tk=/sw/lib
+with_tkinclude=/sw/include
+with_tcl=/sw/lib
+with_tclinclude=/sw/include
