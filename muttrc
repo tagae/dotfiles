@@ -1,0 +1,26 @@
+# behaviour
+unset metoo # remove me from CC
+#editor="emacs -nw"
+
+# SSL
+set certificate_file="~/.mutt/certificates"
+
+# imap
+set imap_idle
+set imap_user=sgm
+set folder="imaps://mail.sgsi.ucl.ac.be/"
+set spoolfile="imaps://mail.sgsi.ucl.ac.be/INBOX"
+set mail_check=360
+set record="=Sent"
+set postponed="=Drafts"
+unset imap_passive
+set imap_check_subscribed
+set header_cache="~/.mutt/cache/headers"
+set message_cachedir="~/.mutt/cache/bodies"
+set certificate_file="~/.mutt/certificates"
+
+# Display download progress every 5K
+set net_inc=5
+
+# SMTP
+smtp_url="smtps://gonzalezmontesions@smtp.sgsi.ucl.ac.be"
