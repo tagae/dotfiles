@@ -1,0 +1,11 @@
+# Test with: ldapsearch -x -b '' -s base '(objectclass=*)' namingContexts
+
+URI             ldap://vps2358.xlshosting.net
+BASE            dc=vps2358,dc=xlshosting,dc=net
+
+# BINDDN          uid=tagae,ou=people,o=fu
+
+# TLS_REQCERT     demand
+# TLS_CACERTDIR   /Users/sgonzalez/.ssl/certs
+# TLS_CERT        /Users/sgonzalez/.ssl/cert.pem
+# TLS_KEY         /Users/sgonzalez/.ssl/key.pem
