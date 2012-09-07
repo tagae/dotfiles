@@ -1,5 +1,3 @@
-# -*- mode: shell-script -*-
-
 ### Login script common to bash and zsh
 
 # PATHs

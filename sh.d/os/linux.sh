@@ -1,5 +1,3 @@
-# -*- mode: shell-script -*-
-
 ### Tools
 
 # try in order (last is preferred)
