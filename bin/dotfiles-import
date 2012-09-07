@@ -19,28 +19,34 @@ while getopts ":p" opt; do
     shift
 done
 
-dotfile=$1
+[ $# -eq 0 ] && info "Nothing to do."
 
-[ -e "$dotfile" ] || \
-    error "File '$dotfile' does not exist."
+while [ $# -gt 0 ]; do
+    dotfile="$1"
+    shift
 
-[[ $(basename $dotfile) =~ ^\.?(.+) ]]
-basename=${BASH_REMATCH[1]}
+    [ -e "$dotfile" ] || \
+        error "File '$dotfile' does not exist."
 
-[ "$basename" = "$(basename "$dotfile")" ] && \
-    warning "File '$dotfile' does not seem to be a dotfile."
+    [[ $(basename $dotfile) =~ ^\.?(.+) ]]
+    basename=${BASH_REMATCH[1]}
 
-[ "$(realdir "$dotfile")" != $HOME ] && \
-    warning "Dotfile '$dotfile' does not reside in your home directory."
+    [ "$basename" = "$(basename "$dotfile")" ] && \
+        warning "File '$dotfile' does not seem to be a dotfile."
 
-targetFile=$basename$suffix
+    [ "$(realdir "$dotfile")" != $HOME ] && \
+        warning "Dotfile '$dotfile' does not reside in your home directory."
 
-mv -i "$dotfile" ~/.dotfiles/"$targetFile"
+    targetFile="$basename$suffix"
 
-cd ~/.dotfiles/
-shouldStash=false
-[ -n "$(git status -suno)" ] && shouldStash=true
-$shouldStash && git stash save --quiet "Prior to importing $basename."
-git add "$targetFile"
-git commit -m "Imported $basename."
-$shouldStash && git stash pop --quiet
+    mv -i "$dotfile" ~/.dotfiles/"$targetFile" || exit $?
+
+    pushd ~/.dotfiles/ > /dev/null
+    shouldStash=false
+    [ -n "$(git status -suno)" ] && shouldStash=true
+    $shouldStash && git stash save --quiet "Prior to importing $basename."
+    git add "$targetFile"
+    git commit -m "Imported $basename."
+    $shouldStash && git stash pop --quiet
+    popd > /dev/null
+done

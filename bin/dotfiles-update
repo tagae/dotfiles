@@ -33,8 +33,8 @@ function print-sources {
 }
 
 print-sources | while read source; do
-    target=.$(basename $source | egrep -o "$targetRegExp")
-    if [ ! -e $target ]; then
+    target=.$(basename "$source" | egrep -o "$targetRegExp")
+    if [ ! -e "$target" ]; then
         symlink "$source" "$target"
     else
         info "Skipped existent target '$target'"

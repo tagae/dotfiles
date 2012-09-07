@@ -22,7 +22,6 @@ With this you no longer need to manually invoke `dotfiles-update`,
 since normally all changes (e.g. renaming of files) should be carried
 out through `git` commands, which are ultimately committed.
 
-
 Use
 ===
 
@@ -35,6 +34,12 @@ To import an existing `.file` into the dotfiles repository do
 
 This will add the file to the git repository, and place the
 corresponding symlink in your home directory.
+
+You can safely import dotfiles even if your `~/.dotfile` repository
+has uncommitted changes, since the command `dotfiles-import` stashes
+away those changes before doing its job, and restores the changes once
+finished.
+
 
 Platfrom-Specific Dotfiles
 --------------------------

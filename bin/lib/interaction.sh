@@ -1,45 +1,63 @@
 source ~/.dotfiles/bin/lib/colors.sh
 
 termInfo=$(tput setaf 7)
-termInfoSection=$(tput setaf 7)
+termStrong=$(tput setaf 7)
 termWarn=$(tput setaf 3)
 termError=${termBold}$(tput setaf 1)
 termStep=$(tput setaf 4)
 
+infoLabel="[${termInfo}Info${termPlain}] "
+warningLabel="[${termWarn}Warn${termPlain}] "
+errorLabel="[${termError}Error${termPlain}] "
+stepLabel="[${termStep}Step${termPlain}] "
+
 function info {
-    local messageAttrs
-    while [[ $1 =~ -([a-z]) ]]; do
+    while [[ "$1" =~ ^-([a-z])$ ]]; do
         case ${BASH_REMATCH[1]} in
             h)
                 messageAttrs=$termBold
                 ;;
             s)
-                messageAttrs=$termInfoSection
+                # Strong
+                messageAttrs=$termStrong
                 ;;
             *)
-                warning "Unknown info switch $1."
+                echo "${infoLabel}[ Unknown info switch $1 ]" >&2
                 ;;
         esac
         shift
     done
     while test $# -gt 0; do
-        echo "[${termInfo}Info${termPlain}] ${messageAttrs}"$1"${termPlain}"
+        echo "${infoLabel}${messageAttrs}"$1"${termPlain}"
         shift
     done
 }
 
 function warning {
-    warningPrompt="[${termWarn}Warn${termPlain}] "
-    while test $# -gt 0; do
-        echo "${warningPrompt}$1" >&2
+    local prompt
+    prompt=true
+    while [[ "$1" =~ ^-([a-z])$ ]]; do
+        echo "got $1"
+        case ${BASH_REMATCH[1]} in
+            c)
+                prompt=false
+                ;;
+            *)
+                echo "${warningLabel}[ Unknown warning switch $1 ]" >&2
+                ;;
+        esac
         shift
     done
-    yesno "${warningPrompt}Continue? (y/n) " || exit 1
+    while test $# -gt 0; do
+        echo "${warningLabel}$1" >&2
+        shift
+    done
+    $prompt && yesno "${warningLabel}Continue? (y/n) " || exit 1
 }
 
 function error {
     while test $# -gt 0; do
-        echo "[${termError}Error${termPlain}] "$1 >&2
+        echo "${errorLabel}$1" >&2
         shift
     done
     exit 1
@@ -47,7 +65,7 @@ function error {
 
 function step {
     while test $# -gt 0; do
-        echo "[${termStep}Step${termPlain}] "$1
+        echo "${stepLabel}$1"
         shift
     done
     if [ "$stepwiseSetup" = "yes" ]; then
