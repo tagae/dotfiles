@@ -1,0 +1,15 @@
+begin tvtime
+    begin
+        prog = irexec
+        button = KEY_TUNER
+        config = tvtime-command QUIT
+        flags = mode quit
+    end
+end tvtime
+
+begin
+    prog = irexec
+    button = KEY_TUNER
+    config = tvtime &
+    mode = tvtime
+end
