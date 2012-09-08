@@ -12,3 +12,7 @@ function realdir {
 function realpath {
     echo $(realdir "$1")/$(basename "$1")
 }
+
+function available {
+    which "$1" > /dev/null
+}

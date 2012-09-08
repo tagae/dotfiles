@@ -2,6 +2,8 @@
 
 source ~/.dotfiles/bin/lib/dotfiles.sh
 
+unset GIT_DIR # Defined when invoked as a git hook, but messes things up.
+
 cd ~
 
 info "=> Removing dangling links pointing to .dotfiles..."
