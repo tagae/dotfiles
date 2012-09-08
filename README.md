@@ -69,14 +69,14 @@ the file through `git mv` and doing a `git commit --amend -C HEAD`.
 Custom Updates
 --------------
 
-You can place custom updates as `.sh` bash scripts in the
+You can place custom update scripts in the
 `~/.dotfiles/bin/dotfiles-update.d` directory. These will be run as
 the last steps performed by `dotfiles-update`.
 
-The scripts are sourced directly by `dotfiles-update`, which means you
-can reuse the environment already setup by that script. This is the
-main reason for sourcing the scripts rather than executing them as
-independent programs.
-
 Note that custom scripts cannot interact with (e.g. expect input from)
 the user, since they are executed as git hooks.
+
+If you want to have an environment similar to that `dotfiles-update`
+uses, include the following line at the beginning of your script:
+
+    source ~/.dotfiles/bin/lib/dotfiles.sh

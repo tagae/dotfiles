@@ -1,14 +1,6 @@
 #!/bin/bash
 
-source ~/.dotfiles/bin/lib/interaction.sh
-
-function symlink {
-    ln -s "$1" "$2" && info -h "Symlinked $1 to $2"
-}
-
-function rmlink {
-    rm "$1" && info -h "Removed symlink $1"
-}
+source ~/.dotfiles/bin/lib/dotfiles.sh
 
 cd ~
 
@@ -47,7 +39,7 @@ dotfilesUpdateLocal=~/.dotfiles/bin/dotfiles-update.d
 
 if [ -d "$dotfilesUpdateLocal" ]; then
     cd "$dotfilesUpdateLocal"
-    for dotfileUpdate in *.sh; do
-        source $dotfileUpdate
+    for dotfileUpdate in *; do
+        ./$dotfileUpdate
     done
 fi
