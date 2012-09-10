@@ -73,8 +73,8 @@ You can place custom update scripts in the
 `~/.dotfiles/bin/dotfiles-update.d` directory. These will be run as
 the last steps performed by `dotfiles-update`.
 
-Note that custom scripts cannot interact with (e.g. expect input from)
-the user, since they are executed as git hooks.
+Note that custom scripts should not interact with (e.g. expect input
+from) the user, since they can be executed as git hooks.
 
 If you want to have an environment similar to that `dotfiles-update`
 uses, include the following line at the beginning of your script:
