@@ -255,8 +255,8 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 # Four-letter codes for view modes: `Nlsv`, `icnv`, `clmv`, `Flwv`
 defaults write com.apple.Finder FXPreferredViewStyle -string "clmv"
 
-# Disable the warning before emptying the Trash
-defaults write com.apple.finder WarnOnEmptyTrash -bool false
+# Enable the warning before emptying the Trash (default)
+defaults write com.apple.finder WarnOnEmptyTrash -bool true
 
 # Empty Trash securely by default
 defaults write com.apple.finder EmptyTrashSecurely -bool true
