@@ -1,5 +1,3 @@
-#!/bin/sh
-
 XRDB=xrdb
 
 # Add other possible paths of cpp here

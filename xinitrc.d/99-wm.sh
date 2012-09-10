@@ -1,7 +1,5 @@
-#!/bin/sh
-
 OS=$(uname)
-WM=~/.xinitrc.d/$OS/wm
+WM=~/.xinitrc.d/$OS/wm.sh
 
 if [ -r $WM ]; then
     source $WM
