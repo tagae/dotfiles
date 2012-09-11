@@ -105,18 +105,6 @@
              (message ,(format "Loaded local definitions for '%s."
                                package-name))))))))
 
-;; --- el-get
-
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
-(if (require 'el-get nil 'noerror)
-	(el-get)
-  (url-retrieve
-   "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
-   (lambda (status)
-     (goto-char (point-max))
-     (eval-print-last-sexp))))
-
 ;;; === Preloading
 
 (let ((preloads-dir "~/.emacs.d/preload/"))
