@@ -7,7 +7,7 @@ export LANGUAGE="en_GB"
 
 ### Local host configuration
 
-prependpath PATH /sbin /usr/sbin
+prependpath PATH /sbin /usr/sbin /usr/local/bin
 prependpath MANPATH /usr/local/share/man /usr/share/man
 prependpath INFOPATH /usr/local/share/info /usr/share/info
 

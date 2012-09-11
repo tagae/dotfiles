@@ -43,10 +43,3 @@ export LSCOLORS="bxfxcxdxcxegedabagacad"
 ### Environment
 
 prefcmd BROWSER open
-
-
-### Tool configuration
-
-## Python
-
-prependpath PATH /opt/local/Library/Frameworks/Python.framework/Versions/*/bin
