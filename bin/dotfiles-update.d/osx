@@ -4,6 +4,8 @@
 
 [ "$(uname)" = Darwin ] || exit
 
+# Prologue
+
 source ~/.dotfiles/bin/lib/interaction.sh
 source ~/.dotfiles/bin/lib/files.sh
 
@@ -26,205 +28,218 @@ fi
 
 info "Configuring OS X..."
 
-###############################################################################
-# General UI/UX                                                               #
-###############################################################################
 
-# Set computer name
-systemsetup -setcomputername "palenque" > /dev/null
+# System Preferences
+# ------------------
 
-# Menu bar: disable transparency
+## Date & Time
+
+## Desktop & Screen Saver
+
+### Tanslucent menu bar
 defaults write NSGlobalDomain AppleEnableMenuBarTransparency -bool false
 
-# Menu bar icons (in order)
+## Energy Saver
+
+### Computer sleep
+systemsetup -setcomputersleep 20 > /dev/null
+
+### Display sleep
+systemsetup -setdisplaysleep 5 > /dev/null
+
+## Keyboard
+
+### Full Keyboard Access
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3 # All controls
+
+### Key Repeat
+defaults write NSGlobalDomain KeyRepeat -int 2
+
+### Delay Until Repeat
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+## Language & Text
+
+### Language
+defaults write NSGlobalDomain AppleLanguages -array "en" "fr" "nl" "es" "pt" "de"
+
+### Text
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+
+### Region
+
+#### Region / Currency
+defaults write NSGlobalDomain AppleLocale -string "en_GB@currency=EUR"
+
+#### Measurement units
+defaults write NSGlobalDomain AppleMetricUnits -bool true
+# defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
+
+## Security & Privacy
+
+### Require password
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 300
+
+## Sharing
+
+### Computer Name
+systemsetup -setcomputername "palenque" > /dev/null
+
+
+# UI/UX Settings
+# --------------
+
+## Menu bar icons (in order)
 defaults write com.apple.systemuiserver menuExtras -array \
     /System/Library/CoreServices/"Menu Extras"/{AirPort,Bluetooth,TimeMachine,TextInput,Battery,Clock,User}.menu
 
-# Expand save panel by default
+## Expand save panel by default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 
-# Expand print panel by default
+## Expand print panel by default
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
 
-# Save to disk (not to iCloud) by default
+## Save to disk (not to iCloud) by default
 defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
-# Automatically quit printer app once the print jobs complete
+## Automatically quit printer app once the print jobs complete
 defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
-# Disable the “Are you sure you want to open this application?” dialog
+## Disable the “Are you sure you want to open this application?” dialog
 defaults write com.apple.LaunchServices LSQuarantine -bool false
 
-# Display ASCII control characters using caret notation in standard text views
-# Try e.g. `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
+## Display ASCII control characters using caret notation in standard text views
+## Try e.g. `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
 defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
 
-# Disable Resume system-wide
+## Disable Resume system-wide
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
 
-# Disable automatic termination of inactive apps
+## Disable automatic termination of inactive apps
 defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
 
-# Disable the crash reporter
+## Disable the crash reporter
 defaults write com.apple.CrashReporter DialogType -string "none"
 
-# Set Help Viewer windows to non-floating mode
+## Set Help Viewer windows to non-floating mode
 defaults write com.apple.helpviewer DevMode -bool true
 
-# Fix for the ancient UTF-8 bug in QuickLook (http://mths.be/bbo)
-echo "0x08000100:0" > ~/.CFUserTextEncoding
-
-# Restart automatically if the computer freezes
-systemsetup -setrestartfreeze on
-
-# Sleep times
-systemsetup -setdisplaysleep 5 > /dev/null
-systemsetup -setharddisksleep 10 > /dev/null
-systemsetup -setcomputersleep 20 > /dev/null
-
-# Check for software updates every 3 days
+## Check for software updates every 3 days
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 3
 
-###############################################################################
-# Trackpad, mouse, keyboard, Bluetooth accessories, and input                 #
-###############################################################################
 
-# Trackpad: enable tap to click for this user and for the login screen
+# Input devices
+# -------------
+
+## Trackpad
+
+### Enable tap to click for this user and for the login screen
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Trackpad: swipe between pages with three fingers
+### Swipe between pages with three fingers
 defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
 defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerHorizSwipeGesture -int 1
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
 
-# Increase sound quality for Bluetooth headphones/headsets
-defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+## Keyboard
 
-# Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)
-defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
-
-# Set keyboard delay and repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 1
-defaults write NSGlobalDomain InitialKeyRepeat -int 13
-
-# Automatically illuminate built-in MacBook keyboard in low light
+### Automatically illuminate built-in MacBook keyboard in low light
 defaults write com.apple.BezelServices kDim -bool true
-# Turn off keyboard illumination when computer is not used for 5 minutes
+
+### Turn off keyboard illumination when computer is not used for 5 minutes
 defaults write com.apple.BezelServices kDimTime -int 300
 
-# Set language and text formats
-defaults write NSGlobalDomain AppleLanguages -array "en" "fr" "nl" "es" "pt" "de"
-defaults write NSGlobalDomain AppleLocale -string "en_GB@currency=EUR"
-defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
-defaults write NSGlobalDomain AppleMetricUnits -bool true
+# Screen
+# ------
 
-# Set the timezone; see `systemsetup -listtimezones` for other values
-systemsetup -settimezone "Europe/Brussels" > /dev/null
-
-# Disable auto-correct
-defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
-
-###############################################################################
-# Screen                                                                      #
-###############################################################################
-
-# Require password after sleep or screen saver (5 minutes)
-defaults write com.apple.screensaver askForPassword -int 1
-defaults write com.apple.screensaver askForPasswordDelay -int 300
-
-# Save screenshots to the desktop
+## Save screenshots to the desktop
 defaults write com.apple.screencapture location -string "$HOME/Desktop"
 
-# Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
+## Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
 
-# Disable shadow in screenshots
-defaults write com.apple.screencapture disable-shadow -bool true
 
-# Enable subpixel font rendering on non-Apple LCDs
-defaults write NSGlobalDomain AppleFontSmoothing -int 2
+# Finder
+# ------
 
-###############################################################################
-# Finder                                                                      #
-###############################################################################
-
-# Finder: allow quitting via ⌘ + Q; doing so will also hide desktop icons
+## Allow quitting via ⌘ + Q; doing so will also hide desktop icons
 defaults write com.apple.finder QuitMenuItem -bool true
 
-# Icons visibility for hard drives, servers, and removable media on the desktop
+## Icons visibility for hard drives, servers, and removable media on the desktop
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
 defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
 defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
 
-# Finder: show status bar
+## Finder: show status bar
 defaults write com.apple.finder ShowStatusBar -bool true
 
-# Finder: allow text selection in Quick Look
+## Finder: allow text selection in Quick Look
 defaults write com.apple.finder QLEnableTextSelection -bool true
 
-# Display full POSIX path as Finder window title
+## Display full POSIX path as Finder window title
 # defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 
-# When performing a search, search the current folder by default
+## When performing a search, search the current folder by default
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
-# Disable the warning when changing a file extension
+## Disable the warning when changing a file extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
-# Avoid creating .DS_Store files on network volumes
+## Avoid creating .DS_Store files on network volumes
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
-# Disable disk image verification
+## Disable disk image verification
 defaults write com.apple.frameworks.diskimages skip-verify -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 
-# Automatically open a new Finder window when a volume is mounted
+## Automatically open a new Finder window when a volume is mounted
 defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
 defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
 defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
-# Show item info below icons on the desktop and in other icon views
+## Show item info below icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
 
-# Enable snap-to-grid for icons on the desktop and in other icon views
+## Enable snap-to-grid for icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
 
-# Increase grid spacing for icons on the desktop and in other icon views
+## Increase grid spacing for icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
 
-# Increase the size of icons on the desktop and in other icon views
+## Increase the size of icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
 
-# Use column view in all Finder windows by default
-# Four-letter codes for view modes: `Nlsv`, `icnv`, `clmv`, `Flwv`
+## Use column view in all Finder windows by default
+## Four-letter codes for view modes: `Nlsv`, `icnv`, `clmv`, `Flwv`
 defaults write com.apple.Finder FXPreferredViewStyle -string "clmv"
 
-# Enable AirDrop over Ethernet and on unsupported Macs running Lion
+## Enable AirDrop over Ethernet and on unsupported Macs running Lion
 defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
-# Show the ~/Library folder
+## Show the ~/Library folder
 chflags nohidden ~/Library
 
-# Remove Dropbox’s green checkmark icons in Finder
+## Remove Dropbox’s green checkmark icons in Finder
 file=/Applications/Dropbox.app/Contents/Resources/check.icns
 [ -e "$file" ] && mv -f "$file" "$file.disabled"
 unset file
 
-###############################################################################
-# Dock                                                                        #
-###############################################################################
+
+# Dock
+# ----
 
 # Enable highlight hover effect for the grid view of a stack (Dock)
 defaults write com.apple.dock mouse-over-hilte-stack -bool true
@@ -253,9 +268,9 @@ defaults write com.apple.dock autohide -bool true
 # Make Dock icons of hidden applications translucent
 defaults write com.apple.dock showhidden -bool true
 
-###############################################################################
-# Safari & WebKit                                                             #
-###############################################################################
+
+# Safari.app & WebKit
+# -------------------
 
 # Set Safari’s home page to `about:blank` for faster loading
 defaults write com.apple.Safari HomePage -string "about:blank"
@@ -292,9 +307,9 @@ defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 # Enable the WebKit Developer Tools in the Mac App Store
 defaults write com.apple.appstore WebKitDeveloperExtras -bool true
 
-###############################################################################
-# iTunes                                                                      #
-###############################################################################
+
+# iTunes.app
+# ----------
 
 # Disable the iTunes store link arrows
 defaults write com.apple.iTunes show-store-link-arrows -bool false
@@ -317,9 +332,9 @@ defaults write com.apple.iTunes disableRadio -bool true
 # for `kHiddenMenuItemTargetSearch`.
 defaults write com.apple.iTunes NSUserKeyEquivalents -dict-add "Target Search Field" "@F"
 
-###############################################################################
-# Mail                                                                        #
-###############################################################################
+
+# Mail.app
+# --------
 
 # Disable send and reply animations in Mail.app
 defaults write com.apple.Mail DisableReplyAnimations -bool true
@@ -331,16 +346,16 @@ defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
 # Add the keyboard shortcut ⌘ + Enter to send an email in Mail.app
 defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" "@\\U21a9"
 
-###############################################################################
-# Terminal                                                                    #
-###############################################################################
+
+# Terminal.app
+# ------------
 
 # Only use UTF-8 in Terminal.app
 defaults write com.apple.terminal StringEncodings -array 4
 
-###############################################################################
-# Address Book, Dashboard, iCal, TextEdit, and Disk Utility                   #
-###############################################################################
+
+# TextEdit.app
+# ------------
 
 # Use plain text mode for new TextEdit documents
 defaults write com.apple.TextEdit RichText -int 0
@@ -349,9 +364,9 @@ defaults write com.apple.TextEdit RichText -int 0
 defaults write com.apple.TextEdit PlainTextEncoding -int 4
 defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
 
-###############################################################################
-# Transmission.app                                                            #
-###############################################################################
+
+# Transmission.app
+# ----------------
 
 # Use `~/Downloads/Torrents` to store incomplete downloads
 defaults write org.m0k.transmission UseIncompleteDownloadFolder -bool true
@@ -369,9 +384,9 @@ defaults write org.m0k.transmission WarningDonate -bool false
 # Hide the legal disclaimer
 defaults write org.m0k.transmission WarningLegal -bool false
 
-###############################################################################
-# Twitter.app                                                                 #
-###############################################################################
+
+# Twitter.app
+# -----------
 
 # Show the app window when clicking the menu icon
 defaults write com.twitter.twitter-mac MenuItemBehavior -int 1
@@ -388,10 +403,10 @@ defaults write com.twitter.twitter-mac ShowFullNames -bool true
 # Hide the app in the background if it’s not the front-most window
 defaults write com.twitter.twitter-mac HideInBackground -bool true
 
-###############################################################################
-# Kill affected applications                                                  #
-###############################################################################
 
+# Epilogue
+
+## Kill affected applications
 for app in \
     "Address Book" "Calendar" "Contacts" "Dashboard" "Dock" "Finder" \
     "Mail" "Safari" "SystemUIServer" "Terminal" "Transmission" \
@@ -399,6 +414,6 @@ for app in \
     killall "$app" > /dev/null 2>&1
 done
 
-echo "[$(date +'%Y-%m-%d %H:%M')] Finished configuration for script with sum $scriptSum." >> "$scriptLog"
+echo "[$(date +'%Y-%m-%d %H:%M')] Finished OS X configuration using script with checksum $scriptSum." >> "$scriptLog"
 
 info "Note that some of the changes require a logout/restart to take effect."
