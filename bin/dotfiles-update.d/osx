@@ -21,10 +21,7 @@ cd "$scriptDir"
 
 touch "$scriptLog"
 
-if [[ $(tail -n 1 "$scriptLog") =~ $scriptSum ]]; then
-    info "Skipped OS X configuration"
-    exit
-fi
+[[ $(tail -n 1 "$scriptLog") =~ $scriptSum ]] && exit
 
 info "Configuring OS X..."
 
