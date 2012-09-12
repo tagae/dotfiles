@@ -67,4 +67,4 @@ alias -s js="node"
 ### Specific initialisation
 
 load ~/.zsh.d/host/${HOST%%.*}
-load ~/.zsh.d/os/${PLATFORM:=${$(uname):l}}
+load ~/.zsh.d/os/$(uname)

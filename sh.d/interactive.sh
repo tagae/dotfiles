@@ -104,5 +104,5 @@ export CLOJURESCRIPT_HOME=$HOME/Applications/opt/clojurescript
 
 load ~/.sh.d/aliases
 
-load ~/.sh.d/os/${PLATFORM:=$(uname | tr "[:upper:]" "[:lower:]")} # platform specific
+load ~/.sh.d/os/$(uname) # platform specific
 load ~/.sh.d/host/${HOSTNAME%%.*} # host specific
