@@ -1,0 +1,8 @@
+*~
+gpg-agent.conf
+private-keys-v1.d
+pubring.gpg
+pubring.kbx
+random_seed
+secring.gpg
+trustdb.gpg

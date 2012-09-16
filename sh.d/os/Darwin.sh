@@ -22,6 +22,11 @@ addflag LDFLAGS -L /sw/lib
 addflag ACLOCAL_FLAGS -I /sw/share/aclocal
 prependpath PKG_CONFIG_PATH /sw/lib/pkgconfig
 
+## keychain (SSH / PGP)
+
+testcmd gpg-agent && \
+optcmd keychain --agents gpg --quiet && \
+source ~/.keychain/$HOST-sh-gpg
 
 ### Aliases
 

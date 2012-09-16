@@ -1,3 +1,9 @@
+if [ -n "$DOTFILES_LIB_COLORS" ]; then
+    return
+else
+    DOTFILES_LIB_COLORS=true
+fi
+
 # See http://linuxtidbits.wordpress.com/2008/08/11/output-color-on-bash-scripts/
 
 function show-term-colors {

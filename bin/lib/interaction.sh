@@ -1,3 +1,9 @@
+if [ -n "$DOTFILES_LIB_INTERACTION" ]; then
+    return
+else
+    DOTFILES_LIB_INTERACTION=true
+fi
+
 source ~/.dotfiles/bin/lib/colors.sh
 
 termInfo=$(tput setaf 7)
@@ -55,7 +61,11 @@ function warning {
         echo "${warningLabel}$1" >&2
         shift
     done
-    $prompt && yesno "${warningLabel}Continue? (y/n) " || exit 1
+    if $prompt; then
+        yesno "${warningLabel}Continue? (y/n) " || exit 1
+    else
+        true
+    fi
 }
 
 function error {

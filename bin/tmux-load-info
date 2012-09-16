@@ -1,0 +1,12 @@
+#!/bin/bash
+
+updateInterval=$1
+shift
+
+if which tmux-mem-cpu-load > /dev/null; then
+    tmux-mem-cpu-load "$updateInterval"
+elif [ $(uname) = "Darwin" ]; then
+    echo -n $(sysctl -n vm.loadavg | tr -d "{}")
+else
+    echo -n ""
+fi

@@ -1,3 +1,9 @@
+if [ -n "$DOTFILES_LIB_VERSIONING" ]; then
+    return
+else
+    DOTFILES_LIB_VERSIONING=true
+fi
+
 source ~/.dotfiles/bin/lib/interaction.sh
 
 function flatVersionNumber {

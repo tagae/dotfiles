@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source ~/.dotfiles/bin/lib/dotfiles.sh
-
-[ -r ~/.bin/loadavg ] || symlink ~/.bin/loadavg-$OS ~/.bin/loadavg

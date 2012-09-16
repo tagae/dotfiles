@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -x /opt/local/bin/reattach-to-user-namespace ]; then
+    /opt/local/bin/reattach-to-user-namespace zsh
+else
+    /bin/zsh
+fi

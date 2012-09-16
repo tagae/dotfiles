@@ -2,33 +2,62 @@
 
 source ~/.dotfiles/bin/lib/dotfiles.sh
 
-unset GIT_DIR # Defined when invoked as a git hook, but messes things up.
-
 cd ~
+
+info "=> Checking dotfiles-update git configuration..."
+
+pushd ~/.dotfiles/.git/hooks > /dev/null
+for hook in post-merge post-commit; do
+    if [ ! -r "$hook" ]; then
+        info "Setting dotfiles-update as git '$hook' hook"
+        ln -s ../../bin/dotfiles-update "$hook"
+    fi
+done
+popd > /dev/null
 
 info "=> Removing dangling links pointing to .dotfiles..."
 
-for danglingLink in $(find -L . -maxdepth 1 -type l -print); do
+for danglingLink in \
+        $(find -L . -maxdepth 1 -type l -print) \
+        $(find -L .dotfiles -type l -print); do
     if [[ $(readlink "$danglingLink") =~ ^\.dotfiles/ ]]; then
         rmlink "$danglingLink"
     fi
 done
 
+for danglingLink in $(find -L .dotfiles -type l -print); do
+    rmlink "$danglingLink"
+done
+
 info "=> Symlinking .dotfiles to home directory..."
 
 OS=$(uname)
-sourceRegExp='^[^ ]+([ ]*\('$OS'\))?$'
-targetRegExp='^[^ ]+'
 
-function print-sources {
-    echo find .dotfiles -depth 1 \
-        "-not -name '"{'\.*',README'*'}"'" \
-        -print | bash | egrep "$sourceRegExp"
-}
+find .dotfiles -maxdepth 1 \
+    -not -name ".*" \
+    -not -name "README*" \
+    \( -name "*($OS)" -o -name "*[!()]" \) -print | \
+while read source; do
+    target=.$(basename "$source" | sed "s/[[:space:]]*($OS)//")
+    if [ ! -e "$target" ]; then
+        symlink "$source" "$target"
+    elif [[ ! $(readlink "$target") =~ ^\.dotfiles/ ]]; then
+        warning -c "Leaving existing '$target' unchanged"
+    fi
+done
 
-print-sources | while read source; do
-    target=.$(basename "$source" | egrep -o "$targetRegExp")
-    [ ! -e "$target" ] && symlink "$source" "$target"
+info "=> Symlinking platform-specific dotfiles..."
+
+find .dotfiles -mindepth 2 -name "*($OS)" | \
+while read source; do
+    dir=$(dirname "$source")
+    file=$(basename "$source")
+    target=$(echo "$file" | sed "s/[[:space:]]*($OS)//")
+    if [ ! -e "$dir/$target" ]; then
+        pushd "$dir" > /dev/null
+        symlink "$file" "$target" "${dir#.*/}/"
+        popd > /dev/null
+    fi
 done
 
 info "=> Running custom updates..."
