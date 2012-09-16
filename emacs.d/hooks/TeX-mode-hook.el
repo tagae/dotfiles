@@ -22,4 +22,7 @@
 (setq TeX-save-query nil)
 (setq TeX-PDF-mode t)
 
+;; Start server for PDF-TeX Sync support
+(server-mode)
+
 (message "Loaded tagae's TeX config")

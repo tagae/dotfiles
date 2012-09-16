@@ -1,4 +1,4 @@
-### Tools
+### Environment
 
 # try in order (last is preferred)
 prefcmd BROWSER elinks
@@ -6,6 +6,13 @@ prefcmd BROWSER konqueror
 #prefcmd BROWSER "konqueror '%s' &"
 
 ### Program configuration
+
+## keychain (SSH / PGP)
+
+if optcmd keychain --quiet; then
+    load ~/.keychain/$HOST-sh
+    load ~/.keychain/$HOST-sh-gpg
+fi
 
 ## Alsa
 export ALSA_OUTPUT_PORTS="Emu10k1 WaveTable:0"

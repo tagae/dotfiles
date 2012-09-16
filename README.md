@@ -11,16 +11,11 @@ and install them as symlinks in your home directory with
 
 You can run the previous command whenever needed.
 
-To update dotfiles automatically after each `git pull` or `git commit`
-do
+The `dotfiles-update` command will install itself as `post-merge` and
+`post-commit` hook of the repository. This way, all pulled or
+committed changes will be followed by a corresponding
+`dotfiles-update`.
 
-    cd ~/.dotfiles/.git/hooks
-    ln -si ../../bin/dotfiles-update post-merge
-    ln -si ../../bin/dotfiles-update post-commit
-
-With this you no longer need to manually invoke `dotfiles-update`,
-since normally all changes (e.g. renaming of files) should be carried
-out through `git` commands, which are ultimately committed.
 
 Use
 ===

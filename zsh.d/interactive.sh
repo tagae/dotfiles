@@ -1,4 +1,4 @@
-# -*- mode: shell-script -*-
+OS=$(uname)
 
 ### Extensions
 
@@ -7,16 +7,16 @@
 if [[ -d ~/.oh-my-zsh ]]; then
     export ZSH=$HOME/.oh-my-zsh
     if [[ -r $ZSH/oh-my-zsh.sh ]]; then
-        #export ZSH_THEME="tagae"
-        export REPORTTIME=5
+        ZSH_THEME="robbyrussell"
         plugins=(
-            osx
             zsh-syntax-highlighting
             git svn
             ruby
             ant
-            brew macports
             node npm)
+        if [ $OS = "Darwin" ]; then
+            plugins=( "${plugins[@]}" osx brew macports )
+        fi
         source $ZSH/oh-my-zsh.sh
     fi
 fi
@@ -67,4 +67,4 @@ alias -s js="node"
 ### Specific initialisation
 
 load ~/.zsh.d/host/${HOST%%.*}
-load ~/.zsh.d/os/$(uname)
+load ~/.zsh.d/os/$OS

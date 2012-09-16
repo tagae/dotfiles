@@ -1,3 +1,9 @@
+if [ -n "$DOTFILES_LIB_FILES" ]; then
+    return
+else
+    DOTFILES_LIB_FILES=true
+fi
+
 function realdir {
     local dir
     dir=$(dirname "$1")
