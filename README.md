@@ -1,3 +1,5 @@
+Yet another [GitHub dotfiles repository](http://dotfiles.github.com/).
+
 Installation
 ============
 
@@ -14,7 +16,8 @@ You can run the previous command whenever needed.
 The `dotfiles-update` command will install itself as `post-merge` and
 `post-commit` hook of the repository. This way, all pulled or
 committed changes will be followed by a corresponding
-`dotfiles-update`.
+`dotfiles-update`, and you will not need to manually execute the
+command again.
 
 
 Use
@@ -55,7 +58,7 @@ have been created by executing
     ~/.dotfiles/bin/dotfiles-import -p Linux ~/.lircrc
 
 Mind that the `-p` option will apply to _all_ imports specified in the
-command line.
+command line, not only the first one.
 
 If you forget to use the `-p` option when importing a
 platform-specific dotfile, you can still fix the commit by renaming
@@ -69,9 +72,9 @@ You can place custom update scripts in the
 the last steps performed by `dotfiles-update`.
 
 Note that custom scripts should not interact with (e.g. expect input
-from) the user, since they can be executed as git hooks.
+from) the user, since they are usually executed as git hooks.
 
-If you want to have an environment similar to that `dotfiles-update`
-uses, include the following line at the beginning of your script:
+If you want an environment similar to the one `dotfiles-update` uses,
+include the following line at the beginning of your script:
 
     source ~/.dotfiles/bin/lib/dotfiles.sh
