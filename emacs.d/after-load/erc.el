@@ -8,7 +8,7 @@
  '(("irc.eu.freenode.net" "british")
    ("#fu" "spanish"))
  erc-autojoin-channels-alist
- '(("freenode.net" "#emacs" "#slate" "#lisp" "#gentoo"))
+ '(("freenode.net" "#emacs" "#slate" "#lisp" "#gentoo" "#latex"))
  erc-pals
  '("azul" "novo" "galactus" "arhuaco")
  erc-keywords
