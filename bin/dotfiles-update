@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ~/.dotfiles/bin/lib/dotfiles.sh
+source ~/.dotfiles/bin/lib/files.sh
 
 cd ~
 
@@ -33,18 +34,31 @@ info "=> Symlinking .dotfiles to home directory..."
 
 OS=$(uname)
 
-find .dotfiles -maxdepth 1 \
-    -not -name ".*" \
-    -not -name "README*" \
-    \( -name "*($OS)" -o -name "*[!()]" \) -print | \
-while read source; do
-    target=.$(basename "$source" | sed "s/[[:space:]]*($OS)//")
-    if [ ! -e "$target" ]; then
-        symlink "$source" "$target"
-    elif [[ ! $(readlink "$target") =~ ^\.dotfiles/ ]]; then
-        warning -c "Leaving existing '$target' unchanged"
-    fi
-done
+function linkDotfiles {
+    fromDir=$1
+    toDir=$2
+    [ "$(realdir "$toDir")" = "$HOME" ] && dot=.
+    find "$fromDir" -maxdepth 1 \
+        -not -name ".*" \
+        -not -name "README*" \
+        \( -name "*($OS)" -o -name "*[!()]" \) -print | \
+        while read source; do
+            target=$dot$(basename "$source" | sed "s/[[:space:]]*($OS)//")
+            if [ ! -e "$target" ]; then
+                symlink "$source" "$target"
+            elif [[ ! $(readlink "$target") =~ ^\.dotfiles/ ]]; then
+                [[ $target =~ ^\.(.+) ]] && fromDir=$fromDir/${BASH_REMATCH[1]}
+                if [ -d "$fromDir" -a -d "$target" ]; then
+                    echo "[TODO: recursively link files]"
+                    echo linkDotfiles "$fromDir" "$target"
+                else
+                    warning -c "Leaving existing '$target' unchanged"
+                fi
+            fi
+        done
+}
+
+linkDotfiles .dotfiles .
 
 info "=> Symlinking platform-specific dotfiles..."
 
