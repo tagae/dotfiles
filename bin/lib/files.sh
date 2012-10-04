@@ -22,3 +22,8 @@ function realpath {
 function available {
     which "$1" > /dev/null
 }
+
+function ensureDir {
+    dir=$1
+    test -d "$dir" || mkdir -p "$dir"
+}

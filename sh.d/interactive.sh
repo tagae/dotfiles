@@ -23,13 +23,6 @@ prependpath PATH $HOME/Applications/opt/npm/bin
 prependpath CDPATH $HOME/Work/UCL
 export CDPATH
 
-## Development
-addflag CFLAGS -I $HOME/include
-addflag CPPFLAGS -I $HOME/Applications/include
-addflag LDFLAGS -L $HOME/lib
-addflag LDFLAGS -L $HOME/Applications/lib
-prependpath LD_LIBRARY_PATH $HOME/lib
-
 ## Documentation
 prependpath MANPATH $HOME/Applications/share/man
 prependpath INFOPATH $HOME/Applications/share/info
@@ -47,6 +40,13 @@ prefcmd ALTERNATE_EDITOR emacs
 #~/Applications/bin/edit
 
 ### Tool configuration
+
+## C-like compilers and linkers
+addflag CFLAGS -I $HOME/include
+addflag CPPFLAGS -I $HOME/Applications/include
+addflag LDFLAGS -L $HOME/lib
+addflag LDFLAGS -L $HOME/Applications/lib
+prependpath LD_LIBRARY_PATH $HOME/lib
 
 ## less
 export LESSHISTFILE="-"
@@ -88,7 +88,7 @@ export JSDOCDIR=$HOME/Applications/opt/jsdoc-toolkit
 export JSDOCTEMPLATEDIR=$JSDOCDIR/templates/jsdoc
 
 ## node.js
-prependpath MANPATH $HOME/Applications/opt/npm/share/man
+PATH=./node_modules/.bin:$PATH # render locally installed commands visible
 
 ## Slime
 prependpath INFOPATH $HOME/Applications/lib/lisp/slime/doc

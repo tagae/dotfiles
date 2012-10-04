@@ -65,7 +65,6 @@
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
-
 ;;; === Platform-specific configuration
 
 (cond
