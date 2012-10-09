@@ -5,6 +5,8 @@
 
 ;; Execute `coffee` in the directory where Emacs was started. This is
 ;; particularly useful if you have ./node_modules/.bin in your PATH.
-(add-hook 'find-file-hook
-  (lambda ()
-    (setq default-directory command-line-default-directory)))
+(setq default-directory command-line-default-directory)
+
+;(add-hook 'find-file-hook
+;  (lambda ()
+;    (setq default-directory command-line-default-directory)))
