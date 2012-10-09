@@ -1,0 +1,8 @@
+    emacs*geometry: 80x70+0+0
+     emacs*menuBar: off
+     emacs*toolBar: 0
+        emacs*font: -*-terminus-*-*-*-*-12-*-*-*-*-*-*-*
+ emacs*cursorColor: Yellow
+emacs*pointerColor: lightgray
+  emacs*foreground: #fff8dc
+  emacs*background: #233b5a

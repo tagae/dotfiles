@@ -8,6 +8,6 @@ for cpp in /usr/bin/cpp; do
     fi
 done
 
-for resource in ~/.Xresources ~/.Xresources-$(uname) ~/.Xresources.d/* ; do
+for resource in ~/.Xresources ~/.Xresources.d/* ; do
     [ -r $resource ] && $XRDB -merge $resource
 done
