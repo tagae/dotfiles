@@ -48,3 +48,9 @@ export LSCOLORS="bxfxcxdxcxegedabagacad"
 ### Environment
 
 prefcmd BROWSER open
+
+# Set MacOS PATH setting from current environment.
+# if [ -x /usr/libexec/path_helper ]; then
+#     eval `/usr/libexec/path_helper -s`
+#     defaults write $HOME/.MacOSX/environment PATH "$PATH"
+# fi
