@@ -19,7 +19,6 @@
 (setq show-paren-delay 0
       show-paren-style 'parenthesis)
 
-
 ;;; === Emacs behaviour
 
 ;; Load paths.
@@ -39,22 +38,25 @@
 ;; Backup (i.e. foo~) behaviour —put backup files in one place.
 (defvar backup-dir "~/.emacs.d/backups/")
 (setq backup-directory-alist (list (cons "." backup-dir)))
+(setq make-backup-files nil) ; disable backups
 
 ;; Autosave (i.e. #foo#) behaviour —put autosave files in one place.
 (defvar auto-save-dir "~/.emacs.d/auto-saves/")
 (make-directory auto-save-dir t)
 (setq auto-save-file-name-transforms
       `(("\\(?:[^/]*/\\)*\\(.*\\)" ,(concat auto-save-dir "\\1") t)))
+(setq auto-save-default nil) ; disable autosaves
 
 ;; Always end a file with a newline.
 (setq require-final-newline t)
 
-;; Insert spaces instead of tabs
+;; Insert spaces instead of tabs.
 (setq-default indent-tabs-mode nil)
 
 ;; Reduce tab size to a minimum.
 (setq-default tab-width 2)
 
+;; Manage whitespace.
 (global-whitespace-mode)
 
 ;; Don't let customisation code clutter this file.
@@ -64,6 +66,9 @@
 ;; Make scripts executable when saved.
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
+
+;; Have the selection be replaced by typed text.
+(delete-selection-mode t)
 
 ;;; === Platform-specific configuration
 
