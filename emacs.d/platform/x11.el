@@ -11,22 +11,16 @@
 ;; Color theme.
 (when (functionp 'load-theme)
   ;(load-theme 'solarized-dark)
-  ;(load-theme 'wombat)
-  (load-theme 'tango)
+  (load-theme 'wombat)
+  ;(load-theme 'tango)
 )
+
+(set-fringe-style 4)
 
 ;; Remove visual clutter.
 (dolist (mode
          '(tool-bar-mode
            scroll-bar-mode
-           set-fringe-style
            tooltip-mode))
   (when (functionp mode)
-    (mode 0))) ; disable
-
-;;; === Fonts
-
-(set-frame-font "Menlo-14")
-;; (set-default-font "-*-terminus-bold-*-*-14-*-*-*-*-*-*-*")
-;; (set-default-font "-*-fixed-*-*-*-14-*-*-*-*-*-*-*")
-;; (set-default-font "-*-monaco-*-*-*-13-*-*-*-*-*-*-*")
+    (apply mode 0 nil))) ; disable
