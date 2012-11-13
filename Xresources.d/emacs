@@ -1,6 +1,7 @@
     emacs*geometry: 80x70+0+0
      emacs*menuBar: off
      emacs*toolBar: 0
-        eemacs*font: -*-terminus-*-*-*-*-12-*-*-*-*-*-*-*
+!        emacs*font: 7x13bold
+        emacs*font: -*-terminus-bold-*-*-*-12-*-*-*-*-*-*-*
  emacs*cursorColor: Yellow
 emacs*pointerColor: lightgray

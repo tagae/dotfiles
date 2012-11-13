@@ -7,7 +7,7 @@
 
 ### Local host configuration
 
-prependpath PATH /sbin /usr/sbin /usr/local/bin
+prependpath PATH /sbin /usr/sbin /usr/local/bin /usr/local/sbin
 prependpath MANPATH /usr/local/share/man /usr/share/man
 prependpath INFOPATH /usr/local/share/info /usr/share/info
 
