@@ -4,6 +4,7 @@
 [core]
 	editor = emacs
 	quotepath = false
+	excludesfile = /Users/tagae/.gitignore
 [credential]
 	helper = osxkeychain
 [alias]
