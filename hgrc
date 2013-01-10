@@ -1,2 +1,5 @@
 [ui]
 username = Sebastian Gonzalez Montesinos <s.gonzalez@uclouvain.be>
+[extensions]
+hgext.bookmarks =
+hggit =

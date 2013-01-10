@@ -12,6 +12,7 @@
 	ci = commit
 	st = status
 	br = branch
+  lg = log --oneline -5
 [github]
 	user = tagae
 	token = d90a580ac8fcf58848b90c32f9f42fc2
@@ -28,5 +29,3 @@
 [disabled-mergetool "osx-file-merge"]
 	cmd = osx-file-merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
 	trustExitCode = true
-[push]
-	default = simple
