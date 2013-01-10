@@ -67,9 +67,6 @@
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
-;; Have the selection be replaced by typed text.
-(delete-selection-mode t)
-
 ;;; === Platform-specific configuration
 
 (cond
@@ -105,9 +102,7 @@
         (eval-after-load package-name
           `(unless (memq ',package-name loaded-customizations)
              (load-file ,(concat package-config-dir config-file))
-             (add-to-list 'loaded-customizations ',package-name)
-             (message ,(format "Loaded local definitions for '%s."
-                               package-name))))))))
+             (add-to-list 'loaded-customizations ',package-name)))))))
 
 ;;; === Preloading
 
