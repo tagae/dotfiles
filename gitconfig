@@ -29,3 +29,5 @@
 [disabled-mergetool "osx-file-merge"]
 	cmd = osx-file-merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
 	trustExitCode = true
+[push]
+	default = simple
