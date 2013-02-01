@@ -92,5 +92,3 @@
 ;;  do
 ;;    (message "Setting %s height scale to %s" face-name height-scale)
 ;;    (set-face-attribute face-name nil :height height-scale))
-
-(message "Loaded tagae's LaTeX config")

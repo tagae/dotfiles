@@ -11,11 +11,11 @@
 (setq inhibit-startup-message t)
 
 ;; Show line and column numbers.
-(line-number-mode t)
-(column-number-mode t)
+(line-number-mode 1)
+(column-number-mode 1)
 
 ;; Highlight matching parenthesis.
-(show-paren-mode t)
+(show-paren-mode 1)
 (setq show-paren-delay 0
       show-paren-style 'parenthesis)
 
@@ -57,7 +57,7 @@
 (setq-default tab-width 2)
 
 ;; Manage whitespace.
-(global-whitespace-mode)
+(global-whitespace-mode 1)
 
 ;; Don't let customisation code clutter this file.
 (setq custom-file "~/.emacs.d/custom.el")
@@ -66,6 +66,9 @@
 ;; Make scripts executable when saved.
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
+
+;; Avoid automatic breaking of lines
+(auto-fill-mode 0)
 
 ;;; === Platform-specific configuration
 
