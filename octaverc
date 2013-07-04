@@ -1,1 +1,6 @@
-setenv GNUTERM x11
+setenv GNUTERM x11;
+
+pkg prefix ~/.octave/packages;
+pkg local_list ~/.octave/list;
+
+addpath(genpath("~/Applications/share/octave"));
