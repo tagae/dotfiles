@@ -24,9 +24,11 @@ prependpath PKG_CONFIG_PATH /sw/lib/pkgconfig
 
 ## keychain (SSH / PGP)
 
-testcmd gpg-agent && \
-optcmd keychain --agents gpg --quiet && \
-source ~/.keychain/$HOST-sh-gpg
+testcmd ssh-agent && testcmd gpg-agent && \
+if optcmd keychain --agents gpg,ssh --quiet; then
+    source ~/.keychain/$HOST-sh
+    source ~/.keychain/$HOST-sh-gpg
+fi
 
 ### Aliases
 
