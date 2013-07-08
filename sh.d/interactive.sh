@@ -14,6 +14,11 @@ prependpath INFOPATH /usr/local/share/info /usr/share/info
 # System paths
 MANPATH="$MANPATH:"
 
+### Platform-Specific configuration
+
+load ~/.sh.d/os/$(uname) # platform specific
+load ~/.sh.d/host/${HOSTNAME%%.*} # host specific
+
 ### User-specific configuration
 
 ## Paths
@@ -39,6 +44,10 @@ prefcmd VISUAL ~/Applications/bin/edit
 prefcmd ALTERNATE_EDITOR emacs
 #~/Applications/bin/edit
 
+## Aliases
+load ~/.sh.d/aliases
+
+
 ### Tool configuration
 
 ## C-like compilers and linkers
@@ -61,6 +70,9 @@ export GREP_COLOR='1;32'
 
 ## grc
 testcmd brew && load "`brew --prefix grc`/etc/grc.bashrc"
+
+## keychain (SSH, PGP)
+eval $(optcmd keychain --eval --quiet)
 
 ## OpenSSL
 setpath OPENSSL_CONF $HOME/.ssl/openssl.cnf
@@ -99,10 +111,3 @@ prependpath MANPATH $HOME/.cabal/share/man
 
 ## ClojureScript
 export CLOJURESCRIPT_HOME=$HOME/Applications/opt/clojurescript
-
-### Specific initialisation
-
-load ~/.sh.d/aliases
-
-load ~/.sh.d/os/$(uname) # platform specific
-load ~/.sh.d/host/${HOSTNAME%%.*} # host specific

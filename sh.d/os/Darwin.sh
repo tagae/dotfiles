@@ -22,14 +22,6 @@ addflag LDFLAGS -L /sw/lib
 addflag ACLOCAL_FLAGS -I /sw/share/aclocal
 prependpath PKG_CONFIG_PATH /sw/lib/pkgconfig
 
-## keychain (SSH / PGP)
-
-testcmd ssh-agent && testcmd gpg-agent && \
-if optcmd keychain --agents gpg,ssh --quiet; then
-    source ~/.keychain/$HOST-sh
-    source ~/.keychain/$HOST-sh-gpg
-fi
-
 ### Aliases
 
 alias cdrecord='cdrecord driveropts=burnfree -v dev=IODVDServices'
