@@ -15,7 +15,7 @@ and install them as symlinks in your home directory with
 You can run the previous command whenever needed.
 
 The `dotfiles-update` command will install itself as `post-merge` and
-`post-commit` hook of the repository. This way, all pulled or
+`post-commit` hooks in the repository. This way, all pulled or
 committed changes will be followed by a corresponding
 `dotfiles-update`, and you will not need to manually execute the
 command again.
@@ -79,3 +79,10 @@ If you want an environment similar to the one `dotfiles-update` uses,
 include the following line at the beginning of your script:
 
     source ~/.dotfiles/bin/lib/dotfiles.sh
+
+TODO
+----
+
+Drop platform-specific dotfile support, and use git branches instead
+(i.e. one base line, and one branch per platform, even with
+sub-branches for different configurations of each platform).
