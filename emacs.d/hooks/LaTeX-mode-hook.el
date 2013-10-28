@@ -2,6 +2,12 @@
 
 (add-to-list
  'TeX-command-list
+ '("Make" "make %s.pdf"
+   TeX-run-command t t
+   :help "Run make") t)
+
+(add-to-list
+ 'TeX-command-list
  '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t"
    TeX-run-TeX nil (latex-mode context-mode)
    :help "Run XeLaTeX with SyncTeX") t)
@@ -11,6 +17,12 @@
  '("LaTeX" "%`pdflatex --synctex=1%(mode)%' %t"
    TeX-run-TeX nil (latex-mode context-mode)
    :help "Run LaTeX with SyncTeX") t)
+
+(add-to-list
+ 'TeX-command-list
+ '("TeX" "%`tex --synctex=1%(mode)%' %t"
+   TeX-run-TeX nil (latex-mode context-mode)
+   :help "Run TeX with SyncTeX") t)
 
 (add-to-list
  'TeX-command-list

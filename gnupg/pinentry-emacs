@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# Inspired from https://github.com/ecraven/pinentry-emacs
+
+debug=/tmp/pinentry-emacs.log
+
+echo "$0 $@" > "$debug"
+
+echo OK
+
+while read cmd arg; do
+    $DEBUG && echo "[debug] cmd='$cmd' arg='$arg'" >> "$debug"
+    case "$cmd" in
+        \#*)
+            ;;
+        SETDESC)
+            DESC="$arg"
+            echo OK
+            ;;
+        SETPROMPT)
+            PROMPT="$arg"
+            echo OK
+            ;;
+        SETOK)
+            OK="$arg"
+            echo OK
+            ;;
+        SETERROR)
+            ERROR="$arg"
+            echo OK
+            ;;
+        GETPIN)
+            PIN=$(emacsclient \
+              -e "(pinentry-emacs \"$DESC\" \"$PROMPT\" \"$OK\" \"$ERROR\")" \
+              | sed -e 's/^"//' -e 's/"$//')
+            echo D "$PIN"
+            echo OK
+            ;;
+        OPTION)
+            echo OK
+            ;;
+        GETINFO)
+            case "$arg" in
+                pid*)
+                    echo D $$
+                    echo OK
+            esac
+            ;;
+        BYE)
+            echo OK
+            exit
+            ;;
+        *)
+            echo OK
+            ;;
+    esac
+done

@@ -13,6 +13,7 @@
 	st = status
 	br = branch
   lg = log --oneline -5
+  la = log --pretty=\"format:%ad %h (%an): %s\" --date=short
 [github]
 	user = tagae
 	token = d90a580ac8fcf58848b90c32f9f42fc2

@@ -22,6 +22,10 @@ addflag LDFLAGS -L /sw/lib
 addflag ACLOCAL_FLAGS -I /sw/share/aclocal
 prependpath PKG_CONFIG_PATH /sw/lib/pkgconfig
 
+## Python
+
+appendpath PATH /opt/local/Library/Frameworks/Python.framework/Versions/Current/bin
+
 ### Aliases
 
 alias cdrecord='cdrecord driveropts=burnfree -v dev=IODVDServices'

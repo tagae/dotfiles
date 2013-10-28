@@ -24,5 +24,3 @@
 
 ;; Start server for PDF-TeX Sync support
 (server-mode)
-
-(message "Loaded tagae's TeX config")

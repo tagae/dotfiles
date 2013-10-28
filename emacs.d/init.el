@@ -1,7 +1,7 @@
 ;;; === Personal data
 
 (setq user-full-name "Sebastián González"
-      user-mail-address "s.gonzalez@uclouvain.be"
+      user-mail-address "sgm@acm.be"
       user-website "http://www.info.ucl.ac.be/~sgm/")
 
 
