@@ -50,29 +50,37 @@ setopt PROMPT_SUBST
 # See SOLARIZED_THEME to either 'light' or 'dark' (default).
 
 declare -A solarizedBG
-solarizedBG=(light white dark black) # zsh syntax differs from bash
+solarizedBG=(light white dark black) # key-values (e.g. light->white)
 bkg=$solarizedBG[${SOLARIZED_THEME:-dark}]
 
-ZSH_THEME_HOST="%n%{%B%F{blue}%}@%{%B%F{cyan}%}%m%{%B%F{green}%} "
-ZSH_THEME_VCS="\${vcs_info_msg_0_}"
-ZSH_THEME_JOBS="%j "
-ZSH_THEME_ERRNO="%(?..%B%F{white}%K{red}[⚡ %?]%f%k%b )"
-ZSH_THEME_DIR="%{%b%F{yellow}%K{${bkg}}%}%~%{%B%F{green}%}"
-ZSH_THEME_INFO_START="%{%K{${bkg}}%B%F{green}%}"
-ZSH_THEME_INFO_END="%E%{%f%k%b%}"
+ZSH_THEME_INFO_DIR='%{%b%F{yellow}%K{${bkg}}%}%~%{%B%F{green}%}'
+ZSH_THEME_INFO_END='%E%{%f%k%b%}'
+ZSH_THEME_INFO_ERRNO='%(?..%B%F{white}%K{red}[⚡ %?]%f%k%b )'
+ZSH_THEME_INFO_HOST='%n%{%B%F{blue}%}@%{%B%F{cyan}%}%m%{%B%F{green}%} '
+ZSH_THEME_INFO_JOBS='%j '
+ZSH_THEME_INFO_START='%{%K{${bkg}}%B%F{green}%}'
+ZSH_THEME_INFO_VCS='${vcs_info_msg_0_}'
 
-ZSH_THEME_PROMPT_START="%{%K{${bkg}}%}"
-ZSH_THEME_PROMPT_PREFIX="%{%K{${bkg}}%}"
-ZSH_THEME_PROMPT="%(!.# .➜ )"
+for var in ZSH_THEME_INFO_{START,HOST,JOBS,ERRNO,DIR,VCS,END}; do
+    ZSH_THEME_INFO+="${(P)var}"
+done
+
+ZSH_THEME_PROMPT_START=""
+ZSH_THEME_PROMPT_PREFIX=""
+ZSH_THEME_PROMPT_CHAR="%(!.# .➜ )"
 ZSH_THEME_PROMPT_END="%{%f%k%b%}"
 
+for var in ZSH_THEME_PROMPT_{START,PREFIX,CHAR,END}; do
+    ZSH_THEME_PROMPT+="${(P)var}"
+done
+
 PROMPT="%{%f%k%b%}
-$ZSH_THEME_INFO_START$ZSH_THEME_HOST$ZSH_THEME_JOBS$ZSH_THEME_ERRNO$ZSH_THEME_DIR$ZSH_THEME_VCS$ZSH_THEME_INFO_END
-$ZSH_THEME_PROMPT_START$ZSH_THEME_PROMPT_PREFIX$ZSH_THEME_PROMPT$ZSH_THEME_PROMPT_END"
+$ZSH_THEME_INFO
+$ZSH_THEME_PROMPT"
 
 RPROMPT="!%{%B%F{cyan}%}%!%{%f%k%b%}"
 
-### Zsh behaviour
+### Behaviour
 
 ## Options
 

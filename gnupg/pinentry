@@ -1,0 +1,48 @@
+#!/bin/sh
+
+home="$(dirname "$0")"
+log="/tmp/pinentry.log"
+
+echo "$0" "$@" > "$log"
+
+#trap "rm -f '$log'" EXIT
+
+function available {
+    which "$1" > /dev/null
+}
+
+function try {
+    echo "Trying" "$@" > "$log"
+    available "$1" && exec "$@"
+}
+
+function parentPID {
+    local -i pid="$1"; shift
+    [ -n "$pid" ] || pid=$$
+    ps -o ppid= $pid
+}
+
+declare -i parent=$(parentPID $$)
+
+# Try Emacs pinentry
+while (( $parent != 0 )); do
+    echo "$(ps -o comm= $parent)" >> /tmp/pinentry-custom.log
+    case "$(ps -o comm= $parent)" in
+        *emacs)
+            try "$home/pinentry-emacs" "$@" || break
+            ;;
+    esac
+    parent=$(parentPID $parent)
+done
+
+# Try TTY pinentry
+#try pinentry-curses "$@"
+
+# Try QT4 pinentry
+#try pinentry-qt4 "$@"
+
+# Last resort
+try pinentry "$@"
+
+echo "No pinentry means" >&2
+exit 1

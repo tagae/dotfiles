@@ -1,1 +1,1 @@
-(add-to-list 'auto-mode-alist '("\.?bbx\\'" . latex-mode))
+(add-to-list 'auto-mode-alist '("\.?[bcd]bx\\'" . latex-mode))
