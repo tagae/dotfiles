@@ -74,6 +74,12 @@ testcmd brew && load "`brew --prefix grc`/etc/grc.bashrc"
 ## keychain (SSH, PGP)
 eval $(optcmd keychain --eval --quiet)
 
+## GnuPG
+
+# See gpg-agent(1)
+GPG_TTY=$(tty)
+export GPG_TTY
+
 ## OpenSSL
 setpath OPENSSL_CONF $HOME/.ssl/openssl.cnf
 
