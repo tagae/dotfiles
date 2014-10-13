@@ -11,6 +11,8 @@ prependpath PATH /sbin /usr/sbin /usr/local/bin /usr/local/sbin
 prependpath MANPATH /usr/local/share/man /usr/share/man
 prependpath INFOPATH /usr/local/share/info /usr/share/info
 
+prependpath INFOPATH $HOME/Applications/share/info
+
 # System paths
 MANPATH="$MANPATH:"
 
@@ -24,8 +26,7 @@ load ~/.sh.d/host/${HOSTNAME%%.*} # host specific
 ## Paths
 prependpath PATH $HOME/.bin
 prependpath PATH $HOME/Applications/bin
-prependpath PATH $HOME/Applications/opt/npm/bin
-prependpath CDPATH $HOME/Work/UCL
+prependpath CDPATH $HOME/Work
 export CDPATH
 
 ## Documentation
@@ -87,6 +88,9 @@ setpath OPENSSL_CONF $HOME/.ssl/openssl.cnf
 export CLASSPATH=""
 prependpath CLASSPATH /opt/local/share/java/saxon9he.jar
 prependpath CLASSPATH /sw/share/java/saxon-b/saxon8.jar
+export M2_HOME="$HOME/Applications/opt/apache-maven-3.2.3"
+export M2="$M2_HOME/bin"
+prependpath PATH "$M2"
 
 ## Autoconf
 setpath CONFIG_SITE $HOME/.autoconf
@@ -102,11 +106,12 @@ load /usr/share/mc/mc.gentoo
 setpath CCL_DEFAULT_DIRECTORY $HOME/Applications/opt/ccl-svn
 
 ## jsdoc
-export JSDOCDIR=$HOME/Applications/opt/jsdoc-toolkit
-export JSDOCTEMPLATEDIR=$JSDOCDIR/templates/jsdoc
+export JSDOCDIR="$HOME/Applications/opt/jsdoc-toolkit"
+export JSDOCTEMPLATEDIR="$JSDOCDIR/templates/jsdoc"
 
 ## node.js
-PATH=./node_modules/.bin:$PATH # render locally installed commands visible
+prependpath PATH "$HOME/.npm/bin" # see ~/.npmrc
+export PATH="node_modules/.bin:$PATH" # locally installed commands
 
 ## Slime
 prependpath INFOPATH $HOME/Applications/lib/lisp/slime/doc
@@ -117,3 +122,14 @@ prependpath MANPATH $HOME/.cabal/share/man
 
 ## ClojureScript
 export CLOJURESCRIPT_HOME=$HOME/Applications/opt/clojurescript
+
+### Heroku
+prependpath PATH /usr/local/heroku/bin
+
+### Ruby
+prependpath PATH "$HOME/.gem/ruby/1.9.1/bin"
+
+### Python
+#prependpath WORKON_HOME "$HOME/.virtualenvs"
+#load "$HOME/Library/Python/3.3/bin/virtualenvwrapper.sh"
+#prependpath PATH "$HOME/Library/Python/3.3/bin"

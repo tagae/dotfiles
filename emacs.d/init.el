@@ -14,11 +14,6 @@
 (line-number-mode 1)
 (column-number-mode 1)
 
-;; Highlight matching parenthesis.
-(show-paren-mode 1)
-(setq show-paren-delay 0
-      show-paren-style 'parenthesis)
-
 ;;; === Emacs behaviour
 
 ;; Load paths.
@@ -35,10 +30,8 @@
 ;; Make all "yes or no" prompts show "y or n" instead.
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Backup (i.e. foo~) behaviour —put backup files in one place.
-(defvar backup-dir "~/.emacs.d/backups/")
-(setq backup-directory-alist (list (cons "." backup-dir)))
-(setq make-backup-files nil) ; disable backups
+;; disable backups
+;(setq make-backup-files nil)
 
 ;; Autosave (i.e. #foo#) behaviour —put autosave files in one place.
 (defvar auto-save-dir "~/.emacs.d/auto-saves/")

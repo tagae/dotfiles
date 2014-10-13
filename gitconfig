@@ -12,7 +12,9 @@
 	ci = commit
 	st = status
 	br = branch
-  lg = log --oneline -5
+	#lg = log --all --pretty=format:'%h %cd %s (%an)' --since='7 days ago'
+  #lg = log --oneline -5
+  lg = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
   la = log --pretty=\"format:%ad %h (%an): %s\" --date=short
 [github]
 	user = tagae

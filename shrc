@@ -1,7 +1,7 @@
 # ~/.shrc: sh(1) configuration
 
 # If not running interactively, don't do anything
-[ -z "$PS1" ] && return
+#[ -z "$PS1" ] && return
 
 # Load auxiliary functions
 if [ -r ~/.sh.d/ancillary* ]; then
