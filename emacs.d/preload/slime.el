@@ -1,4 +1,2 @@
-;(require 'slime-autoloads nil 'noerror)
-(when (load "slime-autoloads" t)
-  (setq slime-auto-connect 'always)
-  (slime-setup '(slime-fancy slime-asdf inferior-slime)))
+(add-to-list 'load-path "~/Applications/opt/slime")
+(require 'slime-autoloads nil 'noerror)

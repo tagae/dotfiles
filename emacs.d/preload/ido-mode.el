@@ -1,1 +1,0 @@
-(ido-mode t)

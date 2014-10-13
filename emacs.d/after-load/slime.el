@@ -1,7 +1,6 @@
 ;; Load paths
 
-(add-to-list 'load-path "~/Applications/opt/slime")
-(add-to-list 'load-path "~/Applications/opt/slime/contrib")
+;;(add-to-list 'load-path "~/Applications/opt/slime/contrib")
 
 ;;; Common Lisp implementations
 
@@ -17,11 +16,13 @@
 
 (setq slime-auto-connect 'always)
 
-(slime-setup '(slime-repl
-               slime-asdf
-               slime-fancy
-               slime-banner
-               inferior-slime))
+(setq slime-contribs '(slime-fancy inferior-slime))
+
+;; (slime-setup '(slime-repl
+;;                slime-asdf
+;;                slime-fancy
+;;                slime-banner
+;;                inferior-slime))
 
 ;;; Hyperspec
 
