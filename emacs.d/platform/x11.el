@@ -5,6 +5,9 @@
 
 ;;; === Look & feel
 
+;; Avoid tooltips
+(tooltip-mode 0)
+
 ;; Color theme.
 (when (functionp 'load-theme)
   ;(load-theme 'solarized-dark)

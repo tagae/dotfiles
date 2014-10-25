@@ -8,8 +8,8 @@
      (goto-char (point-max))
      (eval-print-last-sexp))))
 
-(defvar goodies '(smex better-defaults))
-
-(dolist (p goodies)
+(dolist (p '(smex
+             diminish
+             better-defaults))
   (unless (package-installed-p p)
     (package-install p)))

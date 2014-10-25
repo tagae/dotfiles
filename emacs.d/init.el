@@ -1,9 +1,7 @@
 ;;; === Personal data
 
 (setq user-full-name "Sebastián González"
-      user-mail-address "sgm@acm.be"
-      user-website "http://www.info.ucl.ac.be/~sgm/")
-
+      user-mail-address "tagae@ehub.io")
 
 ;;; === Emacs look & feel
 
@@ -20,7 +18,7 @@
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/packages")
 
-;; Use UTF-8 by default (be people friendly).
+;; Use UTF-8 by default.
 (set-default-coding-systems 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-clipboard-coding-system 'utf-8)
@@ -30,21 +28,13 @@
 ;; Make all "yes or no" prompts show "y or n" instead.
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; disable backups
-;(setq make-backup-files nil)
+;; Let autosaves and backups go into $TMPDIR/emacs-$USER/
+(defconst emacs-tmp-dir
+  (format "%s%s-%s/" temporary-file-directory "emacs" (user-login-name)))
 
-;; Autosave (i.e. #foo#) behaviour —put autosave files in one place.
-(defvar auto-save-dir "~/.emacs.d/auto-saves/")
-(make-directory auto-save-dir t)
-(setq auto-save-file-name-transforms
-      `(("\\(?:[^/]*/\\)*\\(.*\\)" ,(concat auto-save-dir "\\1") t)))
-(setq auto-save-default nil) ; disable autosaves
-
-;; Always end a file with a newline.
-(setq require-final-newline t)
-
-;; Insert spaces instead of tabs.
-(setq-default indent-tabs-mode nil)
+(setq backup-directory-alist `((".*" . ,emacs-tmp-dir))
+      auto-save-file-name-transforms `((".*" ,emacs-tmp-dir t))
+      auto-save-list-file-prefix emacs-tmp-dir)
 
 ;; Reduce tab size to a minimum.
 (setq-default tab-width 2)
@@ -60,7 +50,7 @@
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
-;; Avoid automatic breaking of lines
+;; Avoid automatic breaking of lines.
 (auto-fill-mode 0)
 
 ;;; === Platform-specific configuration
@@ -74,7 +64,6 @@
 (if (eq window-system 'x)
   (load "platform/x11")
   (load "platform/term"))
-
 
 ;;; === Mode hooks
 
