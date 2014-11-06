@@ -3,3 +3,5 @@
 ssh
 elinks/globhist
 emacs.d/places
+/emacs.d/auto-save/
+/emacs.d/state/

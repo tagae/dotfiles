@@ -31,7 +31,7 @@ while read cmd arg; do
             ;;
         GETPIN)
             PIN=$(emacsclient \
-              -e "(pinentry-emacs \"$DESC\" \"$PROMPT\" \"$OK\" \"$ERROR\")" \
+              -e "(pinentry \"$DESC\" \"$PROMPT\" \"$OK\" \"$ERROR\")" \
               | sed -e 's/^"//' -e 's/"$//')
             echo D "$PIN"
             echo OK
