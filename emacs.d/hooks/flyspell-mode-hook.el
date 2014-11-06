@@ -1,0 +1,1 @@
+(diminish 'flyspell-mode "FS")

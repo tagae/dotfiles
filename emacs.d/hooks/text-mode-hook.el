@@ -1,5 +1,4 @@
-(flyspell-mode t)
-(whitespace-mode t)
+(flyspell-mode)
 
 ;; Pairwise insertion
 (setq skeleton-pair t)

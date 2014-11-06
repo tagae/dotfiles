@@ -15,3 +15,5 @@
 
 ; try to automagically figure out indentation
 ;(setq py-smart-indentation t)
+
+(setq python-indent 3)

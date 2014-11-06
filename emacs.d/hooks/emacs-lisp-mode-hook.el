@@ -1,0 +1,5 @@
+(paredit-mode)
+;(hl-sexp-mode)
+(idle-highlight-mode 1)
+(eldoc-mode)
+(flyspell-prog-mode)

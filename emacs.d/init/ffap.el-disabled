@@ -1,0 +1,2 @@
+(setq ffap-require-prefix t) ; C-u C-x C-f
+(ffap-bindings)

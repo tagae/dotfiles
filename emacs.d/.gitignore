@@ -4,3 +4,5 @@ backups
 el-get
 elpa
 url
+data
+*-old
