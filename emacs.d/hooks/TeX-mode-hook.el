@@ -22,5 +22,10 @@
 (setq TeX-save-query nil)
 (setq TeX-PDF-mode t)
 
+;; Use smartparens.
+(require 'smartparens-latex)
+(smartparens-mode 1)
+
 ;; Start server for PDF-TeX Sync support
-(server-mode)
+(unless (server-running-p)
+  (server-start))

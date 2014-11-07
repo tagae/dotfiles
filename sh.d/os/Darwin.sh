@@ -37,6 +37,7 @@ else
     alias top='top -o cpu'
 fi
 alias la='ls -laO'
+alias Emacs='open -a Emacs'
 
 ### Colors
 

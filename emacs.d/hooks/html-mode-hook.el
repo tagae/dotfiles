@@ -1,0 +1,1 @@
+(tagedit-mode 1)

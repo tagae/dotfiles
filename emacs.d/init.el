@@ -1,31 +1,6 @@
-;;; === Personal data
-
-(setq user-full-name "Sebastián González"
-      user-mail-address "tagae@ehub.io")
-
-;;; === Emacs look & feel
-
-;; Supress splash screen.
-(setq inhibit-startup-message t)
-
-;; Show line and column numbers.
-(line-number-mode 1)
-(column-number-mode 1)
-
-;; Turn alarms off.
-(setq ring-bell-function 'ignore)
-
-;; Title bar format.
-(setq frame-title-format "%b") ; instead of the host name
-
-;; No blinking cursor.
-(blink-cursor-mode 0)
-
-;;; === Emacs behaviour
-
 ;; Load paths.
-(add-to-list 'load-path (concat user-emacs-directory "local"))
-(add-to-list 'load-path (concat user-emacs-directory "packages"))
+(add-to-list 'load-path (expand-file-name "lib" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "packages" user-emacs-directory))
 
 ;; Use UTF-8 by default.
 (setq locale-coding-system 'utf-8)
@@ -126,7 +101,7 @@
         auto-save-list-file-prefix auto-save-dir))
 
 ;; Don't let customisation code clutter this file.
-(setq custom-file (concat user-emacs-directory "custom.el"))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
 
 ;; Enable commands disabled by default for the sake of new users.
@@ -179,7 +154,7 @@
 
 ;;; === Preloads
 
-(let ((init-dir (concat user-emacs-directory "init/")))
+(let ((init-dir (expand-file-name "init/"  user-emacs-directory)))
   (when (file-exists-p init-dir)
     (dolist (path (directory-files init-dir 'full "\\.el\\'"))
       (load-file path))))

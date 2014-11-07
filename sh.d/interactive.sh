@@ -34,7 +34,7 @@ prependpath MANPATH $HOME/Applications/share/man
 prependpath INFOPATH $HOME/Applications/share/info
 
 ## Environment
-export MAIL='Sebastian Gonzalez <s.gonzalez@uclouvain.be>'
+export MAIL='Sebastián González <tagae@ehub.io>'
 export EMAIL=$MAIL
 prefcmd PAGER less
 prefcmd MANPAGER less
