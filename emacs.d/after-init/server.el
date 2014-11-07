@@ -1,4 +1,3 @@
-(require 'server)
-
-(unless (server-running-p)
-  (server-start))
+(when (require 'server nil t)
+  (unless (server-running-p)
+    (server-start)))

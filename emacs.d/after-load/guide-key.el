@@ -1,0 +1,1 @@
+(diminish 'guide-key-mode)
