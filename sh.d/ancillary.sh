@@ -1,6 +1,6 @@
 load () {
-    [ -r "$1" ] && source "$1" && echo "Loaded $1"
-    [ -r "$1.sh" ] && source "$1.sh" && echo "Loaded $1"
+    [ -r "$1" ] && source "$1"
+    [ -r "$1.sh" ] && source "$1.sh"
 }
 
 testcmd () {

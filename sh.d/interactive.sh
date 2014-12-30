@@ -38,12 +38,14 @@ export MAIL='Sebastián González <tagae@ehub.io>'
 export EMAIL=$MAIL
 prefcmd PAGER less
 prefcmd MANPAGER less
-# prefcmd MANPAGER less -+$LESS -iRSw
 prefcmd LISTER ls
-prefcmd EDITOR ~/Applications/bin/edit
-prefcmd VISUAL ~/Applications/bin/edit
-prefcmd ALTERNATE_EDITOR emacs
-#~/Applications/bin/edit
+# prefcmd MANPAGER less -+$LESS -iRSw
+export EDITOR='emacsclient -c'
+export VISUAL="$EDITOR"
+export ALTERNATE_EDITOR='emacs'
+#prefcmd EDITOR ~/Applications/bin/edit
+#prefcmd VISUAL ~/Applications/bin/edit
+#prefcmd ALTERNATE_EDITOR emacs
 
 ## Aliases
 load ~/.sh.d/aliases

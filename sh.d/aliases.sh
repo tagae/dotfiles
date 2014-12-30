@@ -18,6 +18,7 @@ function cd () {
 ## New commands
 
 alias edit=$EDITOR
+alias e=$EDITOR
 
 ## Fast directory change
 alias ...='cd ../..'
