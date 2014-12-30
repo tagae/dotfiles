@@ -26,6 +26,10 @@ prependpath PKG_CONFIG_PATH /sw/lib/pkgconfig
 
 appendpath PATH /opt/local/Library/Frameworks/Python.framework/Versions/Current/bin
 
+## Java
+
+#export JAVA_HOME=`/usr/libexec/java_home`
+
 ### Aliases
 
 alias cdrecord='cdrecord driveropts=burnfree -v dev=IODVDServices'
@@ -38,6 +42,7 @@ else
 fi
 alias la='ls -laO'
 alias Emacs='open -a Emacs'
+alias o='open'
 
 ### Colors
 
