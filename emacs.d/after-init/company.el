@@ -1,1 +1,1 @@
-(global-company-mode)
+(global-company-mode 1)

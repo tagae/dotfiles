@@ -1,7 +1,6 @@
 (global-set-key (kbd "C-c C-g") 'magit-status)
 (global-set-key (kbd "C-c C-b") 'magit-blame-mode)
 
-;; Magit settings.
 (setq
  ;; List of autocompletions if nothing in sight.
  magit-repo-dirs '("~/.dotfiles" "~/Projects")

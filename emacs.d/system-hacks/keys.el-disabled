@@ -1,0 +1,9 @@
+;; [BROKEN] [DISABLED] Unneeded given the way the current config works.
+
+(advice-add 'define-key :around
+            (lambda (@define-key keymap key def)
+              ;; Ignore key assignment if DEF is an f-unbound symbol.
+              (when (or (not (symbolp def)) (fboundp def))
+                ;; Pass call through.
+                (apply @define-key keymap key def '())))
+            '((name ignore-undefined)))
