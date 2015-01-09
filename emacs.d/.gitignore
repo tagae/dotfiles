@@ -1,8 +1,15 @@
+*-disabled
+*-discarded
+*-old
 auto-save-list
+auto-save/
 auto-saves
 backups
+data
 el-get
 elpa
+packages/
+places
+projectile-bookmarks.eld
+state/
 url
-data
-*-old

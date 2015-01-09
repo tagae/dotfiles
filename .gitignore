@@ -2,8 +2,3 @@
 .DS_Store
 ssh
 elinks/globhist
-emacs.d/places
-/emacs.d/auto-save/
-/emacs.d/state/
-/emacs.d/projectile-bookmarks.eld
-/emacs.d/packages/
