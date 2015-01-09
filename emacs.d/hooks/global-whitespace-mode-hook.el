@@ -2,4 +2,12 @@
 (setq whitespace-action '(auto-cleanup))
 
 ;; Only show bad whitespace.
-(setq whitespace-style '(face trailing tabs space-before-tab))
+(setq whitespace-style
+      '(face
+        indentation
+        lines
+        space-after-tab
+        space-before-tab
+        tabs
+        trailing)
+      whitespace-line-column 100)

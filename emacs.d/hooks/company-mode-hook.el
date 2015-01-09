@@ -1,1 +1,0 @@
-(diminish 'company-mode)

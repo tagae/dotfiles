@@ -1,0 +1,15 @@
+(when (featurep 'package)
+
+  (require 'sg/packages)
+
+  ;; Have `require' try to recover from imminent failure by recommending a package
+  ;; with the given feature name.
+  ;;
+  ;; To make intent explicit, this mechanism is triggered only if NOERROR is
+  ;; 'recommended.
+  ;;
+  (advice-add 'require :around
+    (lambda (@require feature &optional filename noerror)
+      (when (eq noerror 'recommended)
+        (sg:recommend-package feature))
+      (apply @require feature filename noerror '()))))

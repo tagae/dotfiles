@@ -1,0 +1,7 @@
+;; [TESTED] [DISABLED] Does not really make sense.
+
+(advice-add 'autoload :before
+            (lambda (function file &optional docstring interactive type)
+              (when (autoloadp (symbol-function function))
+                (message "Warning [sg:autoload]: redefining autoload for %s"
+                         function))))

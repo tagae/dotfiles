@@ -1,0 +1,19 @@
+;;;###autoload
+(defun sg:update-autoloads (&optional file)
+  "Update autoloads for files in the directory containing this file."
+  (interactive)
+  (let* ((base-dir
+          (file-truename
+           (file-name-directory
+            (symbol-file 'sg:update-autoloads 'defun))))
+         (autoload-file (expand-file-name "autoloads.el" base-dir))
+         (generated-autoload-file autoload-file))
+    (message "base %s" base-dir)
+    (unless (file-exists-p autoload-file)
+      (with-temp-file autoload-file
+        ;; Create file with non-zero size to appease autoload.
+        (insert ";;")))
+    (cd base-dir)
+    (if file
+        (update-file-autoloads file)
+      (update-directory-autoloads base-dir))))

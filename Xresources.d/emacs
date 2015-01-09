@@ -1,9 +1,14 @@
-          emacs*geometry: 80x70+0+0
-           emacs*menuBar: off
-           emacs*toolBar: 0
-              emacs*font: -*-terminus-bold-*-*-*-12-*-*-*-*-*-*-*
-       emacs*cursorColor: Yellow
-      emacs*pointerColor: lightgray
+! Be 80 columns wide, and as tall as the screen permits.
+emacs*geometry: 80x70+0+0
+
+! Use a great font that works with UTF-8 both on Linux and Mac.
+emacs.font: Terminus-9
+
+! Remove visual clutter.
 emacs*verticalScrollBars: off
            emacs*toolBar: off
-!        emacs*font: 7x13bold
+           emacs*menuBar: off
+
+! Why not.
+emacs*cursorColor: Yellow
+emacs*pointerColor: lightgray
