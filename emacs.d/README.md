@@ -44,6 +44,7 @@ See https://github.com/bbatsov/emacs-lisp-style-guide
 TODO
 ====
 
+* Don't ask to install packages if connection unavailable.
 * Would organisation benefit from using `cask`?
 * Check `dash` and `s` package to implement the diverse .el files.
   Both seem nice.

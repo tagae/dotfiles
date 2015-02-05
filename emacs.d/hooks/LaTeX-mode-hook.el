@@ -24,64 +24,14 @@
 
 ;; For case-sensitive file systems, all AUCTeX-specific code could go in
 ;; LaTeX-mode-hook.el instead of here.
-(when (require 'auctex nil 'recommended)
+(when (load "auctex" 'noerror 'nomessage)
 
-  (dolist (spec '(("Make" "make %s.pdf"
-                   TeX-run-command t t
-                   :help "Run make")
-                  ("TeX" "%`tex --synctex=1%(mode)%' %t"
-                   TeX-run-TeX nil (latex-mode context-mode)
-                   :help "Run TeX with SyncTeX")
-                  ("LaTeX" "%`pdflatex --synctex=1%(mode)%' %t"
+  (dolist (spec '(("LaTeX" "%`pdflatex --synctex=1%(mode)%' %t"
                    TeX-run-TeX nil (latex-mode context-mode)
                    :help "Run LaTeX with SyncTeX")
                   ("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t"
                    TeX-run-TeX nil (latex-mode context-mode)
-                   :help "Run XeLaTeX with SyncTeX")
-                  ("Biber" "biber %s"
-                   TeX-run-Biber nil (latex-mode context-mode)
-                   :help "Run Biber"))
+                   :help "Run XeLaTeX with SyncTeX"))
            (add-to-list 'TeX-command-list spec t)))
 
-  (defun TeX-run-Biber (name command file)
-    "Create a process for NAME using COMMAND to format FILE with Biber."
-    (let ((process (TeX-run-command name command file)))
-      (setq TeX-sentinel-function 'TeX-Biber-sentinel)
-      (if TeX-process-asynchronous
-          process
-          (TeX-synchronous-sentinel name file process))))
-
-  (defun TeX-Biber-sentinel (process name)
-    "Cleanup TeX output buffer after running Biber."
-    (goto-char (point-max))
-    (cond
-      ;; Check whether Biber reports any warnings or errors.
-      ((re-search-backward (concat
-                            "^(There \\(?:was\\|were\\) \\([0-9]+\\) "
-                            "\\(warnings?\\|error messages?\\))") nil t)
-       ;; Tell the user their number so that she sees whether the
-       ;; situation is getting better or worse.
-       (message (concat "Biber finished with %s %s. "
-                        "Type `%s' to display output.")
-                (match-string 1) (match-string 2)
-                (substitute-command-keys
-                 "\\\\[TeX-recenter-output-buffer]")))
-      (t
-       (message (concat "Biber finished successfully. "
-                        "Run LaTeX again to get citations right."))))
-    (setq TeX-command-next TeX-command-default))
-
-  ;;(setq-default TeX-master nil) ; query for master file if not defined locally
-
-  ;;(local-set-key '[(meta tab)] 'TeX-complete-symbol)
-
-  (setq TeX-command-default "XeLaTeX"
-        TeX-save-query nil) ; autosave before compiling
-
-  ;; Autocompile after save, for documents that have set TeX-master.
-  (add-hook 'after-save-hook
-            (lambda ()
-              (when TeX-master
-                (TeX-command TeX-command-default 'TeX-master-file 0))))
-
-  (turn-on-reftex))
+  (setq TeX-command-default "XeLaTeX"))
