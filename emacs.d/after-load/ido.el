@@ -1,6 +1,6 @@
 (setq ido-save-directory-list-file (expand-file-name "ido" emacs-state-dir)
       ido-enable-flex-matching t
-      ido-use-filename-at-point 'guess
+      ;ido-use-filename-at-point 'guess
       ido-use-url-at-point t
       ido-show-dot-for-dired t
       ido-use-virtual-buffers 'auto
