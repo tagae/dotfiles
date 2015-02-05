@@ -90,9 +90,6 @@ setpath OPENSSL_CONF $HOME/.ssl/openssl.cnf
 export CLASSPATH=""
 prependpath CLASSPATH /opt/local/share/java/saxon9he.jar
 prependpath CLASSPATH /sw/share/java/saxon-b/saxon8.jar
-export M2_HOME="$HOME/Applications/opt/apache-maven-3.2.3"
-export M2="$M2_HOME/bin"
-prependpath PATH "$M2"
 
 ## Autoconf
 setpath CONFIG_SITE $HOME/.autoconf
