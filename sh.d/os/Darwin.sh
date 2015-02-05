@@ -29,6 +29,8 @@ appendpath PATH /opt/local/Library/Frameworks/Python.framework/Versions/Current/
 ## Java
 
 #export JAVA_HOME=`/usr/libexec/java_home`
+export JAVA_HOME="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home"
+export M3_HOME="/opt/local/share/java/maven3"
 
 ### Aliases
 
