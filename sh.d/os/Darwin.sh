@@ -32,6 +32,8 @@ appendpath PATH /opt/local/Library/Frameworks/Python.framework/Versions/Current/
 export JAVA_HOME="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home"
 export M3_HOME="/opt/local/share/java/maven3"
 
+export CATALINA_HOME="$HOME/Applications/opt/apache-tomcat"
+
 ### Aliases
 
 alias cdrecord='cdrecord driveropts=burnfree -v dev=IODVDServices'
