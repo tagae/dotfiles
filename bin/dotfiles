@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+source "$(dirname "$0")"/../lib/base.sh
+
+require-module command message import use eject
+
+use-command ln gln ln
+
+### Top-level shell
+
+dotfiles() {
+    if (( $# == 0 )); then
+        cat >&2 <<EOM
+Usage: $(basename "$0") <ACTION> [ARGS...]
+EOM
+        exit 1
+    fi
+
+    local -r action="$1"
+    shift
+
+    if [[ "$(type -t "$action"-dotfiles)" = 'function' ]]; then
+        "$action"-dotfiles "$@"
+    else
+        error "unknown action '$action'"
+    fi
+}
+
+### Sub shells
+
+import-dotfiles() {
+    if (( $# == 0 )); then
+        cat >&2 <<EOM
+Usage: $(basename "0") import ~/.FILE...
+EOM
+        exit 1
+    fi
+    while (( $# > 0 )); do
+        import-dotfile "$1"
+        shift
+    done
+}
+
+use-dotfiles() {
+    if (( $# == 0 )); then
+        cat >&2 <<EOM
+Usage: $(basename "$0") use ~/$(relative-to "$HOME" "$DOTFILES")/FILE...
+EOM
+        exit 1
+    fi
+    while (( $# > 0 )); do
+        use-dotfile "$1"
+        shift
+    done
+}
+
+eject-dotfiles() {
+    if (( $# == 0 )); then
+        cat >&2 <<EOM
+Usage: $(basename "$0") eject ~/.FILE...
+EOM
+        exit 1
+    fi
+    while (( $# > 0 )); do
+        eject-dotfile "$1"
+        shift
+    done
+}
+
+dotfiles "$@"
