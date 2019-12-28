@@ -1,0 +1,21 @@
+name: test
+
+on: [push]
+
+jobs:
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Check dotfiles spec
+      run: ./spec/dotfiles.spec
+
+  macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install bash and coreutils
+      run: brew install bash coreutils
+    - name: Check dotfiles spec
+      run: ./spec/dotfiles.spec
