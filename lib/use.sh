@@ -27,6 +27,5 @@ use-dotfile() {
     mkdir -p "$(dirname "$reference")"
     ln --relative --symbolic "$dotfile" "$reference"
 
-    local -r pretty_dotfile="~/$(relative-to "$HOME" "$dotfile")"
-    info "using $pretty_dotfile as $pretty_reference"
+    info "using $(from-home "$dotfile") as $pretty_reference"
 }
