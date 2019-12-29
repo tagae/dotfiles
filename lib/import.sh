@@ -11,17 +11,14 @@ import-dotfile() {
     [[ "$(absolute-path "$source")" =~ ^"$HOME"/\.(.+) ]] || error "$source is not a dotfile"
     local -r relative="${BASH_REMATCH[1]}"
     local -r dotfile="$DOTFILES/$relative"
-    local pretty_dotfile
     if [[ -e "$dotfile" ]]; then
-        pretty_dotfile="~/$(relative-to "$HOME" "$dotfile")"
-        error "import clashes with existing $pretty_dotfile"
+        error "import clashes with existing $(from-home "$dotfile")"
     fi
 
     ingest-dotfile "$source" "$dotfile"
     track-dotfile "$dotfile" "feat: import $relative"
 
-    : ${pretty_dotfile:="~/$(relative-to "$HOME" "$dotfile")"}
-    info "moved ~/.$relative to $pretty_dotfile"
+    info "moved ~/.$relative to $(from-home "$dotfile")"
 
     use-dotfile "$dotfile"
 }

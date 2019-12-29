@@ -19,14 +19,13 @@ eject-dotfile() {
     local -r relative="${BASH_REMATCH[1]}"
 
     local -r dotfile="$DOTFILES/$relative"
-    local -r pretty_dotfile="~/$(relative-to "$HOME" "$dotfile")"
     [[ "$(realpath "$reference")" = "$(realpath "$dotfile")" ]] || \
-        error "$reference does not refer to $pretty_dotfile"
+        error "$reference does not refer to $(from-home "$dotfile")"
 
     expel-dotfile "$reference" "$dotfile"
     untrack-dotfile "$dotfile" "feat: eject $relative"
 
-    info "moved $pretty_dotfile back into ~/.$relative"
+    info "moved $(from-home "$dotfile") back into ~/.$relative"
 }
 
 expel-dotfile() {

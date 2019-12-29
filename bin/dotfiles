@@ -2,7 +2,7 @@
 
 source "$(dirname "$0")"/../lib/base.sh
 
-require-module command message import use eject
+require-module command message path import use eject
 
 use-command ln gln ln
 
@@ -44,7 +44,7 @@ EOM
 use-dotfiles() {
     if (( $# == 0 )); then
         cat >&2 <<EOM
-Usage: $(basename "$0") use ~/$(relative-to "$HOME" "$DOTFILES")/FILE...
+Usage: $(basename "$0") use ~/$(from-home "$DOTFILES")/FILE...
 EOM
         exit 1
     fi
