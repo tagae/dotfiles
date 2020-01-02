@@ -6,6 +6,11 @@ Yet another [GitHub dotfiles repository].
 Dotfiles are managed in a git repository and symlinked from there to your home
 directory.
 
+The `master` branch contains the pristine (empty) configuration, and other
+branches contain the different configurations adapted to personal preferences,
+platforms and hosts. These configurations might be merged as needed using
+regular git workflows.
+
 ![](https://github.com/tagae/dotfiles/workflows/test/badge.svg)
 
 
@@ -14,9 +19,12 @@ Installation
 
 Issue
 
-    git clone --branch <your branch> git@github.com:tagae/dotfiles.git ~/.dotfiles
+    git clone git@github.com:tagae/dotfiles.git ~/.dotfiles
 
 Any directory can be used as destination.
+
+Merge the branches that correspond to your personal preferences, platform
+(macOS / Linux) and host.
 
 The `bin` directory in the repository contains the `dotfiles` command, which
 you can use to perform a number of actions on your dotfiles.
