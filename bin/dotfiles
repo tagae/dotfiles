@@ -12,6 +12,11 @@ dotfiles() {
     if (( $# == 0 )); then
         cat >&2 <<EOM
 Usage: $(basename "$0") <ACTION> [ARGS...]
+
+The available actions are
+- import: bring an exiting dotfile into version control, and use the managed dotfile
+- use: symlink a managed dotfile to your home directory, so that it take effect
+- eject: move a dotfile out of version control, and back to your home directory
 EOM
         exit 1
     fi
