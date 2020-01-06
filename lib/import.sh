@@ -1,36 +1,36 @@
-test -v IMPORT_LIB && return || readonly IMPORT_LIB="${BASH_SOURCE[0]}"
+test -v IMPORT_LIB && return || readonly IMPORT_LIB="${BASH_SOURCE}"
 
 source "$(dirname "$IMPORT_LIB")"/base.sh
 
-require-module message path git use
+require_module message path git use
 
-import-dotfile() {
+import_dotfile() {
     local -r source="$1"
     [[ -e "$source" ]] || error "$source does not exist"
     [[ -L "$source" ]] && error "$source is a symbolic link"
-    [[ "$(absolute-path "$source")" =~ ^"$HOME"/\.(.+) ]] || error "$source is not a dotfile"
+    [[ "$(absolute_path "$source")" =~ ^"$HOME"/\.(.+) ]] || error "$source is not a dotfile"
     local -r relative="${BASH_REMATCH[1]}"
     local -r dotfile="$DOTFILES/$relative"
     if [[ -e "$dotfile" ]]; then
-        error "import clashes with existing $(from-home "$dotfile")"
+        error "import clashes with existing $(from_home "$dotfile")"
     fi
 
-    ingest-dotfile "$source" "$dotfile"
-    track-dotfile "$dotfile" "feat: import $relative"
+    ingest_dotfile "$source" "$dotfile"
+    track_dotfile "$dotfile" "feat: import $relative"
 
-    info "moved ~/.$relative to $(from-home "$dotfile")"
+    info "moved ~/.$relative to $(from_home "$dotfile")"
 
-    use-dotfile "$dotfile"
+    use_dotfile "$dotfile"
 }
 
-ingest-dotfile() {
+ingest_dotfile() {
     local -r source="$1" dotfile="$2"
     mkdir -p "$(dirname "$dotfile")"
     mv "$source" "$dotfile"
 }
 
-track-dotfile() {
+track_dotfile() {
     local -r dotfile="$1" message="$2"
-    dotfiles-git add "$dotfile"
-    dotfiles-git commit --quiet --message "$message"
+    dotfiles_git add "$dotfile"
+    dotfiles_git commit --quiet --message "$message"
 }

@@ -1,7 +1,9 @@
-test -v SPEC_LIB && return || readonly SPEC_LIB="${BASH_SOURCE[0]}"
+test -v SPEC_LIB && return || readonly SPEC_LIB="${BASH_SOURCE}"
 
-set -o nounset
+set -o nounset -o posix
 test -v DEBUG && set -o xtrace
+
+trap 'echo "[Trace] command '"'"'$BASH_COMMAND'"'"' failed at $BASH_SOURCE:$LINENO" >&2' ERR
 
 SPEC_NAME="$(basename "$0")"
 SPEC_DIR="$(realpath "$(dirname "$0")")"
@@ -42,7 +44,7 @@ fail() {
     (( FAIL++ ))
 }
 
-report-lines-as() {
+report_lines_as() {
     local -r label="$1" file="$2"
     if [ -f "$file" ]; then
         local line
@@ -53,11 +55,10 @@ report-lines-as() {
     fi
 }
 
-create-file() {
+create_file() {
     local -r file="$1" content="${2:-}"
     mkdir -p "$(dirname "$file")"
     echo "$content" > "$file"
-    # mark for cleaning if file does not reside under HOME directory
     [[ "$(realpath "$file")" =~ ^"$HOME" ]] || FILES_TO_CLEAN+="$file"
 }
 
@@ -71,11 +72,10 @@ Feature() {
 }
 
 Given() {
-    # effects
     if [[ "$*" =~ ^'a file '(.+)' with content '(.+)$ ]]; then
-        create-file "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+        create_file "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
     elif [[ "$*" =~ ^'a file '(.+)$ ]]; then
-        create-file "${BASH_REMATCH[1]}"
+        create_file "${BASH_REMATCH[1]}"
     elif [[ "$*" =~ ^'a directory '(.+)$ ]]; then
         local -r directory="${BASH_REMATCH[1]}"
         mkdir -p "$directory"
@@ -88,34 +88,15 @@ Given() {
             || fail "Fixture $directory contains $actual instead of $count files"
     elif [[ "$*" =~ ^'a symlink '(.+)' pointing to '(.+)$ ]]; then
         local -r symlink="${BASH_REMATCH[1]}" target="${BASH_REMATCH[2]}"
-        Given a file "$target"
+        Given that file "$target" exists
         mkdir -p "$(dirname "$symlink")"
         ln -fs "$target" "$symlink"
     elif [[ "$*" =~ ^'variable '(.+)' containing the path of the dotfiles git repository'$ ]]; then
         local -r varname="${BASH_REMATCH[1]}"
         eval "$varname=\"$(git -C "$HOME" rev-parse --show-toplevel)\""
-
-    # assertions
-    elif [[ "$*" =~ ^'that the symlink '(.+)' points to '(.+)$ ]]; then
-        local -r symlink="${BASH_REMATCH[1]}" target="${BASH_REMATCH[2]}"
-        Given an existing symlink "$symlink"
-        Given an existing file "$target"
-        test "$(realpath "$symlink")" = "$(realpath "$target")" \
-             || fail "fixture symlink $symlink should point to $target"
-    elif [[ "$*" =~ ^'an existing file '(.+)$ ]]; then
-        local -r file="${BASH_REMATCH[1]}"
-        test -f "$file" || fail "fixture should contain file $file"
-    elif [[ "$*" =~ ^'an existing directory '(.+)$ ]]; then
-        local -r directory="${BASH_REMATCH[1]}"
-        test -d "$directory" || fail "fixture should contain directory $directory"
-    elif [[ "$*" =~ ^'an existing symlink '(.+)$ ]]; then
-        local -r symlink="${BASH_REMATCH[1]}"
-        test -L "$symlink" || fail "fixture should contain symlink $symlink"
-    elif [[ "$*" =~ ^'that file '(.+)' does not exist'$ ]]; then
-        local -r filename="${BASH_REMATCH[1]}"
-        test -f "$filename" && fail "fixture should not contain file $filename"
-    else
-        fail Unmatched step: Given "$*"
+    elif (( $# > 0 )) && [ "$1" = 'that' ]; then
+        shift
+        Assert "$@"
     fi
 }
 
@@ -125,8 +106,12 @@ Thus() {
     else
         fail "$@"
     fi
-    report-lines-as 'message' ~/stdout
-    report-lines-as 'error message' ~/stderr
+    report_lines_as 'message' ~/stdout
+    report_lines_as 'error message' ~/stderr
+}
+
+And() {
+    Thus "$@"
 }
 
 End() {
@@ -134,4 +119,33 @@ End() {
     echo $PASS tests passed
     echo $FAIL tests failed
     (( FAIL == 0 ))
+}
+
+Assert() {
+    if [[ "$*" =~ ^'the symlink '(.+)' points to '(.+)$ ]]; then
+        local -r symlink="${BASH_REMATCH[1]}" target="${BASH_REMATCH[2]}"
+        Given that symlink "$symlink" exists
+        Given that "$target" exists
+        test "$(realpath "$symlink")" = "$(realpath "$target")" \
+             || fail "fixture symlink $symlink should point to $target"
+    elif [[ "$*" =~ ^'file '(.+)' exists'$ ]]; then
+        local -r file="${BASH_REMATCH[1]}"
+        test -f "$file" || fail "fixture should contain file $file"
+    elif [[ "$*" =~ ^'directory '(.+)' exists'$ ]]; then
+        local -r directory="${BASH_REMATCH[1]}"
+        test -d "$directory" || fail "fixture should contain directory $directory"
+    elif [[ "$*" =~ ^'symlink '(.+)' exists'$ ]]; then
+        local -r symlink="${BASH_REMATCH[1]}"
+        test -L "$symlink" || fail "fixture should contain symlink $symlink"
+    elif [[ "$*" =~ ^(.+)' exists'$ ]]; then
+        local -r path="${BASH_REMATCH[1]}"
+        test -e "$path" || fail "fixture should contain $path"
+    elif [[ "$*" =~ ^'file '(.+)' does not exist'$ ]]; then
+        local -r filename="${BASH_REMATCH[1]}"
+        if test -f "$filename"; then
+            fail "fixture should not contain file $filename"
+        fi
+    else
+        fail Unmatched step: "$*"
+    fi
 }
