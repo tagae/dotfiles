@@ -81,7 +81,7 @@ Thus the dotfile is imported preserving the directory hierarchy
 Feature - handling of invalid imports
 #####################################
 
-Given an existing symlink ~/.a-dotfile # imported dotfile from previous spec
+Given that symlink ~/.a-dotfile exists # imported dotfile from previous spec
 
     ! dotfiles import ~/.a-dotfile
 
@@ -105,6 +105,7 @@ Thus importing a non-dotfile fails
 
 ###
 
+Given a file ~/a-target
 Given a symlink ~/.a-symlink pointing to ~/a-target
 
     ! dotfiles import ~/.a-symlink
@@ -137,22 +138,47 @@ Given a file ~/plain-directory/.file
 Thus importing a dotfile that is not a child of a dot-directory fails
 
 
-Feature - using an imported dotfile
-###################################
+Feature - using a dotfile
+#########################
 
-# use dotfile imported in previous spec
-Given an existing file ~/.dotfiles/share/a-dotfile
-Given an existing symlink ~/.a-dotfile
+Given file ~/.dotfiles/share/a-dotfile
+
+    rm ~/.a-dotfile # make sure the dotfile is not used
+
+    dotfiles use ~/.dotfiles/share/a-dotfile
+
+Thus using a dotfile succeeds
+And the symlink ~/.a-dotfile points to ~/.dotfiles/share/a-dotfile
 
     dotfiles use ~/.dotfiles/share/a-dotfile
 
 Thus using an already used dotfile succeeds
+And the symlink ~/.a-dotfile points to ~/.dotfiles/share/a-dotfile
 
-    rm ~/.a-dotfile # stop using dotfile
 
-    dotfiles use ~/.dotfiles/share/a-dotfile
+Feature - using a dotfile in a directory
+########################################
 
-Thus using an unused dotfile succeeds
+Given a file ~/.dotfiles/share/a-directory/a-dotfile
+
+    dotfiles use ~/.dotfiles/share/a-directory/a-dotfile
+
+Thus using a dotfile in a directory succeeds
+And the symlink ~/.a-directory/a-dotfile points to ~/.dotfiles/share/a-directory/a-dotfile
+
+
+Feature - using a dot-directory
+###############################
+
+Given a file ~/.dotfiles/share/a-directory/a-dotfile
+Given a file ~/.dotfiles/share/a-directory/another-dotfile
+
+    rm -rf ~/.a-directory # make sure the dot-directory is not used
+
+    dotfiles use ~/.dotfiles/share/a-directory
+
+Thus using a directory succeeds
+And the symlink ~/.a-directory points to ~/.dotfiles/share/a-directory
 
 
 Feature - handling of invalid uses
@@ -176,9 +202,8 @@ Thus using an unmanaged file fails
 Feature - ejection of a dotfile '(inverse of importing)'
 ########################################################
 
-# dotfile imported and used from previous specs
-Given an existing file ~/.dotfiles/share/a-dotfile
-Given an existing symlink ~/.a-dotfile
+Given a file ~/.dotfiles/share/a-dotfile with content 'some content'
+Given a symlink ~/.a-dotfile pointing to ~/.dotfiles/share/a-dotfile
 
     dotfiles eject ~/.a-dotfile
 
@@ -208,8 +233,8 @@ Thus the last commit message mentions the ejection of the dotfile
 Feature - ejection of a file in a dot-directory
 ###############################################
 
-# dotfile imported and used from previous specs
-Given that the symlink ~/.directory/file points to ~/.dotfiles/share/directory/file
+Given a file ~/.dotfiles/share/directory/file
+Given a symlink ~/.directory/file pointing to ~/.dotfiles/share/directory/file
 Given that ~/.dotfiles/share/directory contains 1 file
 
     dotfiles eject ~/.directory/file

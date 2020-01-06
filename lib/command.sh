@@ -1,6 +1,6 @@
-test -v COMMAND_LIB && return || readonly COMMAND_LIB="${BASH_SOURCE[0]}"
+test -v COMMAND_LIB && return || readonly COMMAND_LIB="${BASH_SOURCE}"
 
-use-command() {
+use_command() {
     local role="$1" cmd
     shift
     while (( $# > 0 )); do

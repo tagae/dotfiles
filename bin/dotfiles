@@ -2,9 +2,9 @@
 
 source "$(dirname "$0")"/../lib/base.sh
 
-require-module command message path import use eject
+require_module command message path import use eject
 
-use-command ln gln ln
+use_command ln gln ln
 
 ### Top-level shell
 
@@ -24,8 +24,8 @@ EOM
     local -r action="$1"
     shift
 
-    if [[ "$(type -t "$action"-dotfiles)" = 'function' ]]; then
-        "$action"-dotfiles "$@"
+    if [[ "$(type -t "$action"_dotfiles)" = 'function' ]]; then
+        "$action"_dotfiles "$@"
     else
         error "unknown action '$action'"
     fi
@@ -33,7 +33,7 @@ EOM
 
 ### Sub shells
 
-import-dotfiles() {
+import_dotfiles() {
     if (( $# == 0 )); then
         cat >&2 <<EOM
 Usage: $(basename "0") import ~/.FILE...
@@ -41,12 +41,12 @@ EOM
         exit 1
     fi
     while (( $# > 0 )); do
-        import-dotfile "$1"
+        import_dotfile "$1"
         shift
     done
 }
 
-use-dotfiles() {
+use_dotfiles() {
     if (( $# == 0 )); then
         cat >&2 <<EOM
 Usage: $(basename "$0") use ~/$(from-home "$DOTFILES")/FILE...
@@ -54,12 +54,12 @@ EOM
         exit 1
     fi
     while (( $# > 0 )); do
-        use-dotfile "$1"
+        use_dotfile "$1"
         shift
     done
 }
 
-eject-dotfiles() {
+eject_dotfiles() {
     if (( $# == 0 )); then
         cat >&2 <<EOM
 Usage: $(basename "$0") eject ~/.FILE...
@@ -67,7 +67,7 @@ EOM
         exit 1
     fi
     while (( $# > 0 )); do
-        eject-dotfile "$1"
+        eject_dotfile "$1"
         shift
     done
 }

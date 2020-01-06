@@ -1,4 +1,4 @@
-test -v MESSAGE_LIB && return || readonly MESSAGE_LIB="${BASH_SOURCE[0]}"
+test -v MESSAGE_LIB && return || readonly MESSAGE_LIB="${BASH_SOURCE}"
 
 info() {
     if test -t 1; then echo -n "[$(tput setaf 7)Info$(tput sgr0)] "; fi
