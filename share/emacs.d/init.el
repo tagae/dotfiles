@@ -456,6 +456,9 @@
       :ensure t
       :defer t
       :diminish "clj")
+  (use-package clojure-mode-extra-font-locking
+      :ensure t
+      :after clojure-mode)
   (use-package projectile
       :ensure t
       :defer t
