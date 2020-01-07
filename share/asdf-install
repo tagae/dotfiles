@@ -1,0 +1,13 @@
+;;; -*- Mode: Lisp -*-
+
+#-(or sbcl openmcl)
+(progn
+  (pushnew "~/.asdf-install-dir/systems/"
+           asdf:*central-registry*
+           :test #'equal)
+
+  (pushnew "~/.asdf-install-dir/"
+           asdf:*central-registry*
+           :test #'equal)
+
+  (setq asdf-install:*verify-gpg-signatures* nil))
