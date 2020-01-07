@@ -1,0 +1,16 @@
+# ~/.inputrc: readline initialization file.
+
+# For more information on how this file works, please see the
+# INITIALIZATION FILE section of the readline(3) man page
+#
+# This file controls the behaviour of line input editing for programs that use
+# the GNU Readline library, such as Bash and GDB.
+#
+# You can re-read the inputrc file with C-x C-r.
+
+# First, include any system-wide bindings and variable
+# assignments from /etc/inputrc
+$include /etc/inputrc
+
+# Emacs-style editing
+set editing-mode emacs
