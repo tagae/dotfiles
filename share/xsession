@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -d ~/.xsession.d ]; then
+    for script in ~/.xsession.d/*.sh; do
+        source "$script"
+    done
+    unset script
+fi
