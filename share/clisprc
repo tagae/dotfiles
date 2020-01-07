@@ -1,0 +1,21 @@
+;; -*- mode:lisp -*-
+
+;works, but slows down clisp:
+;(setq *clocc-root* "~/Applications/opt/clocc/")
+;(load (concatenate 'string *clocc-root* "clocc"))
+;(load (translate-logical-pathname "clocc:src;port;net"))
+
+#-:asdf (load "~/Applications/opt/ccl-svn/tools/asdf")
+
+#+disable
+(pushnew (truename "~/.asdf-install-dir/systems/")
+         asdf:*central-registry* :test #'equal)
+
+#-:asdf-install
+(let ((asdf:*central-registry*
+       (cons (truename "~/Applications/opt/ccl-svn/tools/asdf-install/")
+             asdf:*central-registry*)))
+  (asdf:operate 'asdf:load-op :asdf-install))
+
+;(asdf:operate 'asdf:load-op :mk-defsystem)
+;(mk:add-registry-location "~/.asdf-install-dir/systems/")
