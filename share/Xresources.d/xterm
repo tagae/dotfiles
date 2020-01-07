@@ -1,0 +1,33 @@
+         xterm*geometry: 80x45
+        xterm*saveLines: 10000
+             xterm*utf8: 1
+  xterm*scrollTtyOutput: false
+             xterm*font: -*-terminus-*-*-*-*-12-*-*-*-*-*-*-*
+         xterm*faceName: Terminus:size=12:style=Bold
+      xterm*cursorBlink: true
+    xterm*cursorOffTime: 300
+     xterm*cursorOnTime: 1500
+  xterm*metaSendsEscape: true
+xterm*selectToClipboard: true
+
+! xterm*foreground: Gray65
+! xterm*background: Black
+!       xterm*cursorColor: Orange
+!       xterm*color0: Black
+!       xterm*color1: Red3
+!       xterm*color2: Green3
+!       xterm*color3: Yellow3
+!       xterm*color4: RoyalBlue
+!       xterm*color5: Magenta3
+!       xterm*color6: Cyan3
+!       xterm*color7: AntiqueWhite
+!       xterm*color8: Grey25
+!       xterm*color9: LightCoral
+!      xterm*color10: LightGreen
+!      xterm*color11: Gold
+!      xterm*color12: CornflowerBlue
+!      xterm*color13: LightPink
+!      xterm*color14: DeepSkyBlue
+!      xterm*color15: White
+!     xterm*highlightColor: SlateGray
+! xterm*highlightTextColor: PowderBlue

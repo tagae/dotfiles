@@ -1,0 +1,9 @@
+       xdvi*geometry: 830x800+308+0
+   xdvi*shrinkFactor: 6
+          xdvi*paper: a4
+         xdvi*expert: 0
+      xdvi*underLink: true
+     xdvi*wwwBrowser: open
+           xdvi*font: -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+xdvi*statusline*font: -*-helvetica-medium-r-*-*-11-*-*-*-*-*-*-*
+!     xdvi*background: LightYellow
