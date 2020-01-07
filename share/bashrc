@@ -1,0 +1,3 @@
+[ -r ~/.sh.d/ancillary.sh ] && source ~/.sh.d/ancillary.sh
+[ -r ~/.sh.d/interactive.sh ] && source ~/.sh.d/interactive.sh
+[ -r ~/.bash.d/interactive.sh ] && source ~/.bash.d/interactive.sh
