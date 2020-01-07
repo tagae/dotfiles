@@ -336,7 +336,7 @@
 
 (use-package ace-jump-mode
     :ensure t
-    :bind ("C-." . ace-jump-mode)
+    :bind ("§" . ace-jump-mode)
     :config (ace-jump-mode-enable-mark-sync))
 
 (use-package smex
@@ -350,17 +350,14 @@
 (use-package undo-tree
     :ensure t
     :config
-  (global-undo-tree-mode 1)
-  (setq undo-tree-mode-lighter ""))
+    (global-undo-tree-mode 1)
+    (setq undo-tree-mode-lighter ""))
 
 (use-package company
     :ensure t
+    :defer t
     :diminish
     :config (global-company-mode 1))
-
-(use-package elisp-slime-nav
-    :ensure t
-    :diminish)
 
 (use-package expand-region
     :ensure t
@@ -373,23 +370,41 @@
 
 (use-package ido-completing-read+
     :ensure t
+    :defer t
     :config (ido-ubiquitous-mode 1))
 
 
 (use-package ido-at-point
     :ensure t
+    :defer t
     :config (ido-at-point-mode 1))
 
 (use-package flx-ido
     :ensure t
+    :defer t
     :config
     (flx-ido-mode 1)
     (setq ido-use-faces nil))
 
+(use-package elisp-slime-nav
+    :ensure t
+    :defer t
+    :diminish)
+
+(use-package company-elisp
+    :after (company elisp-mode)
+    :config
+    (push 'company-elisp company-backends))
+
 (use-package tex
-    :ensure auctex)
+    :ensure auctex
+    :defer t)
+
+(use-package company-auctex
+    :after (company latex))
 
 (use-package deft
+    :ensure t
     :bind ([f8] . deft)
     :config
     (setq deft-extension "text")
@@ -398,10 +413,12 @@
       (setq deft-text-mode 'markdown-mode)))
 
 (use-package dockerfile-mode
-    :ensure t)
+    :ensure t
+    :defer t)
 
 (use-package docker-compose-mode
-    :ensure t)
+    :ensure t
+    :defer t)
 
 (use-package magit
     :ensure t
@@ -411,21 +428,22 @@
     (setq magit-completing-read-function 'magit-ido-completing-read))
 
 (use-package markdown-mode
-    :ensure t)
+    :ensure t
+    :defer t)
 
 (use-package paredit
     :ensure t
+    :defer t
     :diminish "ped")
 
 (use-package rg
-    :ensure t)
-
-(use-package xrdb-mode
-    :mode "Xresources\\.d/.+")
+    :ensure t
+    :defer t)
 
 (use-package slime
     :if (executable-find "sbcl")
     :ensure t
+    :defer t
     :config
     (setq inferior-lisp-program "sbcl")
     (setq slime-contribs '(slime-fancy)))
@@ -436,9 +454,11 @@
 (when (executable-find "clojure")
   (use-package clojure-mode
       :ensure t
+      :defer t
       :diminish "clj")
   (use-package projectile
       :ensure t
+      :defer t
       :diminish "prj"
       :bind-keymap
       ("C-c p" . projectile-command-map)
@@ -446,8 +466,8 @@
       (setq projectile-known-projects-file
             (expand-file-name "projectile-bookmarks.eld" emacs-state-dir)))
   (use-package cider
-      :if (executable-find "clojure")
       :ensure t
+      :defer t
       :diminish "clj"
       :config
       (projectile-mode 1))

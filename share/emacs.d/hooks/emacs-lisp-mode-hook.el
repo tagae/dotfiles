@@ -27,6 +27,6 @@
 (when (require 'elisp-slime-nav nil 'recommended)
   (elisp-slime-nav-mode 1))
 
-;; Maniacal but practical editing mode.
+;; Maniacal but lovely editing mode.
 (when (require 'paredit nil 'recommended)
   (paredit-mode 1))
