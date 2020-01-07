@@ -1,0 +1,1 @@
+[ -r ~/.sh.d/login.sh ] && source ~/.sh.d/login.sh
