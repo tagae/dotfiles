@@ -1,0 +1,16 @@
+(in-package #:cl-user)
+
+(require 'asdf)
+;(asdf:oos 'asdf:load-op 'asdf-binary-locations :verbose nil)
+
+(defparameter *home*
+  (let ((home (sb-ext:posix-getenv "HOME")))
+    (make-pathname
+     :directory (append (pathname-directory home)
+                        (list (file-namestring home))))))
+
+(load (merge-pathnames #p".common.lisp" *home*))
+
+;; Local Variables:
+;; mode: lisp
+;; End:
