@@ -1,0 +1,5 @@
+defscrollback 10000
+startup_message off
+defutf8 on
+hardstatus alwayslastline
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{wk}%?%-Lw%?%{=b kR}(%{W}%n*%f %t%?(%u)%?%{=b kR})%{= kw}%?%+Lw%?%?%= %{g}][%{Y}%l%{g}]%{C}[ %m/%d %c ]%{W}'
