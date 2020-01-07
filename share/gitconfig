@@ -20,6 +20,7 @@
         # ---[ commit ]---
         ci = commit -v
         fix = commit -v --amend --no-edit
+        fup = commit --fixup
         # ---[ branching ]---
         br = branch -vv
         # ---[ diff ]---
