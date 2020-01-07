@@ -1,0 +1,4 @@
+# ~/.profile: executed by the command interpreter for login shells.
+
+[ -r ~/.sh.d/login.sh ] && source ~/.sh.d/login.sh
+[ -r ~/.bashrc ] && source ~/.bashrc
