@@ -6,6 +6,9 @@
         path = ~/.gitconfig.d/local
         path = ~/.gitconfig.d/secrets
 
+[core]
+        excludesfile = ~/.gitconfig.d/ignore
+
 [commit]
         template = ~/.gitconfig.d/commit-template
 
