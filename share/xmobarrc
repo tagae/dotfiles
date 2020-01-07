@@ -1,0 +1,127 @@
+Config {
+
+  -- appearance
+    font = "xft:Terminus:bold:size=10"
+  , bgColor = "black"
+  , fgColor = "grey"
+  , border = NoBorder
+  , borderColor = "black"
+  , iconRoot = "."
+
+  -- layout
+  , sepChar = "$" -- delineator between plugin names and straight text
+  , alignSep = "}{" -- separator between left-right alignment
+  , template = "$StdinReader$}CPU $cpu$ = $multicpu$% TEMP $thermal0$ $thermal1$ MEM $memory$+$swap$% $dynnetwork$ $battery$ UP $uptime${<fc=#ee9a00>$date$</fc> $EBBR$"
+  , position = Bottom
+
+  -- behaviour
+  , allDesktops = True -- show on all desktops
+  , hideOnStart = False -- start with window unmapped
+  , lowerOnStart = True -- send to bottom of window stack on start
+  , overrideRedirect = True -- set the Override Redirect flag (Xlib)
+  , pickBroadest = True -- choose widest display (multi-monitor)
+  , persistent = True -- enable/disable hiding (True = disabled)
+
+  -- plugins (http://projects.haskell.org/xmobar/#system-monitor-plugins)
+  -- update rates are in tenth of seconds
+
+  , commands =
+    [
+      Run Cpu
+      [ "--template", "<total>"
+      , "--Low",  "50"   -- units: %
+      , "--High", "85"  -- units: %
+      , "--low", "darkgreen"
+      , "--normal", "darkorange"
+      , "--high", "red"
+      ] 10
+
+    , Run MultiCpu
+      [ "--template", "<autototal>"
+      , "--Low",  "50"   -- units: %
+      , "--High", "85"  -- units: %
+      , "--low", "darkgreen"
+      , "--normal", "darkorange"
+      , "--high", "red"
+      ] 10
+
+    , Run ThermalZone 0
+      [ "--template", "<temp>°C"
+      , "--Low" ,  "60"  -- units: °C
+      , "--High" , "80" -- units: °C
+      , "--low" , "darkgreen"
+      , "--normal" , "darkorange"
+      , "--high" , "red"
+      ] 10
+
+    , Run ThermalZone 1
+      [ "--template", "<temp>°C"
+      , "--Low" ,  "60"  -- units: °C
+      , "--High" , "80" -- units: °C
+      , "--low" , "darkgreen"
+      , "--normal" , "darkorange"
+      , "--high" , "red"
+      ] 10
+
+    , Run Memory
+      [ "--template", "<usedratio>"
+      , "--Low",  "60" -- units: %
+      , "--High", "90" -- units: %
+      , "--low", "darkgreen"
+      , "--normal", "darkorange"
+      , "--high", "darkred"
+      ] 10
+
+    , Run Swap
+      [ "--template", "<usedratio>"
+      ] 10
+
+    , Run DynNetwork
+      [ "--template", "<dev> <rx>↓<tx>↑"
+      , "--Low",  "100000" -- units: seems to be in bytes
+      , "--High", "300000" -- units: seems to be in bytes
+      , "--low", "darkgreen"
+      , "--normal", "darkorange"
+      , "--high", "darkred"
+      ] 10
+
+    , Run Battery
+      [ "--template", "<acstatus>",
+        -- "-L", "10", -- low power threshold in watts
+        -- "-H", "80", -- high power threshold
+        -- "-p", "3",
+        "--", -- start battery-specific options
+        "-O", "", -- string for AC "on" status
+        "-i", "<fc=blue>Idle</fc>", -- string for AC "idle" status
+        "-o", "Batt <left>% (<timeleft>) ", -- string for AC "off" status
+        "-L", "-12", -- low power threshold in watts
+        "-H", "-10", -- high power threshold
+        "-l", "darkred", -- when power < -L threshold
+        "-m", "darkorange", -- when power < -H threshold
+        "-h", "darkgreen" -- when power > -H threshold
+      ] 50
+
+    , Run Weather "EBBR"
+      [ "--template", "<fc=#4682B4><tempC></fc>°C"
+      , "--Low", "15"
+      , "--High","25"
+      , "--low", "lightblue"
+      , "--normal", "lightyellow"
+      , "--high", "lightred"
+      ] 18000
+
+    , Run Uptime
+      [ "--template", "<hours>h <minutes>m"
+      ] 600
+
+    , Run Date "%b %_d %H:%M" "date"
+      10
+
+    , Run Kbd
+      [ ("us(dvorak)" , "<fc=#707070>DV</fc>")
+      , ("us"         , "<fc=#FF7070>US</fc>")
+      ]
+
+    , Run StdinReader
+    ]
+}
