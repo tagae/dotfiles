@@ -1,0 +1,3 @@
+! Switch codes 94 and 49. See xev(1).
+keycode  94 = grave asciitilde grave asciitilde dead_grave dead_tilde dead_grave
+keycode  49 = section plusminus
