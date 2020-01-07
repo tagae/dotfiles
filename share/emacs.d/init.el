@@ -24,10 +24,10 @@
 
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 
-(require 'sg/elisp-files)
-
 
 ;; ===[ H O O K S ]===
+
+(require 'sg/elisp-files)
 
 ;; Install hooks found in the `hooks' directory.
 ;; Each filename in `hooks' is used as hook name.
