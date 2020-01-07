@@ -1,0 +1,10 @@
+# ~/.shrc: sh(1) configuration
+
+# Load auxiliary functions
+if [ -r ~/.sh.d/ancillary* ]; then
+    source ~/.sh.d/ancillary* && load ~/.sh.d/interactive
+    true # Assume success
+else
+    echo "Could not find ~/.sh.d framework." >&2
+    exit 1
+fi
