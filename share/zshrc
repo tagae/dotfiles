@@ -1,0 +1,5 @@
+# ~/.zshrc: zsh(1) configuration
+
+unsetopt nomatch
+
+source ~/.shrc && load ~/.zsh.d/interactive
