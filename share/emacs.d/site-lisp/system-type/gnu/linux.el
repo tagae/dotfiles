@@ -1,0 +1,1 @@
+(load "site-gentoo" 'optional)

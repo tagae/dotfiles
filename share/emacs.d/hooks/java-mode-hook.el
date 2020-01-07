@@ -1,0 +1,1 @@
+(smartparens-mode 1)
