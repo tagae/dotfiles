@@ -1,5 +1,7 @@
-test -f ~/.config/fish/secrets.fish
-and source ~/.config/fish/secrets.fish
+#---[ S E T U P ]---
+
+set -g fish_greeting ''
+
 
 #---[ P A T H S ]---
 
@@ -17,6 +19,7 @@ and set PATH /usr/local/sbin $PATH
 
 test -d /opt/local/sbin
 and set PATH /opt/local/sbin $PATH
+
 
 #---[ T O O L S ]---
 
@@ -41,6 +44,7 @@ command -sq go
 and set -x GOPATH $HOME/Applications/opt/go
 and set PATH $PATH $GOPATH/bin
 
+
 #---[ A L I A S E S ]---
 
 command -sq htop
@@ -51,3 +55,9 @@ and alias ping prettyping
 
 command -sq lsd
 and alias ls lsd
+
+
+#---[ L O C A L ]---
+
+test -f ~/.config/fish/secrets.fish
+and source ~/.config/fish/secrets.fish
