@@ -56,6 +56,17 @@ and alias ping prettyping
 command -sq lsd
 and alias ls lsd
 
+# We pass -F to ignore the system-wide configuration (/etc/ssh/ssh_config),
+# which typically has the setting
+#
+#     SendEnv LANG LC_*
+#
+# This setting is inconvenient because locales are not necessarily supported
+# across hosts.
+#
+command -sq ssh
+and test -f ~/.ssh/config
+and alias ssh 'ssh -F ~/.ssh/config'
 
 #---[ L O C A L ]---
 
