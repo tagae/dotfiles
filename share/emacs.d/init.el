@@ -391,6 +391,10 @@
     :defer t
     :diminish)
 
+(use-package fish-mode
+    :ensure t
+    :defer t)
+
 (use-package company-elisp
     :after (company elisp-mode)
     :config
