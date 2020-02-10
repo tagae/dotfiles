@@ -194,3 +194,8 @@ if [ -f $HOME/.aws/credentials ]; then
     export AWS_SECRET_KEY="$(awk '/aws_secret_access_key/ {print $3}' $HOME/.aws/credentials)"
 fi
 export EC2_URL=https://ec2.eu-west-1.amazonaws.com
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"
