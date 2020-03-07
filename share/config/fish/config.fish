@@ -23,6 +23,12 @@ and set PATH /opt/local/bin $PATH
 test -d /opt/local/sbin
 and set PATH /opt/local/sbin $PATH
 
+test -d /usr/local/opt/helm@2
+and set PATH /usr/local/opt/helm@2/bin $PATH
+
+test -d ~/.krew/bin
+and set PATH ~/.krew/bin $PATH
+
 
 #---[ T O O L S ]---
 
