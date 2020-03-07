@@ -11,11 +11,14 @@ and set PATH $HOME/.dotfiles/bin $PATH
 test -d $HOME/Applications/bin
 and set PATH $HOME/Applications/bin $PATH
 
-test -d /opt/local/bin
-and set PATH /opt/local/bin $PATH
+test -d /usr/local/bin
+and set PATH /usr/local/bin $PATH
 
 test -d /usr/local/sbin
 and set PATH /usr/local/sbin $PATH
+
+test -d /opt/local/bin
+and set PATH /opt/local/bin $PATH
 
 test -d /opt/local/sbin
 and set PATH /opt/local/sbin $PATH
