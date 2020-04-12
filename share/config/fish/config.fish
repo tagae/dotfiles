@@ -50,6 +50,12 @@ and set PATH $PATH $GOPATH/bin
 
 #---[ A L I A S E S ]---
 
+command -sq git
+and alias g git
+
+command -sq kubectl
+and alias k kubectl
+
 command -sq htop
 and alias top htop
 
