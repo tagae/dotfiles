@@ -1,6 +1,7 @@
 Host *
   Protocol 2
   AddKeysToAgent yes
+  IPQoS=throughput
 
 #---[ Private IP addresses ]---
 
