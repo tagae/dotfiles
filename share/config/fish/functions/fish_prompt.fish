@@ -37,5 +37,5 @@ function fish_prompt --description 'Write out the prompt'
     printf '%s ' (__fish_vcs_prompt)
 
     # Suffix
-    echo -n '$ '
+    echo -n '> '
 end
