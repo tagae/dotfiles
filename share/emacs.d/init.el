@@ -24,7 +24,6 @@
 
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 
-
 ;; ===[ H O O K S ]===
 
 (require 'sg/elisp-files)
@@ -479,3 +478,6 @@
       :config
       (projectile-mode 1))
   (add-hook 'clojure-mode-hook #'paredit-mode))
+
+(use-package password-store
+    :load-path "/usr/local/share/emacs/site-lisp/pass")
