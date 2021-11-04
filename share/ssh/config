@@ -40,3 +40,6 @@ Host 172.31.*
 Host 192.168.*
   UserKnownHostsFile /dev/null
   StrictHostKeyChecking no
+
+Match all
+Include config.d/*
