@@ -173,7 +173,6 @@ fi
 export PYENV_ROOT=/usr/local/var/pyenv
 if command -v pyenv > /dev/null; then
     eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
 fi
 
 ## Go

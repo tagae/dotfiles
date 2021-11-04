@@ -23,13 +23,6 @@ and set PATH /opt/local/bin $PATH
 test -d /opt/local/sbin
 and set PATH /opt/local/sbin $PATH
 
-test -d /usr/local/opt/helm@2
-and set PATH /usr/local/opt/helm@2/bin $PATH
-
-test -d ~/.krew/bin
-and set PATH ~/.krew/bin $PATH
-
-
 #---[ T O O L S ]---
 
 command -sq emacs
@@ -46,13 +39,22 @@ and rbenv init - | source
 
 command -sq pyenv
 and set -x PYENV_ROOT /usr/local/var/pyenv
-and pyenv init - | source
-and pyenv virtualenv-init - | source
+and pyenv init --path | source
 
 command -sq go
 and set -x GOPATH $HOME/Applications/opt/go
 and set PATH $PATH $GOPATH/bin
 
+test -d ~/.krew/bin
+and set PATH ~/.krew/bin $PATH
+
+test -d ~/.roswell/bin
+and set PATH ~/.roswell/bin $PATH
+
+test -d /usr/local/opt/curl/bin
+and set PATH /usr/local/opt/curl/bin $PATH
+
+# fish_add_path /usr/local/opt/openjdk/bin
 
 #---[ A L I A S E S ]---
 
@@ -62,14 +64,17 @@ and alias g git
 command -sq kubectl
 and alias k kubectl
 
-command -sq htop
-and alias top htop
 
-command -sq prettyping
-and alias ping prettyping
+#---[ P R I V A C Y ]---
 
-command -sq lsd
-and alias ls lsd
+# https://github.com/Homebrew/homebrew-core/issues/87844
+test -x /usr/local/bin/gpgconf
+and function gpgconf
+    /usr/local/bin/gpgconf $argv 2>|grep -v /proc/curproc/file
+end
+
+set -xg SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
 
 # We pass -F to ignore the system-wide configuration (/etc/ssh/ssh_config),
 # which typically has the setting
@@ -82,6 +87,9 @@ and alias ls lsd
 command -sq ssh
 and test -f ~/.ssh/config
 and alias ssh 'ssh -F ~/.ssh/config'
+
+#set -x GPG_TTY (tty)
+
 
 #---[ L O C A L ]---
 
