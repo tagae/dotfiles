@@ -470,3 +470,10 @@
 
 (use-package password-store
     :load-path "/usr/local/share/emacs/site-lisp/pass")
+
+(use-package auto-package-update
+    :ensure t
+    :config
+    (setq auto-package-update-delete-old-versions t
+          auto-package-update-interval 15)
+    (auto-package-update-maybe))
