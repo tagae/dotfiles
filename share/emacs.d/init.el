@@ -40,11 +40,8 @@
 
 (require 'package)
 
-(add-to-list 'package-archives '("melpa" . "https://stable.melpa.org/packages/"))
-
-(setq package-user-dir (expand-file-name "packages" user-emacs-directory))
-
-(package-initialize)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 (unless package-archive-contents
   (package-refresh-contents))
@@ -53,6 +50,7 @@
   (package-install 'use-package))
 
 (require 'use-package)
+
 (setq use-package-verbose t)
 
 
