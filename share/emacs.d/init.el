@@ -147,9 +147,6 @@
 ;; Lines should be 80 characters wide, not 70.
 (set-default 'fill-column 79) ; columns are 0-based
 
-;; Avoid automatic breaking of lines.
-;(auto-fill-mode 0)
-
 ;; Save other program's selection before killing text.
 (setq save-interprogram-paste-before-kill t)
 
@@ -269,11 +266,11 @@
 (ido-mode 1)
 (ido-everywhere 1)
 (setq ido-save-directory-list-file (expand-file-name "ido" emacs-state-dir)
-        ido-enable-flex-matching t
-        ido-use-url-at-point t
-        ido-show-dot-for-dired t
-        ido-use-virtual-buffers 'auto
-        ido-default-buffer-method 'selected-window)
+      ido-enable-flex-matching t
+      ido-use-url-at-point t
+      ido-show-dot-for-dired t
+      ido-use-virtual-buffers 'auto
+      ido-default-buffer-method 'selected-window)
 
 
 ;; ===[ T O O L S ]===
@@ -288,12 +285,6 @@
 
 (setq eshell-history-file-name
       (expand-file-name "eshell-history" emacs-state-dir))
-
-;; --- server
-
-;(require 'server) ; no autoloads provided
-;(unless (server-running-p)
-;  (server-start))
 
 ;; --- tramp
 
