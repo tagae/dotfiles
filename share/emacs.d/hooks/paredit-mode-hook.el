@@ -11,7 +11,3 @@
 ;; But keep the previous 2 assignments under different keys.
 (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-backward-slurp-sexp)
 (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-backward-barf-sexp)
-
-;; ;; Shorten mode line indicator.
-;; (when (require 'diminish nil 'recommended)
-;;   (diminish 'paredit-mode "PE"))
