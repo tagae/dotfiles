@@ -5,9 +5,6 @@ set -g fish_greeting ''
 
 #---[ P A T H S ]---
 
-test -d $HOME/.dotfiles/bin
-and set PATH $HOME/.dotfiles/bin $PATH
-
 test -d $HOME/Applications/bin
 and set PATH $HOME/Applications/bin $PATH
 
@@ -24,6 +21,9 @@ test -d /opt/local/sbin
 and set PATH /opt/local/sbin $PATH
 
 #---[ T O O L S ]---
+
+test -d $HOME/.dotfiles/bin
+and set PATH $HOME/.dotfiles/bin $PATH
 
 command -sq emacs
 and set -x EDITOR emacs
@@ -55,6 +55,7 @@ test -d /usr/local/opt/curl/bin
 and set PATH /usr/local/opt/curl/bin $PATH
 
 # fish_add_path /usr/local/opt/openjdk/bin
+
 
 #---[ A L I A S E S ]---
 
