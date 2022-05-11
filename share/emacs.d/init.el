@@ -466,6 +466,7 @@
   (add-hook 'clojure-mode-hook #'paredit-mode))
 
 (use-package password-store
+    :if (executable-find "pass")
     :load-path "/usr/local/share/emacs/site-lisp/pass")
 
 (use-package auto-package-update
