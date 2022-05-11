@@ -336,7 +336,9 @@
     :ensure t
     :config
     (global-undo-tree-mode 1)
-    (setq undo-tree-mode-lighter ""))
+    (setq undo-tree-mode-lighter "")
+    (setq undo-tree-history-directory-alist
+          (list (cons "" (expand-file-name "undo-tree" emacs-state-dir)))))
 
 (use-package company
     :ensure t
