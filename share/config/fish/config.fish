@@ -68,14 +68,9 @@ and alias k kubectl
 
 #---[ P R I V A C Y ]---
 
-# https://github.com/Homebrew/homebrew-core/issues/87844
-test -x /usr/local/bin/gpgconf
-and function gpgconf
-    /usr/local/bin/gpgconf $argv 2>|grep -v /proc/curproc/file
-end
-
-set -xg SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
-gpgconf --launch gpg-agent
+command -sq gpgconf
+and set -xg SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
+and gpgconf --launch gpg-agent
 
 # We pass -F to ignore the system-wide configuration (/etc/ssh/ssh_config),
 # which typically has the setting
