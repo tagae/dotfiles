@@ -1,6 +1,5 @@
 [user]
         name = Sebastián González
-        email = tagae@ehub.io
 
 [include]
         path = ~/.gitconfig.d/local
@@ -39,7 +38,8 @@
 [rebase]
         autosquash = true
 [push]
-	default = current
         default = current
 [init]
         defaultBranch = main
+[merge]
+        conflictstyle = zdiff3
