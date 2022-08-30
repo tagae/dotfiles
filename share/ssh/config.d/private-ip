@@ -1,0 +1,35 @@
+Host 10.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.16.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.17.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.18.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.19.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.2?.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.30.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 172.31.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 192.168.*
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
