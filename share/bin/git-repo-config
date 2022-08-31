@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -x
+
+git config user.name 'Sebastian Gonzalez Montesinos'
+git config user.email tagae@ehub.io
+
+git config pull.ff only
+
+# find desired subkey ID in the output
+# gpg --list-secret-keys --keyid-format=long
+
+git config user.signingkey 4D35DBE293039ADF
+git config commit.gpgsign true
