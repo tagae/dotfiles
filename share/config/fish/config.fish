@@ -8,6 +8,9 @@ set -g fish_greeting ''
 test -d $HOME/Applications/bin
 and set PATH $HOME/Applications/bin $PATH
 
+test -d $HOME/.bin
+and set PATH $HOME/.bin $PATH
+
 test -d /usr/local/bin
 and set PATH /usr/local/bin $PATH
 
