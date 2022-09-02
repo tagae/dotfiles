@@ -468,6 +468,7 @@
 
 (use-package password-store
     :if (executable-find "pass")
+    :ensure t
     :load-path "/usr/local/share/emacs/site-lisp/pass")
 
 (use-package auto-package-update
