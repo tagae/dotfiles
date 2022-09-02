@@ -1,6 +1,1 @@
-Host *
-  Protocol 2
-  AddKeysToAgent yes
-
-Match all
 Include config.d/*
