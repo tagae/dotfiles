@@ -72,9 +72,9 @@ and alias k kubectl
 #---[ P R I V A C Y ]---
 
 command -sq gpgconf
-and gpg --list-secret-keys 1E12E93CDDDD301220B31FAC6A9C2FFCE2892C47 >/dev/null 2>/dev/null
+and gpgconf --create-socketdir
 and set -xg SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
-and gpgconf --launch gpg-agent
+and begin test -S (gpgconf --list-dirs agent-socket); or gpgconf --launch gpg-agent; end
 
 # We pass -F to ignore the system-wide configuration (/etc/ssh/ssh_config),
 # which typically has the setting
