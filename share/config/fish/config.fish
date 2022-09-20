@@ -67,24 +67,14 @@ and alias k kubectl
 #---[ P R I V A C Y ]---
 
 command -sq gpgconf
-and gpgconf --create-socketdir
-and set -xg SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
-and begin test -S (gpgconf --list-dirs agent-socket); or gpgconf --launch gpg-agent; end
+and test -S (gpgconf --list-dirs agent-socket)
+or gpgconf --launch gpg-agent
 
-# We pass -F to ignore the system-wide configuration (/etc/ssh/ssh_config),
-# which typically has the setting
-#
-#     SendEnv LANG LC_*
-#
-# This setting is inconvenient because locales are not necessarily supported
-# across hosts.
-#
-command -sq ssh
-and test -f ~/.ssh/config
-and alias ssh 'ssh -F ~/.ssh/config'
-
-#set -x GPG_TTY (tty)
-
+test -n "$SSH_AUTH_SOCK"
+or begin
+    command -sq keychain
+    and keychain --eval --quiet --quick | source
+end
 
 #---[ L O C A L ]---
 
