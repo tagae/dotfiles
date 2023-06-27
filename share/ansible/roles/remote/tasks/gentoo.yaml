@@ -1,0 +1,5 @@
+- name: Define workstation package USE settings
+  copy:
+    dest:  /etc/portage/package.use/server
+    content: |
+      net-misc/openssh security-key

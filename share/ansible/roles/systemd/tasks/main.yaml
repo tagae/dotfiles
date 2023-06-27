@@ -1,0 +1,5 @@
+- name: Set system time zone
+  command: timedatectl set-timezone Europe/Brussels
+
+- name: Set system time from time server
+  command: timedatectl set-ntp true

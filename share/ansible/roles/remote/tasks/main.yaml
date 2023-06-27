@@ -1,0 +1,13 @@
+- name: Configure SSH to allow forwarding of sockets
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^StreamLocalBindUnlink '
+    line: StreamLocalBindUnlink yes
+    insertbefore: AllowAgentForwarding
+    validate: /usr/sbin/sshd -T -f %s
+  notify:
+  - Reload sshd
+
+- name: Install Gentoo resources
+  import_tasks: gentoo.yaml
+  when: ansible_facts['os_family']|lower == 'gentoo'

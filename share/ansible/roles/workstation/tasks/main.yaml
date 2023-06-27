@@ -1,0 +1,14 @@
+- name: Ensure /etc/sudoers.d exists
+  file: path=/etc/sudoers.d state=directory mode=go-rwx
+
+- name: Password-less sudo access to members of 'wheel'
+  copy:
+    dest: /etc/sudoers.d/wheel
+    mode: go-rwx
+    validate: /usr/sbin/visudo -cf %s
+    content: |
+      # Allow members of group 'wheel' to execute any command without a password
+      %wheel ALL=(ALL:ALL) NOPASSWD: ALL
+
+- import_tasks: gentoo.yaml
+  when: ansible_facts['os_family']|lower == 'gentoo'
