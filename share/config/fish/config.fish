@@ -20,6 +20,9 @@ and set PATH /opt/local/bin $PATH
 test -d /opt/local/sbin
 and set PATH /opt/local/sbin $PATH
 
+test -d $HOME/.docker/bin
+and set PATH $HOME/.docker/bin $PATH
+
 #---[ T O O L S ]---
 
 test -d $HOME/.dotfiles/bin
