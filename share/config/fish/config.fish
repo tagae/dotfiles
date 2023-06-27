@@ -34,6 +34,9 @@ and set -x EDITOR emacs
 command -sq less
 and set -x PAGER less
 
+command -sq brew
+and brew shellenv | source
+
 command -sq direnv
 and direnv hook fish | source
 
