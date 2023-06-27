@@ -1,0 +1,27 @@
+- name: test module
+  my_test:
+    repo: gentoo
+  register: testout
+- name: dump test output
+  debug:
+    msg: '{{ testout }}'
+
+# - name: Ensure portage postsync dir exists
+#   file: path=/etc/portage/postsync.d state=directory
+
+# - name: Define eix postsync hook
+#   copy:
+#     dest: /etc/portage/postsync.d/eix
+#     mode: +x
+#     content: |
+#       #!/bin/bash -eu
+#       if [[ -e /var/cache/eix/portage.eix ]]; then
+#         rsync -ca /var/cache/eix/portage.eix /var/cache/eix/previous.eix;
+#       fi
+#       eix-update
+#       if [[ -e /var/cache/eix/previous.eix ]]; then
+#         eix-diff;
+#       fi
+
+# - name: Install system packages
+#   command: emerge -uUDN @system

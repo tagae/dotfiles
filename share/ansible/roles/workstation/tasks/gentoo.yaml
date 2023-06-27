@@ -1,0 +1,35 @@
+- name: Ensure user-defined sets dir exists
+  file: path=/etc/portage/sets state=directory
+
+- name: Define `workstation` package set
+  copy:
+    dest: /etc/portage/sets/workstation
+    content: |
+      app-portage/gentoolkit
+      app-portage/eix
+      app-shells/fish
+      app-misc/tmux
+      sys-process/htop
+      app-editors/emacs
+      dev-vcs/git
+      app-admin/sudo
+
+- name: Define workstation package USE settings
+  copy:
+    content: |
+      # required by app-shells/fish
+      dev-libs/libpcre2 pcre32
+      # support fetching over HTTPS
+      dev-vcs/git curl -webdav -perl -pcre
+      # no smartcard for gpg
+      app-crypt/gnupg -smartcard
+    dest:  /etc/portage/package.use/workstation
+
+- name: Set package accept keywords
+  copy:
+    content: |
+      =dev-vcs/git-2.37.3 ~amd64
+    dest:  /etc/portage/package.accept_keywords/workstation
+
+- name: Install packages
+  command: emerge -uUDN @workstation
