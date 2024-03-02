@@ -421,6 +421,12 @@
     :ensure t
     :defer t)
 
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1)
+  :diminish ec)
+
 (use-package paredit
     :ensure t
     :defer t
