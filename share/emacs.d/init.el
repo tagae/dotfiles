@@ -175,8 +175,8 @@
 ;; Use spaces for indentation.
 (setq-default indent-tabs-mode nil)
 
-;; Maintain expected (historic) appearance of tabs.
-(setq-default tab-width 8)
+;; Shorten rendering of tab characters
+(setq-default tab-width 4)
 
 ;; Ensure that files end with a newline.
 (setq require-final-newline t)
