@@ -89,18 +89,20 @@ and alias g git
 command -sq kubectl
 and alias k kubectl
 
+command -sq k9s
+and alias k9s 'k9s --logoless'
+
 
 #---[ P R I V A C Y ]---
 
 command -sq gpgconf
-and test -S (gpgconf --list-dirs agent-socket)
-or gpgconf --launch gpg-agent
-
-test -n "$SSH_AUTH_SOCK"
-or begin
-    command -sq keychain
-    and keychain --eval --quiet --quick | source
+and begin
+    test -S (gpgconf --list-dirs agent-socket)
+    or gpgconf --launch gpg-agent
 end
+
+command -sq keychain
+and keychain --eval --quiet --quick | source
 
 #---[ L O C A L ]---
 
