@@ -7,6 +7,7 @@
 
 [core]
         excludesfile = ~/.gitconfig.d/ignore
+        autocrlf = input
 
 [commit]
         template = ~/.gitconfig.d/commit-template
@@ -38,8 +39,15 @@
 [rebase]
         autosquash = true
 [push]
-        default = current
+	default = current
 [init]
         defaultBranch = main
 [merge]
         conflictstyle = zdiff3
+[pull]
+	ff = only
+[blame]
+	markIgnoredLines = true
+	markUnblamableLines = true
+[advice]
+	skippedCherryPicks = false
