@@ -25,6 +25,26 @@ and set PATH $HOME/.docker/bin $PATH
 
 #---[ T O O L S ]---
 
+if test -x /opt/homebrew/bin/brew # keep early in the sequence
+    /opt/homebrew/bin/brew shellenv | source
+
+    test -d (brew --prefix coreutils)/libexec/gnubin
+    and set PATH (brew --prefix coreutils)/libexec/gnubin $PATH
+
+    test -d (brew --prefix make)/libexec/gnubin
+    and set PATH (brew --prefix make)/libexec/gnubin $PATH
+
+    test -d (brew --prefix m4)/bin
+    and set PATH (brew --prefix m4)/bin $PATH
+
+    test -d (brew --prefix bison)/bin
+    and set PATH (brew --prefix bison)/bin $PATH
+    and set -gx LDFLAGS -L(brew --prefix bison)/lib
+
+    test -d (brew --prefix go)/libexec
+    and set -x GOROOT (brew --prefix go)/libexec
+end
+
 test -d $HOME/.dotfiles/bin
 and set PATH $HOME/.dotfiles/bin $PATH
 
