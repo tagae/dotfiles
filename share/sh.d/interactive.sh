@@ -176,7 +176,7 @@ if command -v pyenv > /dev/null; then
 fi
 
 ## Go
-export GOPATH=$HOME/Applications/share/go
+export GOPATH=$HOME/Applications/opt/go
 prependpath PATH "$GOPATH/bin"
 
 ## Haskell
