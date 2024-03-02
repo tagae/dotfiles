@@ -29,6 +29,13 @@ Merge the branches that correspond to your personal preferences, platform
 The `bin` directory in the repository contains the `dotfiles` command, which
 you can use to perform a number of actions on your dotfiles.
 
+### On macOS
+
+On macOS, install Homebrew and then do
+
+    brew install coreutils # to have GNU `realpath`
+    set -x PATH $HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin $PATH # to give precedence to GNU utils over macOS's
+
 
 Importing Dotfiles
 ------------------
