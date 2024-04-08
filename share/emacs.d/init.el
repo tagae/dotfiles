@@ -483,3 +483,6 @@
     (setq auto-package-update-delete-old-versions t
           auto-package-update-interval 15)
     (auto-package-update-maybe))
+
+(use-package xclip
+    :ensure t)
