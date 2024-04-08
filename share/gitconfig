@@ -23,6 +23,7 @@
         fup = commit --fixup
         # ---[ branching ]---
         br = branch -vv
+        sw = switch
         # ---[ diff ]---
         # show differences in individual characters, instead of whole lines
         dw = diff --color-words=.
