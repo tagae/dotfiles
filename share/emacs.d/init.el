@@ -65,7 +65,8 @@
 ;; Remove useless elements.
 (menu-bar-mode 0)
 (tooltip-mode 0)
-(tool-bar-mode 0)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode 0))
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode 0))
 
@@ -390,9 +391,6 @@
     :ensure auctex
     :defer t)
 
-(use-package company-auctex
-    :after (company latex))
-
 (use-package deft
     :ensure t
     :bind ([f8] . deft)
@@ -443,9 +441,6 @@
     :config
     (setq inferior-lisp-program "sbcl")
     (setq slime-contribs '(slime-fancy)))
-
-(use-package slime-company
-    :after slime)
 
 (when (executable-find "clojure")
   (use-package clojure-mode
