@@ -21,6 +21,7 @@
         ci = commit -v
         fix = commit -v --amend --no-edit
         fup = commit --fixup
+        fauth = commit -v --amend --no-edit --reset-author
         # ---[ branching ]---
         br = branch -vv
         sw = switch
