@@ -40,7 +40,7 @@
 
 (require 'package)
 
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 (unless (package-installed-p 'use-package)
   (unless package-archive-contents
