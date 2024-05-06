@@ -98,7 +98,11 @@ and begin
 end
 
 command -sq keychain
-and keychain --eval --quiet --quick | source
+and if string match -q (ps -p 1 -o comm=) systemd
+    keychain --quiet --quick --inherit any --systemd
+else
+    keychain --quiet --quick --inherit any --eval | source
+end
 
 #---[ L O C A L ]---
 
