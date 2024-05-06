@@ -18,4 +18,4 @@ jobs:
     - name: Install bash and coreutils
       run: brew install bash coreutils
     - name: Check dotfiles spec
-      run: ./spec/dotfiles.spec
+      run: env PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH ./spec/dotfiles.spec
