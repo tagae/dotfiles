@@ -4,48 +4,32 @@ set -g fish_greeting ''
 
 #---[ P A T H S ]---
 
-test -d $HOME/.local/bin
-and set PATH $HOME/.local/bin $PATH
-
-test -d /usr/local/bin
-and set PATH /usr/local/bin $PATH
-
-test -d /usr/local/sbin
-and set PATH /usr/local/sbin $PATH
-
-test -d /opt/local/bin
-and set PATH /opt/local/bin $PATH
-
-test -d /opt/local/sbin
-and set PATH /opt/local/sbin $PATH
-
-test -d $HOME/.docker/bin
-and set PATH $HOME/.docker/bin $PATH
+fish_add_path $HOME/.local/bin
+fish_add_path --path $HOME/.docker/bin
 
 #---[ T O O L S ]---
 
-if test -x /opt/homebrew/bin/brew # keep early in the sequence
+if test -x /opt/homebrew/bin/brew
     /opt/homebrew/bin/brew shellenv | source
 
-    test -d (brew --prefix coreutils)/libexec/gnubin
-    and set PATH (brew --prefix coreutils)/libexec/gnubin $PATH
+    fish_add_path --path --move (brew --prefix coreutils)/libexec/gnubin
+    fish_add_path --path --move (brew --prefix gnu-sed)/libexec/gnubin
+    fish_add_path --path --move (brew --prefix make)/libexec/gnubin
+    fish_add_path --path --move (brew --prefix m4)/bin
+    fish_add_path --path --move (brew --prefix bison)/bin
+    fish_add_path --path --move (brew --prefix gpatch)/bin
+    fish_add_path --path --move (brew --prefix gawk)/libexec/gnubin
 
-    test -d (brew --prefix make)/libexec/gnubin
-    and set PATH (brew --prefix make)/libexec/gnubin $PATH
-
-    test -d (brew --prefix m4)/bin
-    and set PATH (brew --prefix m4)/bin $PATH
-
-    test -d (brew --prefix bison)/bin
-    and set PATH (brew --prefix bison)/bin $PATH
+    test -d (brew --prefix bison)/lib
     and set -gx LDFLAGS -L(brew --prefix bison)/lib
 
     test -d (brew --prefix go)/libexec
     and set -x GOROOT (brew --prefix go)/libexec
 end
 
-test -d $HOME/.dotfiles/bin
-and set PATH $HOME/.dotfiles/bin $PATH
+fish_add_path $HOME/.dotfiles/bin
+fish_add_path ~/.krew/bin
+fish_add_path ~/.roswell/bin
 
 command -sq emacs
 and set -x EDITOR emacs
@@ -67,16 +51,6 @@ command -sq go
 and set -x GOPATH $HOME/Applications/opt/go
 and set PATH $PATH $GOPATH/bin
 
-test -d ~/.krew/bin
-and set PATH ~/.krew/bin $PATH
-
-test -d ~/.roswell/bin
-and set PATH ~/.roswell/bin $PATH
-
-test -d /usr/local/opt/curl/bin
-and set PATH /usr/local/opt/curl/bin $PATH
-
-
 #---[ A L I A S E S ]---
 
 command -sq git
@@ -87,7 +61,6 @@ and alias k kubectl
 
 command -sq k9s
 and alias k9s 'k9s --logoless'
-
 
 #---[ P R I V A C Y ]---
 
