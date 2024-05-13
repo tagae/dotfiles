@@ -12,6 +12,7 @@ fish_add_path --path $HOME/.docker/bin
 if test -x /opt/homebrew/bin/brew
     /opt/homebrew/bin/brew shellenv | source
 
+    fish_add_path --path --move (brew --prefix git)/bin
     fish_add_path --path --move (brew --prefix coreutils)/libexec/gnubin
     fish_add_path --path --move (brew --prefix gnu-sed)/libexec/gnubin
     fish_add_path --path --move (brew --prefix make)/libexec/gnubin
