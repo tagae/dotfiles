@@ -36,6 +36,7 @@ if test -x /opt/homebrew/bin/brew
     and fish_add_path --path --move $PNPM_HOME
 end
 
+fish_add_path /opt/local/bin
 fish_add_path $HOME/.dotfiles/bin
 fish_add_path ~/.krew/bin
 fish_add_path ~/.roswell/bin
