@@ -54,8 +54,8 @@ command -sq rbenv
 and rbenv init - | source
 
 command -sq pyenv
-and set -x PYENV_ROOT /usr/local/var/pyenv
-and pyenv init --path | source
+and set -x PYENV_ROOT $HOME/.pyenv
+and pyenv init - | source
 
 command -sq go
 and set -x GOPATH $HOME/Applications/opt/go
