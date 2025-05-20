@@ -24,6 +24,10 @@ if test -x /opt/homebrew/bin/brew
     test -d (brew --prefix bison)/lib
     and set -gx LDFLAGS -L(brew --prefix bison)/lib
 
+    test -d (brew --prefix libiconv)/lib
+    and set -gx LDFLAGS -L/opt/homebrew/opt/libiconv/lib $LDFLAGS
+    and set -gx CPPFLAGS -I/opt/homebrew/opt/libiconv/include $CPPFLAGS
+
     test -d (brew --prefix go)/libexec
     and set -x GOROOT (brew --prefix go)/libexec
 end
