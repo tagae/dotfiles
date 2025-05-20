@@ -53,3 +53,4 @@
 	markUnblamableLines = true
 [advice]
 	skippedCherryPicks = false
+	detachedHead = false
