@@ -141,8 +141,8 @@
 
 ;; ===[ E D I T I N G ]===
 
-;; Lines should be 80 characters wide, not 70.
-(set-default 'fill-column 79) ; columns are 0-based
+;; Line length.
+(set-default 'fill-column 99) ; columns are 0-based
 
 ;; Save other program's selection before killing text.
 (setq save-interprogram-paste-before-kill t)
