@@ -30,6 +30,10 @@ if test -x /opt/homebrew/bin/brew
 
     test -d (brew --prefix go)/libexec
     and set -x GOROOT (brew --prefix go)/libexec
+
+    test -d ~/Library/pnpm
+    and set -x PNPM_HOME $HOME/Library/pnpm
+    and fish_add_path --path --move $PNPM_HOME
 end
 
 fish_add_path $HOME/.dotfiles/bin
@@ -77,12 +81,19 @@ end
 
 command -sq keychain
 and if string match -q (ps -p 1 -o comm=) systemd
-    keychain --quiet --quick --inherit any --systemd
+    keychain --quiet --quick --ssh-allow-forwarded --systemd
 else
-    keychain --quiet --quick --inherit any --eval | source
+    keychain --quiet --quick --ssh-allow-forwarded --eval | source
 end
 
 #---[ L O C A L ]---
 
 test -f ~/.config/fish/secrets.fish
 and source ~/.config/fish/secrets.fish
+
+# pnpm
+set -gx PNPM_HOME "/Users/tagae/Library/pnpm"
+if not string match -q -- $PNPM_HOME $PATH
+  set -gx PATH "$PNPM_HOME" $PATH
+end
+# pnpm end
