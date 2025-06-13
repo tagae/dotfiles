@@ -1,0 +1,102 @@
+plugins:
+  debug-node:
+    # https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container
+    shortCut: Shift-D
+    description: debug node
+    scopes:
+      - node
+    dangerous: true
+    confirm: true
+    background: false
+    command: kubectl
+    args:
+      - --kubeconfig=$KUBECONFIG
+      - --context=$CONTEXT
+      - debug
+      - node/$NAME
+      - -it
+      - --profile=general
+      - --image=nicolaka/netshoot:v0.13
+  debug-pod:
+    # https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container
+    shortCut: Shift-D
+    description: debug pod
+    scopes:
+      - pod
+    dangerous: true
+    confirm: true
+    background: false
+    command: kubectl
+    args:
+      - --kubeconfig=$KUBECONFIG
+      - --context=$CONTEXT
+      - --namespace=$NAMESPACE
+      - debug
+      - $NAME
+      - -it
+      - --profile=general
+      - --image=nicolaka/netshoot:v0.13
+  debug-container:
+    # https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container
+    shortCut: Shift-D
+    description: debug container
+    scopes:
+      - containers
+    dangerous: true
+    confirm: true
+    background: false
+    command: kubectl
+    args:
+      - --kubeconfig=$KUBECONFIG
+      - --context=$CONTEXT
+      - --namespace=$NAMESPACE
+      - debug
+      - $POD
+      - -it
+      - --profile=general
+      - --target=$NAME
+      - --image=nicolaka/netshoot:v0.13
+  jqlogs:
+    shortCut: Ctrl-L
+    confirm: false
+    description: "Logs (jq)"
+    scopes:
+      - pod
+    command: sh
+    background: false
+    args:
+      - -c
+      - "kubectl logs -f $NAME -n $NAMESPACE --context $CONTEXT |jq -SR '. as $line | try (fromjson) catch $line'"
+  jqlogsd:
+    shortCut: Ctrl-L
+    confirm: false
+    description: "Logs (jq)"
+    scopes:
+      - deployment
+    command: sh
+    background: false
+    args:
+      - -c
+      - "kubectl logs -f deployment/$NAME -n $NAMESPACE --context $CONTEXT |jq -SR '. as $line | try (fromjson) catch $line'"
+  jqlogss:
+    shortCut: Ctrl-L
+    confirm: false
+    description: "Logs (jq)"
+    scopes:
+      - service
+    command: sh
+    background: false
+    args:
+      - -c
+      - "kubectl logs -f service/$NAME -n $NAMESPACE --context $CONTEXT |jq -SR '. as $line | try (fromjson) catch $line'"
+  jqlogsc:
+    shortCut: Ctrl-L
+    confirm: false
+    description: "Logs (jq)"
+    scopes:
+      - container
+    command: sh
+    background: false
+    args:
+      - -c
+      - "kubectl logs -f pod/$POD -c $NAME -n $NAMESPACE --context $CONTEXT |jq -SR '. as $line | try (fromjson) catch $line'"

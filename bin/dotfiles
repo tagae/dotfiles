@@ -36,7 +36,7 @@ EOM
 import_dotfiles() {
     if (( $# == 0 )); then
         cat >&2 <<EOM
-Usage: $(basename "0") import ~/.FILE...
+Usage: $(basename "$0") import ~/.FILE...
 EOM
         exit 1
     fi

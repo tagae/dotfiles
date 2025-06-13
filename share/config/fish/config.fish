@@ -1,6 +1,14 @@
-#---[ S E T U P ]---
+#---[ V A R S ]---
 
 set -g fish_greeting ''
+
+# https://specifications.freedesktop.org/basedir-spec/latest/
+
+set -q XDG_CONFIG_HOME    || set -gx XDG_CONFIG_HOME "$HOME/.config"
+set -q XDG_CACHE_HOME     || set -gx XDG_CACHE_HOME "$HOME/.cache"
+set -q XDG_DATA_HOME      || set -gx XDG_DATA_HOME "$HOME/.local/share"
+set -q XDG_STATE_HOME     || set -gx XDG_STATE_HOME "$HOME/.local/state"
+
 
 #---[ P A T H S ]---
 
@@ -70,7 +78,6 @@ command -sq kubectl
 and alias k kubectl
 
 command -sq k9s
-and alias k9s 'k9s --logoless'
 
 #---[ P R I V A C Y ]---
 
