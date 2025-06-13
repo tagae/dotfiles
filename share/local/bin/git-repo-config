@@ -1,12 +1,18 @@
 #!/bin/sh
 
-set -x
+set -xu
 
 git config user.name 'Sebastian Gonzalez Montesinos'
 git config user.email tagae@ehub.io
 
+git config gpg.format ssh
+git config user.signingkey ~/.ssh/id_ecdsa_sk.pub
+git config gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
+
+git config commit.gpgsign true
+git config tag.gpgsign true
+
 # find desired subkey ID in the output
 # gpg --list-secret-keys --keyid-format=long
 
-#git config user.signingkey 4D35DBE293039ADF
-#git config commit.gpgsign true
+# git config user.signingkey 31BBF50420D7F9B1
