@@ -6,7 +6,7 @@ git config user.name 'Sebastian Gonzalez Montesinos'
 git config user.email tagae@ehub.io
 
 git config gpg.format ssh
-git config user.signingkey ~/.ssh/id_ecdsa_sk.pub
+git config user.signingkey ~/.ssh/signing-key.pub
 git config gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
 
 git config commit.gpgsign true
