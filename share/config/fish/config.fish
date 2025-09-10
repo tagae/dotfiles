@@ -79,6 +79,12 @@ and alias k kubectl
 
 command -sq k9s
 
+#---[ A P P E A R A N C E ]---
+
+status is-interactive
+and command -sq vivid
+and set -x LS_COLORS (vivid --color-mode 8-bit generate one-dark)
+
 #---[ P R I V A C Y ]---
 
 command -sq gpgconf
