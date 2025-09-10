@@ -96,11 +96,7 @@ and begin
 end
 
 command -sq keychain
-and if string match -q (ps -p 1 -o comm=) systemd
-    keychain --quiet --quick --ssh-allow-forwarded --systemd
-else
-    keychain --quiet --quick --ssh-allow-forwarded --eval | source
-end
+and keychain --quiet --eval | source
 
 #---[ L O C A L ]---
 
