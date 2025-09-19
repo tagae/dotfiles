@@ -321,7 +321,7 @@
 
 (use-package ace-jump-mode
     :ensure t
-    :bind ("§" . ace-jump-char-mode)
+    :bind ("C-c j c" . ace-jump-char-mode)
     :config (ace-jump-mode-enable-mark-sync))
 
 (use-package smex
