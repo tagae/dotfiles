@@ -382,6 +382,10 @@
     :ensure t
     :defer t)
 
+(use-package hcl-mode
+    :ensure t
+    :defer t)
+
 (use-package company-elisp
     :after (company elisp-mode)
     :config
