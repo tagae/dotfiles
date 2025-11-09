@@ -50,7 +50,7 @@ fish_add_path ~/.krew/bin
 fish_add_path ~/.roswell/bin
 
 command -sq emacs
-and set -x EDITOR emacs
+and set -x EDITOR 'emacs -nw'
 
 command -sq less
 and set -x PAGER less
