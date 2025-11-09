@@ -1,0 +1,6 @@
+# Open only one SSH connection, and reuse it.
+Host github.com
+User git
+ControlMaster auto
+ControlPath ~/.ssh/cm-%r@%h:%p
+ControlPersist 5m
