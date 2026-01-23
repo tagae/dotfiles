@@ -83,9 +83,16 @@ command -sq k9s
 
 #---[ A P P E A R A N C E ]---
 
-status is-interactive
-and command -sq vivid
-and set -x LS_COLORS (vivid --color-mode 8-bit generate one-dark)
+if status is-interactive
+  command -sq vivid
+  and set -x LS_COLORS (vivid --color-mode 8-bit generate one-dark)
+
+  command -sq starship
+  and starship init fish | source
+
+  command -sq jump
+  and jump shell fish | source
+end
 
 #---[ P R I V A C Y ]---
 
