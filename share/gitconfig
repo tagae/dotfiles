@@ -1,56 +1,59 @@
 [user]
-        name = Sebastián González
+name = Sebastián González
 
 [include]
-        path = ~/.gitconfig.d/local
-        path = ~/.gitconfig.d/secrets
+path = ~/.gitconfig.d/local
+path = ~/.gitconfig.d/secrets
 
 [core]
-        excludesfile = ~/.gitconfig.d/ignore
-        autocrlf = input
+excludesfile = ~/.gitconfig.d/ignore
+autocrlf = input
 
 [commit]
-        template = ~/.gitconfig.d/commit-template
+template = ~/.gitconfig.d/commit-template
 
 [alias]
-        # ---[ working tree ]---
-        co = checkout
-        # ---[ staging ]---
-        ap = add --patch
-        # ---[ commit ]---
-        ci = commit -v
-        fix = commit -v --amend --no-edit
-        fup = commit --fixup
-        fauth = commit -v --amend --no-edit --reset-author
-        # ---[ branching ]---
-        br = branch -vv
-        sw = switch
-        # ---[ diff ]---
-        # show differences in individual characters, instead of whole lines
-        dw = diff --color-words=.
-        # ---[ logging ]---
-        lg = log --oneline --abbrev-commit --graph --decorate --color
-        la = log --oneline --abbrev-commit --graph --decorate --color --all
-        lc = log --oneline --abbrev-commit --graph --decorate --color --left-right --cherry-pick
-        ll = log --pretty=format:'%h %ad %s%d [%an]' --graph --date=short
-        # show branch activity
-        lb = for-each-ref --sort=-committerdate --format=\"%(color:cyan)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
-        # ---[ status ]---
-        st = status
+# ---[ working tree ]---
+co = checkout
+# ---[ staging ]---
+ap = add --patch
+# ---[ commit ]---
+ci = commit -v
+fix = commit -v --amend --no-edit
+fup = commit --fixup
+fauth = commit -v --amend --no-edit --reset-author
+# ---[ branching ]---
+br = branch -vv
+sw = switch
+# ---[ diff ]---
+# show differences in individual characters, instead of whole lines
+dw = diff --color-words=.
+# ---[ logging ]---
+lg = log --oneline --abbrev-commit --graph --decorate --color
+la = log --oneline --abbrev-commit --graph --decorate --color --all
+lc = log --oneline --abbrev-commit --graph --decorate --color --left-right --cherry-pick
+ll = log --pretty=format:'%h %ad %s%d [%an]' --graph --date=short
+# show branch activity
+lb = for-each-ref --sort=-committerdate --format=\"%(color:cyan)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
+# ---[ status ]---
+st = status
 
 [rebase]
-        autosquash = true
+autosquash = true
+
 [push]
-	default = current
+default = current
+
 [init]
-        defaultBranch = main
+defaultBranch = main
+
 [merge]
-        conflictstyle = zdiff3
-[pull]
-	ff = only
+conflictstyle = zdiff3
+
 [blame]
-	markIgnoredLines = true
-	markUnblamableLines = true
+markIgnoredLines = true
+markUnblamableLines = true
+
 [advice]
-	skippedCherryPicks = false
-	detachedHead = false
+skippedCherryPicks = false
+detachedHead = false
