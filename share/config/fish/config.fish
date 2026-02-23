@@ -13,7 +13,7 @@ set -q XDG_STATE_HOME     || set -gx XDG_STATE_HOME "$HOME/.local/state"
 #---[ P A T H S ]---
 
 fish_add_path $HOME/.local/bin
-fish_add_path --path $HOME/.docker/bin
+fish_add_path --path $HOME/.rd/bin
 
 #---[ T O O L S ]---
 
