@@ -1,0 +1,31 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+[package]
+disabled = true
+
+[kotlin]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[aws]
+disabled = true
+
+[gradle]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[golang]
+disabled = true
+
+[java]
+disabled = true
+
+[python]
+disabled = true
+
+[nodejs]
+disabled = true
