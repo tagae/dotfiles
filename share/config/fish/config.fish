@@ -79,8 +79,6 @@ and alias g git
 command -sq kubectl
 and alias k kubectl
 
-command -sq k9s
-
 #---[ A P P E A R A N C E ]---
 
 if status is-interactive
