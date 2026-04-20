@@ -76,8 +76,11 @@ and set PATH $PATH $GOPATH/bin
 command -sq git
 and alias g git
 
-command -sq kubectl
-and alias k kubectl
+if command -sq kubecolor
+    alias k kubecolor
+else if command -sq kubectl
+    alias k kubectl
+end
 
 #---[ A P P E A R A N C E ]---
 
