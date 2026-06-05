@@ -1,0 +1,6 @@
+Host pi4.local
+User tagae
+ForwardAgent yes
+ControlMaster auto
+ControlPath ~/.ssh/cm-%r@%h:%p
+ControlPersist 10m
