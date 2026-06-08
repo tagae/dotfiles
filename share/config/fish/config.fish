@@ -82,6 +82,8 @@ else if command -sq kubectl
     alias k kubectl
 end
 
+alias gw ./gradlew
+
 #---[ A P P E A R A N C E ]---
 
 if status is-interactive
