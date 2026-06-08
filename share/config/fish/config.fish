@@ -106,6 +106,8 @@ end
 
 command -sq keychain
 and keychain --quiet --eval | source
+and command -sq launchctl
+and launchctl setenv SSH_AUTH_SOCK $SSH_AUTH_SOCK
 
 #---[ L O C A L ]---
 
