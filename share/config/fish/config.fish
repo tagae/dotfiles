@@ -41,7 +41,7 @@ if test -x /opt/homebrew/bin/brew
 
     test -d ~/Library/pnpm
     and set -x PNPM_HOME $HOME/Library/pnpm
-    and fish_add_path --path --move $PNPM_HOME
+    and fish_add_path --path --move $PNPM_HOME/bin
 end
 
 fish_add_path /opt/local/bin
