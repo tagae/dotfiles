@@ -2,8 +2,6 @@
 
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
-# export LC_CTYPE="en_GB.UTF-8"
-# export LANGUAGE="en_GB"
 
 ### Local host configuration
 
@@ -43,13 +41,9 @@ export EMAIL=$MAIL
 prefcmd PAGER less
 prefcmd MANPAGER less
 prefcmd LISTER ls
-# prefcmd MANPAGER less -+$LESS -iRSw
 export EDITOR='emacsclient -c'
 export VISUAL="$EDITOR"
 export ALTERNATE_EDITOR='emacs'
-#prefcmd EDITOR ~/Applications/bin/edit
-#prefcmd VISUAL ~/Applications/bin/edit
-#prefcmd ALTERNATE_EDITOR emacs
 
 ## Aliases
 load ~/.sh.d/aliases
@@ -72,14 +66,6 @@ prependpath LD_LIBRARY_PATH $HOME/lib
 
 ## less
 export LESSHISTFILE="-"
-# export LESS="FiRSwX"
-
-## grep
-#export GREP_OPTIONS='--color=auto' # deprecated
-#export GREP_COLOR='1;32'
-
-## files
-#FIGNORE="~:.pyc:.swp:.swa:.git" # things to ignore during tab completion
 
 ## grc
 testcmd brew && load "`brew --prefix grc`/etc/grc.bashrc"
@@ -109,17 +95,6 @@ export GPG_TTY
 
 ## OpenSSL
 setpath OPENSSL_CONF $HOME/.ssl/openssl.cnf
-
-## Kerberos
-export KRB5_CONFIG=$HOME/.krb5.conf
-
-## Java
-export CLASSPATH=""
-prependpath CLASSPATH /opt/local/share/java/saxon9he.jar
-prependpath CLASSPATH /sw/share/java/saxon-b/saxon8.jar
-
-## Maven
-export MAVEN_OPTS="-Dfile.encoding=UTF-8 -Xms1024m -Xmx3072m -Dmaven.surefire.debug=-Xmx3072m"
 
 ## Autoconf
 setpath CONFIG_SITE $HOME/.autoconf
@@ -170,7 +145,6 @@ if command -v rbenv > /dev/null; then
 fi
 
 ## pyenv
-export PYENV_ROOT=/usr/local/var/pyenv
 if command -v pyenv > /dev/null; then
     eval "$(pyenv init -)"
 fi
@@ -183,7 +157,9 @@ prependpath PATH "$GOPATH/bin"
 prependpath PATH "$HOME/.cabal/bin"
 
 ## SDKMAN
-load $HOME/.sdkman/bin/sdkman-init.sh
+if [ -d $HOME/.sdkman/ ]; then
+    load $HOME/.sdkman/bin/sdkman-init.sh
+fi
 
 ## AWS
 export EC2_HOME="$HOME"/Applications/opt/ec2-api-tools
