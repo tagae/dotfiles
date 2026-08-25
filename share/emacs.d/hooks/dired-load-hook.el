@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Reuse current buffer by pressing 'a'.
 ;; (off by default for the sake of novices)
 ; (put 'dired-find-alternate-file 'disabled nil)

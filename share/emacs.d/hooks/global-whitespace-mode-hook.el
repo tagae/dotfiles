@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Automatically clean up bad whitespace.
 (setq whitespace-action '(auto-cleanup))
 

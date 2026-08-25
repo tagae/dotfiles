@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Have the delete key behave as expected.
 (global-set-key [delete] 'delete-char)
 

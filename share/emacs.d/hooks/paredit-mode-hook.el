@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Remove key bindings that conflict with
 ;; (windmove-default-keybindings 'meta)
 (define-key paredit-mode-map (kbd "M-<up>") nil)

@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Generic config for programming language text.
 
 ;; Spell check my comments pleaze.

@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Higher frames by default.
 (setq default-frame-alist '((height . 60)))
 

@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (flyspell-mode 1)
 
 ;; --- Editing aids

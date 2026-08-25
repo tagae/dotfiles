@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; elisp file manipulation utilities.
 
 (defvar sg:elisp-file-pattern "^[^.].+\\.el$"

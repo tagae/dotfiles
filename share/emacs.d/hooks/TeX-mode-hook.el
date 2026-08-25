@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (outline-minor-mode 1)
 (visual-line-mode 1)
 (flyspell-mode 1)

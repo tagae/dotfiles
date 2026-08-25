@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (defun cygwin-explore (&optional path)
   "Find the current buffer in Windows explorer.exe"
   (interactive)

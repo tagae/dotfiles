@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; ===[ S Y S T E M ]===
 
 ;; == elisp

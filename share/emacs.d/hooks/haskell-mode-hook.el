@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (haskell-doc-mode 1)
 (haskell-indentation-mode 1)
 (haskell-indent-mode 1)

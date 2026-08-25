@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;;; See http://www.masteringemacs.org/article/mastering-key-bindings-emacs
 
 

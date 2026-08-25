@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (tide-setup)
 (flycheck-mode +1)
 (setq flycheck-check-syntax-automatically '(save mode-enabled))

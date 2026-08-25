@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; Emacs Lisp-specific configuration.
 ;; Inherits from prog-mode-hook.
 
