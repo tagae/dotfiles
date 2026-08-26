@@ -95,7 +95,6 @@ if status is-interactive
 
   command -sq jump
   and jump shell fish | source
-  and alias j jump
 end
 
 #---[ P R I V A C Y ]---
