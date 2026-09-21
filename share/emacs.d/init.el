@@ -410,10 +410,6 @@
     :ensure t
     :defer t)
 
-(use-package docker-compose-mode
-    :ensure t
-    :defer t)
-
 (use-package magit
     :ensure t
     :bind (("C-x g" . magit-status)
