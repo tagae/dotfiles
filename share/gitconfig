@@ -1,5 +1,6 @@
 [user]
-name = Sebastián González
+	name = Seb
+	email = tagae@ehub.io
 
 [include]
 path = ~/.gitconfig.d/local
