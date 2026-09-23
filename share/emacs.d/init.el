@@ -388,6 +388,10 @@
     :ensure t
     :defer t)
 
+(use-package yaml-mode
+    :ensure t
+    :defer t)
+
 (use-package company-elisp
     :after (company elisp-mode)
     :config
