@@ -204,7 +204,11 @@
 ;; --- Minibuffer
 
 (setq savehist-file (expand-file-name "savehist" emacs-state-dir))
+(setq history-length 200 ; cap all histories
+      savehist-autosave-interval nil) ; save on exit only, not on a timer
 (savehist-mode 1)
+;; command-history entries can embed huge magit caches, bloating the file.
+(setq savehist-ignored-variables '(command-history))
 
 
 ;; ===[ F I L E S ]===
