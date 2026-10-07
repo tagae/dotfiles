@@ -24,6 +24,7 @@ if test -x /opt/homebrew/bin/brew
     fish_add_path --path --move (brew --prefix coreutils)/libexec/gnubin
     fish_add_path --path --move (brew --prefix findutils)/libexec/gnubin
     fish_add_path --path --move (brew --prefix gnu-sed)/libexec/gnubin
+    fish_add_path --path --move (brew --prefix gpatch)/libexec/gnubin
     fish_add_path --path --move (brew --prefix make)/libexec/gnubin
     fish_add_path --path --move (brew --prefix m4)/bin
     fish_add_path --path --move (brew --prefix bison)/bin
