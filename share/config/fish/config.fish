@@ -76,15 +76,15 @@ and set PATH $PATH $GOPATH/bin
 #---[ A L I A S E S ]---
 
 command -sq git
-and alias g git
+and abbr g git
 
 if command -sq kubecolor
     alias k kubecolor
 else if command -sq kubectl
-    alias k kubectl
+    abbr k kubectl
 end
 
-alias gw ./gradlew
+abbr gw ./gradlew
 
 #---[ A P P E A R A N C E ]---
 
