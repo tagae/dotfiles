@@ -122,10 +122,3 @@ end
 
 test -f ~/.config/fish/secrets.fish
 and source ~/.config/fish/secrets.fish
-
-# pnpm
-set -gx PNPM_HOME "/Users/tagae/Library/pnpm"
-if not string match -q -- $PNPM_HOME $PATH
-  set -gx PATH "$PNPM_HOME" $PATH
-end
-# pnpm end
