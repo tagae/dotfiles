@@ -1,0 +1,161 @@
+# -----------------------------------------------------------------------------
+# Snazzy skin
+#
+# Based on the layout of the Dracula skin that ships with K9s, but sets every
+# colour K9s allows to skin, so that none of its built-in colours show through.
+# Snazzy has no purple, so blue takes its place, and the background is left to
+# the terminal (and its transparency).
+# -----------------------------------------------------------------------------
+
+# Styles...
+foreground: &foreground "#eff0eb"
+background: &background default
+dark: &dark "#1e1f29"
+current_line: &current_line "#34353e"
+selection: &selection "#4a4b53"
+comment: &comment "#78787e"
+cyan: &cyan "#9aedfe"
+green: &green "#5af78e"
+orange: &orange "#ff9f43"
+pink: &pink "#ff6ac1"
+blue: &blue "#57c7ff"
+red: &red "#ff5c57"
+yellow: &yellow "#f3f99d"
+
+# Skin...
+k9s:
+  # General K9s styles
+  body:
+    fgColor: *foreground
+    bgColor: *background
+    logoColor: *blue
+    logoColorMsg: *foreground
+    logoColorInfo: *green
+    logoColorWarn: *yellow
+    logoColorError: *red
+  # Command prompt styles
+  prompt:
+    fgColor: *foreground
+    bgColor: *background
+    suggestColor: *blue
+    border:
+      default: *green
+      command: *cyan
+  # ClusterInfoView styles.
+  info:
+    fgColor: *pink
+    sectionColor: *foreground
+    k9sRevColor: *cyan
+    cpuColor: *green
+    memColor: *cyan
+  # Help view styles.
+  help:
+    fgColor: *foreground
+    bgColor: *background
+    sectionColor: *green
+    keyColor: *pink
+    numKeyColor: *pink
+  # Dialog styles.
+  dialog:
+    fgColor: *foreground
+    bgColor: *background
+    buttonFgColor: *dark
+    buttonBgColor: *blue
+    buttonFocusFgColor: *dark
+    buttonFocusBgColor: *pink
+    labelFgColor: *orange
+    fieldFgColor: *foreground
+  frame:
+    # Borders styles.
+    border:
+      fgColor: *selection
+      focusColor: *comment
+    menu:
+      fgColor: *foreground
+      keyColor: *pink
+      # Used for favorite namespaces
+      numKeyColor: *pink
+    # CrumbView attributes for history navigation.
+    crumbs:
+      fgColor: *foreground
+      bgColor: *current_line
+      activeColor: *selection
+    # Resource status and update styles
+    status:
+      newColor: *cyan
+      modifyColor: *blue
+      addColor: *green
+      pendingColor: *yellow
+      errorColor: *red
+      highlightColor: *orange
+      killColor: *comment
+      completedColor: *comment
+    # Border title styles.
+    title:
+      fgColor: *foreground
+      bgColor: *current_line
+      highlightColor: *orange
+      counterColor: *blue
+      filterColor: *pink
+  views:
+    # Charts skins...
+    charts:
+      bgColor: *background
+      dialBgColor: *background
+      chartBgColor: *background
+      defaultDialColors:
+        - *green
+        - *red
+      defaultChartColors:
+        - *green
+        - *red
+      resourceColors:
+        cpu:
+          - *blue
+          - *cyan
+        mem:
+          - *yellow
+          - *orange
+      focusFgColor: *dark
+      focusBgColor: *orange
+    # TableView attributes. The cursor takes the colour of the row it is on
+    # as background, so its text must be dark.
+    table:
+      fgColor: *foreground
+      bgColor: *background
+      cursorFgColor: *dark
+      cursorBgColor: *foreground
+      markColor: *green
+      # Header row styles.
+      header:
+        fgColor: *foreground
+        bgColor: *background
+        sorterColor: *cyan
+        selectedSortColumnColor: *cyan
+    # Xray view attributes.
+    xray:
+      fgColor: *foreground
+      bgColor: *background
+      cursorColor: *selection
+      cursorTextColor: *foreground
+      graphicColor: *blue
+      showIcons: false
+    # YAML info styles.
+    yaml:
+      keyColor: *pink
+      colonColor: *blue
+      valueColor: *foreground
+    # Picker (e.g. container selection) styles.
+    picker:
+      mainColor: *foreground
+      focusColor: *cyan
+      shortcutColor: *pink
+    # Logs styles.
+    logs:
+      fgColor: *foreground
+      bgColor: *background
+      indicator:
+        fgColor: *dark
+        bgColor: *blue
+        toggleOnColor: *green
+        toggleOffColor: *cyan

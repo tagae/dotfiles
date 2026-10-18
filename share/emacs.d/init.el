@@ -62,11 +62,15 @@
 
 ;; --- User interface
 
-;; Same palette as WezTerm and tmux.
-(use-package catppuccin-theme
+;; Snazzy palette.
+(use-package snazzy-theme
     :ensure t
-    :custom (catppuccin-flavor 'mocha)
-    :config (load-theme 'catppuccin t))
+    ;; In a terminal, the base16 library underneath maps the theme onto the
+    ;; terminal's 16 ANSI colours, in a layout that does not fit Snazzy
+    ;; (e.g. black background, bright green and yellow highlights). Use the
+    ;; theme's own colours instead.
+    :custom (base16-theme-256-color-source 'colors)
+    :config (load-theme 'snazzy t))
 
 ;; Remove useless elements.
 (menu-bar-mode 0)

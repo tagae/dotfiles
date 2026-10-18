@@ -92,7 +92,10 @@ abbr gw ./gradlew
 
 if status is-interactive
   command -sq vivid
-  and set -x LS_COLORS (vivid --color-mode 8-bit generate one-dark)
+  and set -x LS_COLORS (vivid --color-mode 8-bit generate snazzy)
+
+  command -sq k9s
+  and set -x K9S_SKIN snazzy
 
   command -sq starship
   and starship init fish | source

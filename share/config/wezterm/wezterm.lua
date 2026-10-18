@@ -2,8 +2,9 @@ local wezterm = require("wezterm")
 
 local config = wezterm.config_builder()
 
--- Same palette as tmux and Emacs.
-config.color_scheme = "Catppuccin Mocha"
+-- Snazzy palette, with a darker background than the scheme's own.
+config.color_scheme = "Snazzy (Gogh)"
+config.colors = { background = "#20232c" }
 config.font = wezterm.font("JetBrainsMono Nerd Font")
 config.font_size = 14.0
 config.window_background_opacity = 0.8
@@ -12,8 +13,7 @@ config.window_decorations = "RESIZE"
 config.initial_cols = 120
 config.initial_rows = 50
 
--- tmux is the only chrome: no WezTerm tabs.
-config.enable_tab_bar = false
+config.hide_tab_bar_if_only_one_tab = true
 
 -- Dim unfocused windows so the focused one is obvious at a glance.
 local UNFOCUSED_FOREGROUND_TEXT_HSB = { hue = 1.0, saturation = 0.25, brightness = 0.45 }
