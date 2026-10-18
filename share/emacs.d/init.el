@@ -62,7 +62,11 @@
 
 ;; --- User interface
 
-(load-theme 'wombat)
+;; Same palette as WezTerm and tmux.
+(use-package catppuccin-theme
+    :ensure t
+    :custom (catppuccin-flavor 'mocha)
+    :config (load-theme 'catppuccin t))
 
 ;; Remove useless elements.
 (menu-bar-mode 0)
