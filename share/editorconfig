@@ -1,0 +1,10 @@
+# ~/.editorconfig: default coding style for files under the home directory.
+#
+# See https://editorconfig.org.
+
+root = true
+
+[*.{sh,bash,fish}]
+indent_style = space
+indent_size = 4
+tab_width = 4
