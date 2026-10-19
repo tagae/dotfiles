@@ -8,7 +8,8 @@
 (require 'treesit)
 
 (defconst sg:treesit-language-sources
-  '((go     "https://github.com/tree-sitter/tree-sitter-go" "v0.23.4")
+  '((bash   "https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3")
+    (go     "https://github.com/tree-sitter/tree-sitter-go" "v0.23.4")
     (gomod  "https://github.com/camdencheek/tree-sitter-go-mod" "v1.1.0"))
   "Grammars to install, in the format of `treesit-language-source-alist'.
 Revisions are pinned because newer grammars are built against a tree-sitter

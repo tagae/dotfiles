@@ -328,6 +328,34 @@
 (load custom-file 'optional)
 
 
+;; ===[ P R O G R A M M I N G ]===
+
+;; --- Tree-sitter
+
+(require 'sg/treesit)
+
+;; Edit Bash with tree-sitter. For other dialects (e.g. zsh), `bash-ts-mode'
+;; hands the buffer over to `sh-mode'.
+(when (boundp 'treesit-enabled-modes)
+  (setopt treesit-enabled-modes '(bash-ts-mode)))
+
+;; --- Language server
+
+;; Servers are started by the `*-mode-hook' files (see the `hooks' directory).
+;; Eglot already knows `bash-language-server' (diagnostics through ShellCheck,
+;; formatting through shfmt), so only `fish-lsp' needs registering.
+(use-package eglot
+    :custom
+    (eglot-autoshutdown t)
+    (eglot-events-buffer-config '(:size 0))
+    :config
+    (add-to-list 'eglot-server-programs '(fish-mode . ("fish-lsp" "start")))
+    :bind (:map eglot-mode-map
+           ("C-c e a" . eglot-code-actions)
+           ("C-c e d" . flymake-show-buffer-diagnostics)
+           ("C-c e f" . eglot-format)
+           ("C-c e r" . eglot-rename)))
+
 ;; ===[ U S E D   P A C K A G E S ]===
 
 (use-package diminish

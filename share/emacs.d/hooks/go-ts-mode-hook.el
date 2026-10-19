@@ -8,6 +8,9 @@
             tab-width 4
             go-ts-mode-indent-offset 4)
 
+;; Go code is edited through Eglot (gopls).
+(eglot-ensure)
+
 ;; Organize imports and format through gopls on save.
 (add-hook 'before-save-hook
           (lambda ()
