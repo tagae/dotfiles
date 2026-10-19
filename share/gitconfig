@@ -13,8 +13,9 @@ autocrlf = input
 template = ~/.gitconfig.d/commit-template
 
 [alias]
-# ---[ working tree ]---
+# ---[ worktree ]---
 co = checkout
+wt = worktree
 # ---[ staging ]---
 ap = add --patch
 # ---[ commit ]---
