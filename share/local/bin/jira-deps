@@ -1,0 +1,298 @@
+#!/usr/bin/env python3
+"""Draw a graph of Jira tickets, topologically ordered by their "blocks" links.
+
+Blockers are drawn above the tickets they block, so reading top to bottom gives a valid
+order in which to do the work. Tickets are fetched with the Atlassian CLI (`acli`).
+
+Usage:
+    jira-deps DEV-194890                 # all children of an epic
+    jira-deps DEV-1 DEV-2 DEV-3          # an explicit set of tickets
+    jira-deps --jql 'project = DEV AND labels = foo'
+
+How to read the picture (same idea as `git log --graph`):
+    ○  a ticket that nothing blocks: it can be started now
+    ●  a ticket that waits for one or more tickets above it
+    │  an edge on its way down to the ticket it blocks
+    ├─┐ an edge leaves a ticket and travels sideways to the lane of the ticket it blocks
+    Edges are coloured after the ticket they lead to; the second line under every ticket
+    spells out what blocks it. Use --ascii if your terminal cannot show box-drawing characters.
+
+Tickets without any "blocks" link inside the selection are listed underneath the graph.
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
+
+PALETTE = [33, 208, 35, 170, 37, 178, 204, 99]  # edge colours (ANSI 256), one per target ticket
+CATEGORY_COLOUR = {"new": 245, "indeterminate": 220, "done": 34}  # Jira status categories
+DIM = 244
+
+UNICODE_JUNCTIONS = {  # (up, down, left, right)
+    (1, 1, 0, 0): "│", (0, 0, 1, 1): "─", (1, 1, 0, 1): "├", (1, 1, 1, 0): "┤", (1, 1, 1, 1): "┼",
+    (0, 1, 0, 1): "┌", (0, 1, 1, 0): "┐", (1, 0, 0, 1): "└", (1, 0, 1, 0): "┘",
+    (0, 1, 1, 1): "┬", (1, 0, 1, 1): "┴",
+}
+
+
+@dataclass
+class Ticket:
+    key: str
+    summary: str = ""
+    status: str = ""
+    category: str = ""  # Jira status category: new, indeterminate or done
+    blocks: set = field(default_factory=set)  # keys of the tickets this one blocks
+
+
+class Style:
+    def __init__(self, colour, ascii_only):
+        self.colour, self.ascii_only = colour, ascii_only
+        self.ready, self.waiting = ("o", "*") if ascii_only else ("○", "●")
+
+    def paint(self, text, code):
+        return f"\033[38;5;{code}m{text}\033[0m" if self.colour and code is not None and text.strip() else text
+
+    def glyph(self, up, down, left, right):
+        if self.ascii_only:
+            return "+" if (up or down) and (left or right) else "|" if (up or down) else "-"
+        return UNICODE_JUNCTIONS.get((int(bool(up)), int(bool(down)), int(bool(left)), int(bool(right)))) or (
+            "│" if up or down else "─"
+        )
+
+
+def run_acli(*args):
+    try:
+        done = subprocess.run(["acli", *args], capture_output=True, text=True, timeout=120)
+    except FileNotFoundError:
+        sys.exit("acli not found on PATH")
+    if done.returncode != 0:
+        sys.exit(f"acli {' '.join(args[:3])} failed: {(done.stderr or done.stdout).strip()}")
+    return json.loads(done.stdout)
+
+
+def search(jql):
+    rows = run_acli("jira", "workitem", "search", "--jql", jql, "--fields", "key,summary,status", "--json", "--paginate")
+    tickets = []
+    for r in rows:
+        status = r["fields"].get("status") or {}
+        tickets.append(
+            Ticket(r["key"], r["fields"].get("summary", ""), status.get("name", ""), (status.get("statusCategory") or {}).get("key", ""))
+        )
+    return tickets
+
+
+def fetch_links(key):
+    issue = run_acli("jira", "workitem", "view", key, "--fields", "issuelinks", "--json")
+    out, into = set(), set()
+    for link in issue["fields"].get("issuelinks") or []:
+        if link["type"]["name"] != "Blocks":
+            continue
+        if "outwardIssue" in link:  # this ticket blocks the other one
+            out.add(link["outwardIssue"]["key"])
+        if "inwardIssue" in link:  # the other ticket blocks this one
+            into.add(link["inwardIssue"]["key"])
+    return key, out, into
+
+
+def load(args):
+    if args.jql:
+        jql = args.jql
+    elif len(args.targets) == 1:
+        jql = f"parent = {args.targets[0]} ORDER BY key"
+    else:
+        jql = f"key in ({', '.join(args.targets)}) ORDER BY key"
+    tickets = {t.key: t for t in search(jql)}
+    if not tickets:
+        sys.exit("no tickets found")
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for key, out, into in pool.map(fetch_links, list(tickets)):
+            tickets[key].blocks |= out
+            for blocker in into:
+                if blocker in tickets:
+                    tickets[blocker].blocks.add(key)
+    for t in tickets.values():  # only keep links between tickets of the selection
+        t.blocks &= tickets.keys()
+    return tickets
+
+
+def topological_order(tickets):
+    """Kahn's algorithm, ties broken by key so that the output is stable."""
+    blockers = {k: set() for k in tickets}
+    for t in tickets.values():
+        for b in t.blocks:
+            blockers[b].add(t.key)
+    heads = {k for k, v in blockers.items() if not v}
+    order, ready = [], sorted(heads)
+    while ready:
+        key = ready.pop(0)
+        order.append(key)
+        for b in sorted(tickets[key].blocks):
+            blockers[b].discard(key)
+            if not blockers[b] and b not in order and b not in ready:
+                ready.append(b)
+        ready.sort(key=lambda k: (k not in heads, k))  # all heads come first, whatever their keys
+    if len(order) != len(tickets):
+        stuck = sorted(set(tickets) - set(order))
+        sys.exit(f"the 'blocks' links contain a cycle among: {', '.join(stuck)}")
+    return order
+
+
+def render(tickets, order, style, label):
+    """Lane-based drawing: one lane (column) per edge still on its way to a ticket."""
+    position = {k: i for i, k in enumerate(order)}
+    blockers = {k: sorted((b for b, t in tickets.items() if k in t.blocks), key=position.get) for k in tickets}
+    lanes = []  # lanes[i] is the key of the ticket the lane leads to, or None when it is free
+    rows = []  # (cells, text): cells maps a character position to (character, colour)
+
+    def targets_of(key):
+        return sorted(tickets[key].blocks, key=position.get)
+
+    def colour_of(key):
+        if isinstance(key, tuple):  # a head whose edges are not drawn yet: use the colour of its first edge
+            key = targets_of(key[1])[0]
+        return PALETTE[position[key] % len(PALETTE)]
+
+    def vertical(cells, skip=()):
+        for i, key in enumerate(lanes):
+            if key is not None and i not in skip:
+                cells[2 * i] = (style.glyph(1, 1, 0, 0), colour_of(key))
+
+    def horizontal(cells, source, parts):
+        """Join the source column with the other participating columns.
+
+        `parts` maps a column to (up, down, colour). Lanes that merely cross the line become a crossing.
+        """
+        cols = sorted(parts)
+        lo, hi = 2 * cols[0], 2 * cols[-1]
+        for x in range(lo, hi + 1):
+            left, right = x > lo, x < hi
+            if x % 2 == 0 and x // 2 in parts:
+                up, down, colour = parts[x // 2]
+                cells[x] = (style.glyph(up, down, left, right), colour)
+            elif x in cells:  # a lane crossing the horizontal line
+                cells[x] = (style.glyph(1, 1, left, right), cells[x][1])
+            else:  # plain stretch of line: coloured after the participant at its far end
+                near = max(c for c in cols if 2 * c < x)
+                far = min(c for c in cols if 2 * c > x)
+                cells[x] = (style.glyph(0, 0, 1, 1), parts[far if far > source else near][2])
+
+    def show(key, col):
+        """The ticket's own two lines: the ticket, and what blocks it."""
+        ticket, targets = tickets[key], targets_of(key)
+        cells = {}
+        vertical(cells, skip={col})
+        marker = style.waiting if blockers[key] else style.ready
+        cells[2 * col] = (marker, CATEGORY_COLOUR.get(ticket.category))
+        rows.append((cells, label(ticket)))
+
+        cells = {}  # second line: what blocks this ticket, while the lanes keep going down
+        vertical(cells, skip={col})
+        if targets:
+            cells[2 * col] = (style.glyph(1, 1, 0, 0), colour_of(targets[0]))
+        text = ("blocked by " + ", ".join(blockers[key])) if blockers[key] else "ready to start"
+        rows.append((cells, ("DIM", text)))
+
+    def depart(key, col):
+        """Draw the edges that leave a ticket, in the lane of every ticket it blocks."""
+        targets = targets_of(key)
+        lanes[col] = None
+        joined, opened = [], set()
+        for target in targets:
+            if target in lanes:
+                joined.append(lanes.index(target))
+            else:  # the first new target takes the lowest free lane, the others open new ones
+                free = [i for i, k in enumerate(lanes) if k is None]
+                slot = free[0] if free else len(lanes)
+                if slot == len(lanes):
+                    lanes.append(None)
+                lanes[slot] = target
+                joined.append(slot)
+                opened.add(slot)
+        if joined and joined != [col]:
+            parts = {col: (1, 1 if col in joined else 0, colour_of(targets[0]))}
+            for slot in joined:
+                if slot != col:
+                    parts[slot] = (0 if slot in opened else 1, 1, colour_of(lanes[slot]))
+            cells = {}
+            vertical(cells, skip=set(parts))
+            horizontal(cells, col, parts)
+            rows.append((cells, None))
+        while lanes and lanes[-1] is None:
+            lanes.pop()
+
+    # All heads (tickets nothing blocks) come first, side by side; their edges are drawn afterwards.
+    heads = [k for k in order if not blockers[k]]
+    for key in heads:
+        free = [i for i, k in enumerate(lanes) if k is None]
+        col = free[0] if free else len(lanes)
+        if col == len(lanes):
+            lanes.append(None)
+        lanes[col] = ("head", key)  # holds the column until the head's edges are drawn
+        show(key, col)
+    for key in heads:
+        depart(key, lanes.index(("head", key)))
+
+    for key in order:
+        if key in heads:
+            continue
+        feeding = [i for i, k in enumerate(lanes) if k == key]
+        col = feeding[0]
+        if len(feeding) > 1:  # several blockers converge on this ticket
+            cells = {}
+            vertical(cells, skip=set(feeding))
+            horizontal(cells, col, {i: (1, 1 if i == col else 0, colour_of(key)) for i in feeding})
+            rows.append((cells, None))
+            for i in feeding[1:]:
+                lanes[i] = None
+        lanes[col] = key
+        show(key, col)
+        depart(key, col)
+
+    total = 1 + max(x for cells, _ in rows for x in cells)
+    lines = []
+    for cells, text in rows:
+        left = "".join(style.paint(*cells[x]) if x in cells else " " for x in range(total))
+        if isinstance(text, tuple):
+            text = style.paint(text[1], DIM)
+        lines.append(f"{left}  {text}" if text else left.rstrip())
+    return lines
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("targets", nargs="*", help="an epic key, or several ticket keys")
+    parser.add_argument("--jql", help="select tickets with a JQL query instead")
+    parser.add_argument("--no-status", action="store_true", help="leave the status out of the labels")
+    parser.add_argument("--width", type=int, default=90, help="truncate summaries to this many characters (0: never)")
+    parser.add_argument("--ascii", action="store_true", help="use only ASCII characters")
+    parser.add_argument("--colour", "--color", choices=["auto", "always", "never"], default="auto")
+    args = parser.parse_args()
+    if not args.targets and not args.jql:
+        parser.error("give an epic key, ticket keys or --jql")
+
+    colour = args.colour == "always" or (args.colour == "auto" and sys.stdout.isatty() and "NO_COLOR" not in os.environ)
+    style = Style(colour, args.ascii)
+    tickets = load(args)
+
+    def label(t):
+        summary = t.summary if not args.width or len(t.summary) <= args.width else t.summary[: args.width - 3] + "..."
+        status = "" if args.no_status or not t.status else "  " + style.paint(f"({t.status})", CATEGORY_COLOUR.get(t.category))
+        return f"{t.key}  {summary}{status}"
+
+    linked = {k for k, t in tickets.items() if t.blocks} | {b for t in tickets.values() for b in t.blocks}
+    order = topological_order({k: tickets[k] for k in linked}) if linked else []
+    if order:
+        print("\n".join(render({k: tickets[k] for k in linked}, order, style, label)))
+    unlinked = sorted(set(tickets) - linked)
+    if unlinked:
+        print(("\n" if order else "") + "No 'blocks' links inside this selection:")
+        for k in unlinked:
+            print(f"  {label(tickets[k])}")
+
+
+if __name__ == "__main__":
+    main()
