@@ -1,12 +1,13 @@
 #!/bin/sh
+# shellcheck disable=SC2154  # set by the eval of jq's output further down, which shellcheck cannot see
+
 # Claude Code status line:
 #   "Model+effort ctx [+{subagents}] 5h-quota spend folder[@branch] weekly-quota"
 #
 # Segments run from fastest-moving to slowest, so the eye can stop as soon as it has
 # what it came for, and the static weekly figure is what a narrow terminal cuts off.
 #
-# MAINTENANCE RULE: README.md next to this script describes what it shows. Change both
-# in the same commit.
+# MAINTENANCE RULE: this header describes what the line shows. Change it with the code.
 
 # File mtime(s) as epoch seconds. GNU spelling FIRST: GNU's `stat -f` exits 1 yet still
 # prints a block to stdout, which would land in the caller's variable.
@@ -110,7 +111,6 @@ RED="${ESC}[31m"
 ORANGE="${ESC}[38;5;208m"
 BLUE="${ESC}[38;5;111m"
 GREEN="${ESC}[38;5;78m"
-TEAL="${ESC}[38;5;80m"   # nearest 256-colour match to Claude Code's prompt border
 
 # Light or dark follows Claude Code's own theme: `theme` in settings.json, or the
 # `base` of a `custom:<name>` theme. `auto` follows the terminal background, which a
@@ -150,7 +150,6 @@ if [ "$LIGHT_UI" = 1 ]; then
   ORANGE="${ESC}[38;5;166m"
   BLUE="${ESC}[38;5;25m"
   GREEN="${ESC}[38;5;28m"
-  TEAL="${ESC}[38;5;30m"
 fi
 
 # pulse red|orange TEXT: blink, one second on, one off. Two states register in
@@ -181,6 +180,7 @@ idle=1; age_secs=""; sid=""
 if [ -n "$tp" ] && [ -f "$tp" ]; then
   # Idle = the last main-chain reply did not stop for a tool and nothing user-side came
   # after it. No apostrophes inside: this is one single-quoted shell string.
+  # shellcheck disable=SC2016  # a jq program: its $variables are jq's own
   tok_prog='
 . as $all
 | ([ range(0; ($all|length)) as $i | select($all[$i].type=="assistant" and ($all[$i].isSidechain != true)) | $i ] | last) as $lastA
@@ -668,6 +668,7 @@ if [ "$_chip_key" != "$locpath" ]; then
   case "$_chip_sum" in ''|*[!0-9]*) _chip_sum=0 ;; esac
   { mkdir -p "$HOME/.claude/cwd" && printf '%s %s\n' "$_chip_sum" "$locpath" > "$_chip_file"; } 2>/dev/null || :
 fi
+# shellcheck disable=SC2086  # splitting the space-separated list into words is the point
 set -- $FOLDER_CHIPS
 shift $((_chip_sum % $#))
 # The branch stays outside the block: the block says which folder, not where HEAD is.

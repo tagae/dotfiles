@@ -1,4 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC2016  # the dollar amounts in the expectations are literal
+# shellcheck disable=SC2059  # the printf template is a variable on purpose: it is the payload's shape
+
 # Minimal regression harness for statusline-fancy.sh: feeds sample
 # JSON payloads (what Claude Code hands the script on stdin) and asserts
 # substrings in the rendered line, so the rendering is checked by an assertion
@@ -42,6 +45,19 @@ assert_contains() {
   esac
 }
 
+# assert_contains_raw "<label>" "<haystack>" "<needle>": like assert_contains, but colours are kept.
+assert_contains_raw() {
+  label=$1; haystack=$2; needle=$3
+  case "$haystack" in
+    *"$needle"*) pass=$((pass + 1)); printf 'ok    %s\n' "$label" ;;
+    *)
+      fail=$((fail + 1))
+      printf 'FAIL  %s\n      expected to find: %s\n      got:              %s\n' \
+        "$label" "$needle" "$haystack" | cat -v
+      ;;
+  esac
+}
+
 assert_not_contains() {
   label=$1; haystack=$2; needle=$3
   plain=$(printf '%s' "$haystack" | sed 's/\x1b\[[0-9;]*m//g')
@@ -60,6 +76,7 @@ assert_not_contains() {
 # test-date-fallback.sh is what tests the script's own fallback).
 clock_of() { date -r "$1" "$2" 2>/dev/null || date -d "@$1" "$2"; }
 
+RESET=$(printf '\033[0m')
 now=$(date +%s)
 reset=$((now + 3 * 3600 + 23 * 60))   # 3h23m from now
 
@@ -540,7 +557,7 @@ assert_not_contains "tiny cost change: not mistaken for nothing billed yet" "$ou
 # precedes the "<N>K" token count
 ctx_colour() {
   printf '{"session_id":"statusline-test-ctxcolour","model":{"id":"%s","display_name":"%s"},"context_window":{"used_percentage":%s,"context_window_size":%s,"total_input_tokens":%s},"cost":{"total_cost_usd":1}}' \
-    "$1" "$2" "$4" "$3" "$(($3 / 100 * $4))" | sh "$SCRIPT" | sed -n 's/.*\(\x1b\[[0-9;]*m\)[0-9]*K\x1b\[0m.*/\1/p'
+    "$1" "$2" "$4" "$3" "$(($3 * $4 / 100))" | sh "$SCRIPT" | sed -n 's/.*\(\x1b\[[0-9;]*m\)[0-9]*K\x1b\[0m.*/\1/p'
 }
 ESC=$(printf '\033')
 BLUE="${ESC}[38;5;111m"; ORANGE="${ESC}[38;5;208m"; RED="${ESC}[31m"
@@ -805,7 +822,7 @@ assert_contains     "location: names the repository, not the subdirectory" "$out
 assert_not_contains "location: no subdirectory name"                       "$out" "backend"
 assert_not_contains "location: trunk shows no branch"                      "$out" "@"
 git -C "$repo" symbolic-ref HEAD refs/heads/feat
-assert_contains "location: another branch follows the name" "$(loc "$repo/backend")" "petclinic${RESET}@feat"
+assert_contains_raw "location: another branch follows the name, outside the block" "$(loc "$repo/backend")" "petclinic${RESET}@feat"
 _a=$(loc "$repo" | sed -n 's/.*\(\x1b\[48;5;[0-9]*m\x1b\[38;5;[0-9]*m\)petclinic.*/\1/p')
 _b=$(loc "$repo/backend" | sed -n 's/.*\(\x1b\[48;5;[0-9]*m\x1b\[38;5;[0-9]*m\)petclinic.*/\1/p')
 [ -n "$_a" ] && [ "$_a" = "$_b" ] && _r=ok || _r=bad

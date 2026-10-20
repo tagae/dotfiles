@@ -1,154 +1,346 @@
 #!/bin/sh
-# Claude Code status line, lean edition: "Opus 5.5h+ 42%/200K ↑87K ↓340 (f2 r84K w478) cache 42m→104K miss 202K ttl_expired_5m/2,tools_changed/1 api 4m $1.23 12m 5h 37%↻2h10 7d 48%↻4d3h | session name"
-#   - model name, with the effort glued on: low -> l, medium -> m, high -> h, xhigh -> h+,
-#     max -> x (left out when the model has no effort setting)
-#   - share of the context window used, coloured by how full it is: green < 20%, light
-#     green < 40%, yellow < 60%, orange < 80%, else red (left out early in a session),
-#     then "/" and the window size
-#   - ↑ total input tokens, ↓ output tokens, of the last response, then the input's
-#     split as (f fresh, r cache read, w cache write); the split is left out while
-#     `current_usage` is null
-#   - prompt cache: the time left before it goes cold, then "→" and the tokens a cold start
-#     would re-cache (cache 42m→104K; the tokens are left out when not reported), or
-#     "cold" once the time has run out or there is none. Left out until the first
-#     response. The countdown needs a statusline refreshInterval. It stays plain while
-#     half the TTL or more is left, then runs from yellow through orange to red (a
-#     truecolor gradient, fully red from 15% left) as the cache is about to expire;
-#     "cold" is red. It stays plain when the payload has no TTL. `prompt_cache.warm` is
-#     not used: it stays true past the expiry until the next response. Once a cache miss
-#     has happened it adds, in red, the tokens the misses re-cached and the likely causes
-#     with how many misses each explains (miss 202K ttl_expired_5m/2,tools_changed/1);
-#     the last miss's cause stands in when no tally is reported.
-#   - time spent waiting on the API, session cost in USD, then the wall-clock time the
-#     session has run (each duration as 45s, 12m, 3h05, 2d4h)
-#   - 5-hour and 7-day quota used, "↻" and the time left until it resets (5h 37%↻2h10 7d
-#     48%↻4d3h); the countdown is left out once the reset time has passed
-#   - session name, always last (left out when there is none)
+# shellcheck disable=SC3043  # `local` is not POSIX, but dash, bash and ash all have it
 
-eval "$(jq -r '
-def s: if . == null then "" else tostring end;
-@sh "model=\(.model.display_name? | s)
-effort=\(.effort.level? | s)
-used=\(.context_window.used_percentage? | s)
-size=\(.context_window.context_window_size? | s)
-tok_in=\(.context_window.total_input_tokens? | s)
-tok_fresh=\(.context_window.current_usage.input_tokens? | s)
-tok_read=\(.context_window.current_usage.cache_read_input_tokens? | s)
-tok_write=\(.context_window.current_usage.cache_creation_input_tokens? | s)
-tok_out=\(.context_window.current_usage.output_tokens? | s)
-cost=\(.cost.total_cost_usd? | s)
-api_ms=\(.cost.total_api_duration_ms? | s)
-five=\(.rate_limits.five_hour.used_percentage? | s)
-five_reset=\(.rate_limits.five_hour.resets_at? | s)
-week=\(.rate_limits.seven_day.used_percentage? | s)
-week_reset=\(.rate_limits.seven_day.resets_at? | s)
-cache=\(if .prompt_cache? then "1" else "" end)
-ttl=\(.prompt_cache.ttl? | s)
-miss_tokens=\(.prompt_cache.miss_recache_tokens? | s)
-miss_tally=\((.prompt_cache.miss_causes? // {}) | to_entries | sort_by(-.value) | map("\(.key)/\(.value)") | join(","))
-miss_cause=\((.prompt_cache.last_miss_cause.causes? // []) | join(","))
-recache=\(.prompt_cache.recache_tokens_if_cold? | s)
-warm_until=\(.prompt_cache.expires_at? | s)
-dur_ms=\(.cost.total_duration_ms? | s)
-session=\(.session_name? | s)"' 2>/dev/null)"
+# Claude Code status line, lean edition:
+#   "Opus 5.5·xh in: 87K/200K (+478, ttl: 42m, miss: 202K ttl_expired_5m) out: 340 $0.12 ⊂ $1.23 up: 12m api: 4m 5h: ↑37% ↻2h10 7d: ↗48% ↻4d3h"
+#
+# MAINTENANCE RULE: README.md next to this script describes what it shows. Change both in the
+# same commit. What follows is only what the code does not make obvious.
+#
+#   - Not shown: the fresh, uncached input (with caching on it is always 2 tokens) and the
+#     cache read (it is the rest of the input). (+478) is the cache write, which is how much
+#     the input grew with the last response; after a cache miss it is the rebuild instead.
+#   - `prompt_cache.warm` is not used: it stays true past the expiry until the next response.
+#   - The payload has only running totals. A turn's cost and cache miss are their growth since
+#     the prompt began, so one small file per session in /tmp keeps the prompt id, the session
+#     cost and the miss tokens at the start of the turn, the cost of the turn before, and the
+#     last response's cost and quota with when they changed. It is rewritten only when
+#     something in it changes.
+#   - A quota figure is what this session saw at its last response; other sessions spend the
+#     same quota unseen. Every response bills something, so a cost or quota that moved means
+#     one landed; the quota alone would not do, as it can sit at one percent through many.
+#   - The countdowns (ttl, quota resets) only tick if the status line has a refreshInterval.
+#   - Colours are for dark terminals. Red is kept for the hard limits, so the ttl countdown
+#     stops at orange.
+#
+# Conventions: POSIX sh. Names are lowercase, since uppercase is reserved for the environment
+# (CLAUDE_QUOTA_STALE_SECS is the one variable read from it). A number with a meaning has a
+# named constant; only 0, 1, 10 and 100 (a percentage, a decimal digit) stay as they are.
+# Functions keep their variables `local` (not in POSIX, but dash, bash and ash all have it)
+# and hand back what they compute by printing it, never through a global.
+# `errexit` and `nounset` are on, so: a function ends on a command that succeeds (`return 0`,
+# never a bare `return` after a test), a command that may fail on purpose is followed by
+# `|| :`, and whatever the payload may leave out is set to empty before it is read.
 
-# tokens N -> "340", "1.2K", "15K", "1.2M"
-tokens() {
-  if [ "$1" -ge 1000000 ]; then
-    _t=$((($1 + 50000) / 100000)); echo "$((_t / 10)).$((_t % 10))M"
-  elif [ "$1" -ge 10000 ]; then echo "$((($1 + 500) / 1000))K"
-  elif [ "$1" -ge 1000 ]; then
-    _t=$((($1 + 50) / 100)); echo "$((_t / 10)).$((_t % 10))K"
-  else echo "$1"
+set -o errexit -o nounset
+
+# shorten N -> "340", "1.2K", "15K", "1K", "1.2M", "1M": one decimal, none when it would be 0.
+shorten() {
+  local tenths unit
+  if [ "$1" -ge $((million - thousand / 2)) ]; then   # from where 999.5K rounds up to 1M
+    tenths=$((($1 + million / 20) / (million / 10))); unit=M
+  elif [ "$1" -ge $((10 * thousand)) ]; then
+    printf '%sK' $((($1 + thousand / 2) / thousand)); return 0
+  elif [ "$1" -ge "$thousand" ]; then
+    tenths=$((($1 + thousand / 20) / (thousand / 10))); unit=K
+  else
+    printf '%s' "$1"; return 0
+  fi
+  if [ $((tenths % 10)) -eq 0 ]; then printf '%s%s' $((tenths / 10)) "$unit"
+  else printf '%s.%s%s' $((tenths / 10)) $((tenths % 10)) "$unit"
   fi
 }
 
-ESC=$(printf '\033')
-# Truecolor stops of the cache countdown as it runs out (r g b).
-WARN_YELLOW='250 210 60'; WARN_ORANGE='255 140 30'; WARN_RED='235 50 40'
-
-# span SECONDS -> "45s", "12m", "3h05", "2d4h"
-span() {
-  if [ "$1" -ge 86400 ]; then printf '%dd%dh' $(($1 / 86400)) $((($1 % 86400) / 3600))
-  elif [ "$1" -ge 3600 ]; then printf '%dh%02d' $(($1 / 3600)) $((($1 % 3600) / 60))
-  elif [ "$1" -ge 60 ]; then printf '%dm' $(($1 / 60))
+# duration SECONDS -> "45s", "12m", "3h05", "2d4h"
+duration() {
+  if [ "$1" -ge "$sec_per_day" ]; then
+    printf '%dd%dh' $(($1 / sec_per_day)) $((($1 % sec_per_day) / sec_per_hour))
+  elif [ "$1" -ge "$sec_per_hour" ]; then
+    printf '%dh%02d' $(($1 / sec_per_hour)) $((($1 % sec_per_hour) / sec_per_min))
+  elif [ "$1" -ge "$sec_per_min" ]; then printf '%dm' $(($1 / sec_per_min))
   else printf '%ds' "$1"
   fi
 }
 
+# colour N TEXT -> TEXT in 256-colour number N, then back to the default.
+colour() { printf '%s[38;5;%sm%s%s[0m' "$esc" "$1" "$2" "$esc"; }
+
+# pct PERCENT TEXT YELLOW [ORANGE [RED]] -> TEXT coloured by how high PERCENT is: plain
+# below YELLOW, yellow from there, orange from ORANGE (default pct_orange_from), red from
+# RED (default pct_red_from). Plain too when PERCENT is empty (not reported yet).
+pct() {
+  local rounded code
+  [ -n "$1" ] || { printf '%s' "$2"; return 0; }
+  rounded=$(printf '%.0f' "$1")
+  if [ "$rounded" -lt "$3" ]; then printf '%s' "$2"; return 0; fi
+  if [ "$rounded" -lt "${4:-$pct_orange_from}" ]; then code=$colour_yellow
+  elif [ "$rounded" -lt "${5:-$pct_red_from}" ]; then code=$colour_orange
+  else code=$colour_red
+  fi
+  colour "$code" "$2"
+}
+
+# duration_to_secs TEXT -> the seconds that a number and one unit name: "30s", "5m", "1h", "2d".
+# Nothing for anything else, including the compound forms `duration` prints ("3h05", "2d4h");
+# no leading zero, so no octal surprises, and never zero.
+duration_to_secs() {
+  local n
+  case "$1" in [1-9]*[smhd]) ;; *) return 0 ;; esac
+  n=${1%?}
+  case "$n" in *[!0-9]*) return 0 ;; esac
+  case "${1#"$n"}" in
+    s) echo "$n" ;;
+    m) echo $((n * sec_per_min)) ;;
+    h) echo $((n * sec_per_hour)) ;;
+    d) echo $((n * sec_per_day)) ;;
+  esac
+}
+
+# usd_to_micro USD -> dollars as an integer count of millionths ("0.1214" -> 121400), so a
+# turn's cost is plain shell arithmetic. Six decimals are the millionths. The leading zeros
+# go: $(( )) reads them as octal.
+usd_to_micro() {
+  local micro
+  micro=$(printf '%.6f' "$1")
+  micro="${micro%[.,]*}${micro#*[.,]}"
+  while [ "${micro#0}" != "$micro" ]; do micro=${micro#0}; done
+  printf '%s' "${micro:-0}"
+}
+
+# micro_to_usd MICRO -> "$1.23", rounded to cents.
+micro_to_usd() {
+  local cents
+  cents=$((($1 + micro_per_cent / 2) / micro_per_cent))
+  printf '$%d.%02d' $((cents / cents_per_dollar)) $((cents % cents_per_dollar))
+}
+
+# quota LABEL USED LEFT WINDOW_SECS STALE -> " 5h: ↗37% ↻2h10", with its leading space.
+# LEFT is the seconds until the quota resets (empty if unknown, zero or less once it has);
+# STALE is non-empty for a figure this session has not seen move lately.
+# An arrow compares the quota left with the window left:
+# ↑ well ahead, ↗ ahead (both light green), none on pace, ↘ behind (yellow), ↓ far behind (red).
+# A stale figure, or one whose window has ended, is grey, "37%?", and loses its arrow.
+quota() {
+  local used arrow pace
+  [ -n "$2" ] || return 0
+  used=$(printf '%.0f' "$2")
+  if [ -n "$5" ] || { [ -n "$3" ] && [ "$3" -le 0 ]; }; then
+    printf ' %s: %s' "$1" "$(colour "$colour_grey" "${used}%?")"
+  else
+    # Quota left over window left, times 100: (100 - used) / 100 / (left / window) * 100.
+    arrow=
+    if [ "${3:-0}" -gt 0 ]; then
+      pace=$(((100 - used) * $4 / $3))
+      if [ "$pace" -ge "$pace_far_ahead_from" ]; then arrow=$(colour "$colour_light_green" "↑")
+      elif [ "$pace" -ge "$pace_ahead_from" ]; then arrow=$(colour "$colour_light_green" "↗")
+      elif [ "$pace" -ge "$pace_on_track_from" ]; then arrow=
+      elif [ "$pace" -ge "$pace_behind_from" ]; then arrow=$(colour "$colour_yellow" "↘")
+      else arrow=$(colour "$colour_red" "↓")
+      fi
+    fi
+    printf ' %s: %s%s' "$1" "$arrow" "$(pct "$used" "${used}%" "$quota_yellow_from")"
+  fi
+  if [ "${3:-0}" -gt 0 ]; then printf ' ↻%s' "$(duration "$3")"; fi
+}
+
+# --- Constants -------------------------------------------------------------------------------
+esc=$(printf '\033')
+readonly esc
+
+# Units.
+readonly thousand=1000
+readonly million=1000000
+readonly ms_per_sec=1000
+readonly sec_per_min=60
+readonly sec_per_hour=3600
+readonly sec_per_day=86400
+readonly cents_per_dollar=100
+readonly micro_per_cent=10000
+
+# Windows and lifetimes, in seconds.
+readonly quota_5h_secs=$((5 * sec_per_hour))
+readonly quota_7d_secs=$((7 * sec_per_day))
+readonly stale_default_secs=$((15 * sec_per_min))
+
+# 256-colour numbers.
+readonly colour_light_green=114
+readonly colour_light_yellow=229
+readonly colour_yellow=220
+readonly colour_light_orange=215
+readonly colour_orange=208
+readonly colour_red=196
+readonly colour_grey=245
+
+# Percentage scales (pct): from where each colour starts, as a percentage.
+readonly pct_orange_from=80
+readonly pct_red_from=90
+readonly ctx_yellow_from=60
+readonly quota_yellow_from=70
+readonly miss_yellow_from=0
+readonly miss_orange_from=50
+readonly miss_red_from=80
+
+# The cache countdown, by the share of the lifetime left: each colour up to where the next starts.
+readonly ttl_orange_below=15
+readonly ttl_light_orange_below=26
+readonly ttl_yellow_below=38
+readonly ttl_light_yellow_below=50
+
+# Pace arrows: the share of quota left over the share of the window left, times 100.
+readonly pace_far_ahead_from=150
+readonly pace_ahead_from=115
+readonly pace_on_track_from=87
+readonly pace_behind_from=67
+
+# What the payload may leave out stays empty.
+session_id=; prompt_id=; model=; effort=; ctx_used=; ctx_size=
+tok_in=; tok_write=; tok_out=; cost=; api_ms=; wall_ms=
+five_used=; five_reset=; week_used=; week_reset=
+has_cache=; cache_ttl=; miss_total=; miss_cause=; expires_at=
+
+command -v jq >/dev/null 2>&1 || { printf '%s\n' 'statusline: jq is required'; exit 0; }
+eval "$(jq -r '
+def s: if . == null then "" else tostring end;
+def int: if type == "number" and . >= 0 and . < 1e15 then floor | tostring else "" end;
+def dec: if type == "number" and . >= 0 and . < 1e15 then tostring else "" end;
+@sh "session_id=\(.session_id? | s)
+prompt_id=\(.prompt_id? | s)
+model=\(.model.display_name? | s)
+effort=\(.effort.level? | s)
+ctx_used=\(.context_window.used_percentage? | dec)
+ctx_size=\(.context_window.context_window_size? | int)
+tok_in=\(.context_window.total_input_tokens? | int)
+tok_write=\(.context_window.current_usage.cache_creation_input_tokens? | int)
+tok_out=\(.context_window.current_usage.output_tokens? | int)
+cost=\(.cost.total_cost_usd? | dec)
+api_ms=\(.cost.total_api_duration_ms? | int)
+five_used=\(.rate_limits.five_hour.used_percentage? | dec)
+five_reset=\(.rate_limits.five_hour.resets_at? | int)
+week_used=\(.rate_limits.seven_day.used_percentage? | dec)
+week_reset=\(.rate_limits.seven_day.resets_at? | int)
+has_cache=\(if .prompt_cache? then "1" else "" end)
+cache_ttl=\(.prompt_cache.ttl? | s)
+miss_total=\(.prompt_cache.miss_recache_tokens? | int)
+miss_cause=\((.prompt_cache.last_miss_cause.causes? // []) | join(","))
+expires_at=\(.prompt_cache.expires_at? | int)
+wall_ms=\(.cost.total_duration_ms? | int)"' 2>/dev/null)"
+
+now=$(date +%s)
+readonly now
+
+stale_secs="${CLAUDE_QUOTA_STALE_SECS:-$stale_default_secs}"
+case "$stale_secs" in ''|*[!0-9]*) stale_secs=$stale_default_secs ;; esac
+readonly stale_secs
+
+# --- State: the turn so far, and how long ago this session last heard from the API ------
+state="/tmp/claude-statusline-lean-${session_id:-default}.txt"
+readonly state
+turn_micro=0; turn_miss=0; stale=; dirty=
+s_prompt=; s_base=; s_prev=; s_miss=; s_rl=; s_rl_at=
+if [ -r "$state" ]; then
+  { read -r s_prompt || :; read -r s_base || :; read -r s_prev || :
+    read -r s_miss || :; read -r s_rl || :; read -r s_rl_at || :; } < "$state"
+fi
+case "$s_base" in *[!0-9]*) s_base= ;; esac
+case "$s_prev" in ''|*[!0-9]*) s_prev=0 ;; esac
+case "$s_rl_at" in ''|*[!0-9]*) s_rl_at=$now ;; esac
+if [ -n "$cost" ]; then
+  cost_micro=$(usd_to_micro "$cost")
+  miss_now=${miss_total:-0}
+  case "$s_miss" in ''|*[!0-9]*) s_miss=$miss_now ;; esac
+  if [ "$s_prompt" != "$prompt_id" ] || [ -z "$s_base" ]; then
+    # A new prompt: the turn that just ended is the previous one (zero if /clear reset the cost).
+    if [ -n "$s_base" ]; then
+      s_prev=$((cost_micro - s_base)); [ "$s_prev" -lt 0 ] && s_prev=0
+    fi
+    s_prompt=$prompt_id; s_base=$cost_micro; s_miss=$miss_now; dirty=1
+  fi
+  turn_micro=$((cost_micro - s_base)); [ "$turn_micro" -lt 0 ] && turn_micro=0
+  # Until the new turn bills something, the last one's price stands.
+  [ "$turn_micro" -gt 0 ] || turn_micro=$s_prev
+  turn_miss=$((miss_now - s_miss))
+fi
+# Every response bills something, so a cost or quota that moved means one landed. The
+# quota alone would not do: it can sit at the same percent through many responses.
+if [ -n "$five_used$week_used" ]; then
+  rl_key="$cost $five_used ${five_reset:-0} $week_used ${week_reset:-0}"
+  if [ "$s_rl" != "$rl_key" ]; then s_rl=$rl_key; s_rl_at=$now; dirty=1
+  elif [ $((now - s_rl_at)) -gt "$stale_secs" ]; then stale=1
+  fi
+fi
+if [ -n "$dirty" ]; then
+  printf '%s\n%s\n%s\n%s\n%s\n%s\n' "$s_prompt" "$s_base" "$s_prev" "$s_miss" "$s_rl" "$s_rl_at" \
+    2>/dev/null > "$state" || :
+fi
+
 case "$effort" in
-  low) e=l ;;
-  medium) e=m ;;
-  high) e=h ;;
-  xhigh) e=h+ ;;
-  max) e=x ;;
-  *) e= ;;
+  low) effort_abbr=l ;;
+  medium) effort_abbr=m ;;
+  high) effort_abbr=h ;;
+  xhigh) effort_abbr=xh ;;
+  max) effort_abbr=x ;;
+  *) effort_abbr=$effort ;;
 esac
 
-line="${model:-Claude}${e}"
-if [ -n "$used" ]; then
-  pct=$(printf '%.0f' "$used")
-  if [ "$pct" -lt 20 ]; then c=34
-  elif [ "$pct" -lt 40 ]; then c=114
-  elif [ "$pct" -lt 60 ]; then c=220
-  elif [ "$pct" -lt 80 ]; then c=208
-  else c=196
-  fi
-  line="$line ${ESC}[38;5;${c}m${pct}%${ESC}[0m"
-  if [ -n "$size" ]; then
-    if [ "$size" -ge 1000000 ]; then line="$line/$((size / 1000000))M"
-    else line="$line/$((size / 1000))K"
-    fi
-  fi
+line="${model:-Claude}${effort_abbr:+·$effort_abbr}"
+if [ -n "$tok_in" ]; then
+  line="$line in: $(pct "$ctx_used" "$(shorten "$tok_in")" "$ctx_yellow_from")"
+  [ -z "$ctx_size" ] || line="$line/$(shorten "$ctx_size")"
 fi
-[ -n "$tok_in" ] && line="$line ↑$(tokens "$tok_in")"
-[ -n "$tok_out" ] && line="$line ↓$(tokens "$tok_out")"
-[ -n "$tok_fresh" ] && [ -n "$tok_read" ] && [ -n "$tok_write" ] \
-  && line="$line (f$(tokens "$tok_fresh") r$(tokens "$tok_read") w$(tokens "$tok_write"))"
-if [ -n "$cache" ]; then
+# The cache's figures in one bracket: what the last response wrote, the lifetime left and,
+# on a turn that missed, the miss. The countdown is coloured as it runs out.
+countdown=
+if [ -n "$has_cache" ]; then
   left=0
-  [ -n "$warm_until" ] && left=$((${warm_until%%.*} - $(date +%s)))
+  [ -n "$expires_at" ] && left=$((expires_at - now))
   if [ "$left" -gt 0 ]; then
-    # Without a known TTL there is no share to colour by: the countdown stays plain.
-    case "$ttl" in 1h) ttl_secs=3600 ;; 5m) ttl_secs=300 ;; *) ttl_secs= ;; esac
-    if [ -n "$ttl_secs" ]; then
-      share=$(( left * 100 / ttl_secs ))
-      if [ "$share" -ge 50 ]; then
-        line="$line cache $(span "$left")"
-      else
-        # Piecewise-linear RGB: yellow at 50% left, orange at 32%, red at 15% and below.
-        if [ "$share" -ge 32 ]; then lo=$WARN_ORANGE; hi=$WARN_YELLOW; t=$(( (share - 32) * 100 / 18 ))
-        elif [ "$share" -ge 15 ]; then lo=$WARN_RED; hi=$WARN_ORANGE; t=$(( (share - 15) * 100 / 17 ))
-        else lo=$WARN_RED; hi=$WARN_RED; t=0
-        fi
-        set -- $lo $hi
-        c="$(( $1 + ($4 - $1) * t / 100 ));$(( $2 + ($5 - $2) * t / 100 ));$(( $3 + ($6 - $3) * t / 100 ))"
-        line="$line cache ${ESC}[38;2;${c}m$(span "$left")${ESC}[0m"
-      fi
-    else
-      line="$line cache $(span "$left")"
+    countdown=$(duration "$left")
+    # Coloured in steps as the lifetime runs out, and never red: red is for the hard limits,
+    # and a missed cache is costly but the work goes on. Without a known TTL there is no share
+    # to colour by, and it stays plain.
+    cache_ttl_secs=$(duration_to_secs "$cache_ttl")
+    share=100
+    [ -n "$cache_ttl_secs" ] && share=$(( left * 100 / cache_ttl_secs ))
+    step_colour=
+    if [ "$share" -lt "$ttl_orange_below" ]; then step_colour=$colour_orange
+    elif [ "$share" -lt "$ttl_light_orange_below" ]; then step_colour=$colour_light_orange
+    elif [ "$share" -lt "$ttl_yellow_below" ]; then step_colour=$colour_yellow
+    elif [ "$share" -lt "$ttl_light_yellow_below" ]; then step_colour=$colour_light_yellow
     fi
-  else line="$line cache ${ESC}[38;2;235;50;40mcold${ESC}[0m"
-  fi
-  [ -n "$recache" ] && line="${line}→$(tokens "${recache%%.*}")"
-  # Red, only once a miss has re-processed cacheable content: its tokens and likely cause.
-  if [ "${miss_tokens%%.*}" -gt 0 ] 2>/dev/null; then
-    miss_what=${miss_tally:-$miss_cause}
-    line="$line ${ESC}[38;2;235;50;40mmiss $(tokens "${miss_tokens%%.*}")${miss_what:+ $miss_what}${ESC}[0m"
+    [ -z "$step_colour" ] || countdown=$(colour "$step_colour" "$countdown")
+  else
+    # Past the expiry: by how much, in orange like the last step. Without an expiry in the
+    # payload there is nothing to count.
+    overdue=expired
+    [ -n "$expires_at" ] && overdue="-$(duration $((0 - left)))"
+    countdown=$(colour "$colour_orange" "$overdue")
   fi
 fi
-[ -n "$api_ms" ] && line="$line api $(span $((${api_ms%%.*} / 1000)))"
-[ -n "$cost" ] && line="$line \$$(printf '%.2f' "$cost")"
-[ -n "$dur_ms" ] && line="$line $(span $((${dur_ms%%.*} / 1000)))"
-# quota LABEL USED RESET_EPOCH -> appends "5h 37%↻2h10"
-quota() {
-  [ -n "$2" ] || return
-  line="$line $1 $(printf '%.0f' "$2")%"
-  if [ -n "$3" ]; then
-    left=$((${3%%.*} - $(date +%s)))
-    [ "$left" -gt 0 ] && line="${line}↻$(span "$left")"
+# Only when this turn's requests re-processed cacheable content: its tokens and likely
+# cause. Never plain, to stand out among the calm figures: coloured by the share of the
+# context re-cached (yellow too when that is unknown).
+miss_str=
+if [ "$turn_miss" -gt 0 ]; then
+  miss_share=0
+  [ "${tok_in:-0}" -gt 0 ] && miss_share=$((turn_miss * 100 / tok_in))
+  miss_str=$(pct "$miss_share" "miss: $(shorten "$turn_miss")${miss_cause:+ $miss_cause}" \
+    "$miss_yellow_from" "$miss_orange_from" "$miss_red_from")
+fi
+bracket=
+[ -n "$tok_write" ] && bracket="+$(shorten "$tok_write")"
+[ -n "$countdown" ] && bracket="${bracket:+$bracket, }ttl: $countdown"
+[ -n "$miss_str" ] && bracket="${bracket:+$bracket, }$miss_str"
+[ -n "$bracket" ] && line="$line ($bracket)"
+[ -n "$tok_out" ] && line="$line out: $(shorten "$tok_out")"
+if [ -n "$cost" ]; then
+  if [ "$turn_micro" -gt 0 ]; then line="$line $(micro_to_usd "$turn_micro") ⊂ $(micro_to_usd "$cost_micro")"
+  else line="$line $(micro_to_usd "$cost_micro")"
   fi
-}
-quota 5h "$five" "$five_reset"
-quota 7d "$week" "$week_reset"
-printf '%s\n' "$line${session:+ | $session}"
+fi
+[ -n "$wall_ms" ] && line="$line up: $(duration $((wall_ms / ms_per_sec)))"
+[ -n "$api_ms" ] && line="$line api: $(duration $((api_ms / ms_per_sec)))"
+five_left=; [ -z "$five_reset" ] || five_left=$((five_reset - now))
+week_left=; [ -z "$week_reset" ] || week_left=$((week_reset - now))
+line="$line$(quota 5h "$five_used" "$five_left" "$quota_5h_secs" "$stale")"
+line="$line$(quota 7d "$week_used" "$week_left" "$quota_7d_secs" "$stale")"
+printf '%s\n' "$line"

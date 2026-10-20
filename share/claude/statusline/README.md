@@ -1,88 +1,69 @@
-# Claude Code status line
+Claude Code status line
+=======================
 
-Answers three questions without leaving the terminal: what is this session costing, how much quota is left, and
-is it about to get expensive?
-
-Example:
-
-```
-Opus 5.5xh 50K 98% / 4h46 $0.1 -3m ⊂ $25 myproject +49=70% / 1wd
-```
-
-It refreshes every second and works the same on macOS and Linux.
-
-## Reading the line
-
-| Part             | Meaning                                                                                                                              |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `Opus 5.5xh`     | Model, with the reasoning effort as a lower-case suffix: `l`, `m`, `h`, `xh` or `max`.                                               |
-| `50K`            | Context used so far. On models with a smaller window it reads `80K/200K • 40%`. It turns orange at 70% of the window and red at 90%. |
-| `98% / 4h46`     | Five-hour quota left, and the time until it resets.                                                                                  |
-| `$0.1 -3m ⊂ $25` | The last turn cost $0.10 and finished 3 minutes ago. It is part of a $25 session.                                                    |
-| `myproject`      | The repository you are in, on a coloured block. `@branch` follows when you are not on `main` or `master`.                            |
-| `+49=70% / 1wd`  | Weekly quota: 70% left, 49 points ahead of an even pace, and a working day to go.                                                    |
-
-The quota figures come from your account, using Claude Code's own login, and
-are refreshed about every five minutes.
-
-### The five-hour quota
-
-An arrow says how you are doing against the clock: `↑` or `↗` means more quota
-than time, `↘` or `↓` means you are burning faster than the window allows, and
-no arrow means on pace. The block changes colour when quota runs low, amber
-under 15% and maroon under 5%. A grey `?` means nobody has seen the figure
-change for a while, so treat it as old.
-
-### The weekly quota
-
-The number in front of `=` is the pace: positive means you are ahead, negative
-means you are using the week up too fast, and nothing at all means exactly on
-pace. Time left counts working days only, so weekends do not make Friday look
-worse than it is. When you are on a model with its own weekly cap, it appears
-as a small chip such as `(F22%)`.
-
-### Spend
-
-While Claude is working, a flower animates in place of the `$` in front of the
-turn cost. Right after you press Enter, before anything has been billed, four
-stars hold its place. A red `(202K⏱)` after the turn cost means that this many
-tokens of the turn were spent rebuilding the prompt cache, and the glyph is the
-cause Claude Code identified: `⏱` the cache had expired, `⇄` you switched model
-(each model has its own cache), `↻` something else, such as the tools or the
-system prompt changing. No glyph means Claude Code could not tell. A compaction
-is an expected rebuild, not a miss, so it gets no tag.
-
-### The prompt-cache warning
-
-Claude keeps your conversation cached for a while, and the next message is much
-cheaper while that lasts. Step away long enough and the cache is gone. The line
-tells you how much will have to be rebuilt before it happens:
+One line of numbers, coloured only where something needs attention: how full the context is, what
+the prompt cache will cost, what the session has cost, and how much quota is left. It makes no API
+calls and is coloured for dark terminals.
 
 ```
-Opus 5.5xh 220K 87% / 4h46 $0.1 (>1h⇒+=203K) ⊂ $23 myproject +49=70% / 1wd
+Sonnet 5.5·h in: 295K/1M (+1.7K, ttl: 59m) out: 393 $0.12 ⊂ $3.62 up: 2h00 api: 15m 5h: ↑32% ↻56m 7d: ↑56% ↻1d2h
 ```
 
-`+=203K` is how many tokens your next message will have to write to the cache
-again. The clock turns orange in the last fifth of the cache's lifetime and red
-once it has expired. When that is more than 200K tokens, the context count and
-the clock blink so you notice; `CLAUDE_MISS_FLOOR` changes that threshold (in
-tokens).
+Reading the line
+----------------
 
-All cache figures, the miss tag above included, are Claude Code's own
-statistics (the same ones `/usage` shows), so they need Claude Code 2.1.251 or
-later; the miss cause needs 2.1.260.
+| Part                | Meaning                                                                                                                                            |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Sonnet 5.5·h`      | Model, then the reasoning effort: `l`, `m`, `h`, `xh` or `x` (max). No suffix when the model has none; a level it does not know is shown as it is. |
+| `in: 295K/1M`       | Input tokens in the context, and the window size. Yellow from 60% of the window, orange from 80%, red from 90%.                                    |
+| `(+1.7K, ttl: 59m)` | The prompt cache; see below.                                                                                                                       |
+| `out: 393`          | Output tokens of the last response.                                                                                                                |
+| `$0.12 ⊂ $3.62`     | The turn's cost, contained in the session's. The last turn's stands until the new one bills something.                                             |
+| `up: 2h00`          | How long the session has run.                                                                                                                      |
+| `api: 15m`          | Time spent waiting on the API.                                                                                                                     |
+| `5h: ↑32% ↻56m`     | Five-hour quota used, and the time until it resets.                                                                                                |
+| `7d: ↑56% ↻1d2h`    | Weekly quota used, and the time until it resets.                                                                                                   |
 
-### Subagents
+Durations read `45s`, `12m`, `3h05` or `2d4h`. A part with no data is left out.
 
-While subagents are running, the model segment ends with what they are running
-on: `+{O5h×2,S5m}` is two Opus 5 agents at high effort and one Sonnet 5 at
-medium. The letter is the model family's initial: `O` Opus, `S` Sonnet, `F`
-Fable, `H` Haiku.
+The prompt cache
+----------------
 
-## Light and dark terminals
+`+1.7K` is how much the last response added to the context: the tokens it wrote to the cache.
+`ttl` is the time left before the cache expires, after which the next message has to write
+the whole context to the cache again. It stays plain while half the lifetime or more is left, then
+steps through light yellow, yellow and light orange (below 50%, 38% and 26% left) to orange
+(below 15%), never red. Once it has expired it shows by how much, in orange: `ttl: -3m`.
 
-The colours follow Claude Code's own theme, so a light theme gets deeper
-colours and pastel blocks. With the `auto` theme the status line cannot ask the
-terminal as Claude Code does, so it goes by `$COLORFGBG` when the terminal sets
-it, else by the macOS appearance, else dark. Set `CLAUDE_STATUSLINE_LIGHT=1` or
-`0` to force one.
+A turn that rebuilt part of the cache adds `miss: 11K ttl_expired_5m` to the bracket: the tokens
+re-cached, and the likely cause. It shows on that turn only, and is never plain: yellow, orange
+from 50% of the context re-cached, red from 80%.
+
+Quota
+-----
+
+Percentages are quota used: plain below 70%, yellow from 70%, orange from 80%, red from 90%.
+The arrow compares the share of quota left with the share of the window left, in calendar time:
+
+| Arrow  | Quota left, against time left | Colour      |
+|--------|-------------------------------|-------------|
+| `↑`    | at least 1.5 times as much    | light green |
+| `↗`    | 1.15 to 1.5 times as much     | light green |
+| (none) | 0.87 to 1.15 times: on pace   |             |
+| `↘`    | 0.67 to 0.87 times            | yellow      |
+| `↓`    | under 0.67 times              | red         |
+
+The quota belongs to the account, and other sessions spend it. This session only learns the
+figure when it gets a response, so after 15 minutes without one it turns grey, gains a `?` and
+loses its arrow (`5h: 32%? ↻56m`); so does a figure whose window has ended.
+`CLAUDE_QUOTA_STALE_SECS` changes the 15 minutes.
+
+Setup
+-----
+
+Needs `jq`. The countdowns only tick if the status line refreshes: set `refreshInterval` in the
+`statusLine` setting (5 seconds here). The cache figures need Claude Code 2.1.251, and the miss
+cause 2.1.260.
+
+The turn's cost and the staleness check need a little memory between renders: one small file per
+session, `/tmp/claude-statusline-lean-<session id>.txt`. `./test-lean.sh` runs the tests.

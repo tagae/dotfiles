@@ -35,6 +35,7 @@ check "probe: succeeds against the endpoint"          test $? -eq 0
 check "probe: stamps the attempt as ok"               grep -q ' ok$' "$HOME/.claude/quota-probe"
 check "probe: logs to quota-probe.log"                grep -q 'probe five_hour=12% seven_day=34% Fable=56%' "$HOME/.claude/quota-probe.log"
 check "probe: no log under the retired gate's name"   test ! -e "$HOME/.claude/quota-gate.log"
+# shellcheck disable=SC2016  # the $1 belongs to the child shell
 check "probe: both windows and the scoped cap stored" \
   sh -c '[ "$("$1" read | cut -d" " -f1,4)" = "12 probe" ] && [ "$("$1" reads | cut -d" " -f1,4)" = "56 Fable" ]' _ "$HOME/.claude/hooks/quota-state.sh"
 

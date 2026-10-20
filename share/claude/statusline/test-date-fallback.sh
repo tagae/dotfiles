@@ -1,4 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC2016  # the expectations hold literal $ text
+# shellcheck disable=SC2030,SC2031  # PATH is changed inside $(...) on purpose: each case gets its own fakes
+
 # Tests the BSD/GNU fallbacks for `date` and `stat`. The same job has two
 # spellings -- a file's mtime is `stat -f %m` on BSD and `stat -c %Y` on GNU;
 # an ISO time to an epoch is `date -j -f` on BSD and `date -d` on GNU -- and the
@@ -166,11 +169,14 @@ assert_absent "probe iso_to_epoch never fell through to BSD's date -d" "$TMP/bsd
 
 lock_line=$(grep '^  _lock_at=\$(stat' "$PROBE")
 if [ -z "$lock_line" ]; then echo "FAIL  could not find the _lock_at= line in $PROBE"; exit 1; fi
+# shellcheck disable=SC2034  # read by the line that is eval'd below
 LOCK=/some/lock
 for m in bsd gnu; do
+  # shellcheck disable=SC2154  # _lock_at is assigned by the eval'd line
   out=$( PATH="$TMP/$m:$PATH"; eval "$lock_line" 2>&1; printf '%s' "$_lock_at" )
   assert_eq "probe lock mtime, $m stat" "$out" "1700000000"
 done
+# shellcheck disable=SC2154  # _lock_at is assigned by the eval'd line
 out=$( PATH="$TMP/neither:$PATH"; eval "$lock_line" 2>&1; printf '[%s]' "$_lock_at" )
 assert_eq "probe lock mtime, neither works: empty and silent" "$out" "[]"
 
