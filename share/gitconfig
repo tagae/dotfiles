@@ -1,5 +1,5 @@
 [user]
-name = Sebastián González
+name = Sebastián González Montesinos
 
 [include]
 path = ~/.gitconfig.d/local
