@@ -51,6 +51,17 @@
 
 (require 'use-package)
 
+;; Hide minor modes from the mode line (see the `:diminish' keyword).
+(use-package diminish
+    :ensure t)
+
+(use-package auto-package-update
+    :ensure t
+    :config
+    (setq auto-package-update-delete-old-versions t
+          auto-package-update-interval 15)
+    (auto-package-update-maybe))
+
 
 ;; ===[ A P P E A R A N C E ]===
 
@@ -148,6 +159,19 @@
 (windmove-default-keybindings 'meta)
 (setq windmove-wrap-around t)
 
+;; Resize the selected window to the golden ratio.
+(use-package golden-ratio
+    :ensure t
+    :diminish
+    :init (golden-ratio-mode 1))
+
+;; --- Jumping
+
+(use-package ace-jump-mode
+    :ensure t
+    :bind ("C-c j c" . ace-jump-char-mode)
+    :config (ace-jump-mode-enable-mark-sync))
+
 
 ;; ===[ E D I T I N G ]===
 
@@ -180,6 +204,29 @@
 ;; Easily navigate sillyCasedWords.
 (global-subword-mode 1)
 
+;; Grow the selection by semantic units.
+(use-package expand-region
+    :ensure t
+    :bind ("C-\\" . 'er/expand-region))
+
+;; --- Undo
+
+(use-package undo-tree
+    :ensure t
+    :config
+    (global-undo-tree-mode 1)
+    (setq undo-tree-mode-lighter "")
+    (setq undo-tree-history-directory-alist
+          (list (cons "" (expand-file-name "undo-tree" emacs-state-dir)))))
+
+;; --- Completion
+
+(use-package company
+    :ensure t
+    :defer t
+    :diminish
+    :config (global-company-mode 1))
+
 
 ;; ===[ W H I T E S P A C E ]===
 
@@ -194,6 +241,13 @@
 
 ;; Manage whitespace everywhere.
 (global-whitespace-mode 1)
+
+;; Honour per-project indentation and whitespace settings.
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1)
+  :diminish ec)
 
 
 ;; ===[ B U F F E R S ]===
@@ -283,8 +337,53 @@
       ido-use-virtual-buffers 'auto
       ido-default-buffer-method 'selected-window)
 
+(use-package ido-completing-read+
+    :ensure t
+    :defer t
+    :config (ido-ubiquitous-mode 1))
+
+(use-package ido-at-point
+    :ensure t
+    :defer t
+    :config (ido-at-point-mode 1))
+
+(use-package flx-ido
+    :ensure t
+    :defer t
+    :config
+    (flx-ido-mode 1)
+    (setq ido-use-faces nil))
+
+;; Interactive M-x.
+(use-package smex
+    :ensure t
+    :bind
+    (("M-x" . smex)
+     ("M-X" . smex-major-mode-commands))
+    :config
+    (setq smex-save-file (expand-file-name "smex" emacs-state-dir)))
+
+
+;; ===[ P L A T F O R M ]===
+
+;; Load configuration based on current system type.
+(let* ((base-name (symbol-name system-type))
+       (system-type-config (concat "system-type/" base-name)))
+  (load system-type-config 'optional))
+
+;; Load configuration based on current window system.
+(let* ((base-name (symbol-name window-system))
+       (window-system-config (concat "window-system/" base-name)))
+  (load window-system-config 'optional))
+
+;; Share the clipboard with the window system from within a terminal.
+(use-package xclip
+    :ensure t)
+
 
 ;; ===[ T O O L S ]===
+
+;; Tools are located on `exec-path', which the platform configuration above may adjust.
 
 ;; --- ispell
 
@@ -302,18 +401,38 @@
 (setq tramp-persistency-file-name
       (expand-file-name "tramp" emacs-state-dir))
 
+;; --- magit
 
-;; ===[ P L A T F O R M ]===
+(use-package magit
+    :ensure t
+    :bind (("C-x g" . magit-status)
+           ("C-x G" . magit-status-with-prefix))
+    :config
+    (setq magit-completing-read-function 'magit-ido-completing-read))
 
-;; Load configuration based on current system type.
-(let* ((base-name (symbol-name system-type))
-       (system-type-config (concat "system-type/" base-name)))
-  (load system-type-config 'optional))
+;; --- ripgrep
 
-;; Load configuration based on current window system.
-(let* ((base-name (symbol-name window-system))
-       (window-system-config (concat "window-system/" base-name)))
-  (load window-system-config 'optional))
+(use-package rg
+    :ensure t
+    :defer t)
+
+;; --- pass
+
+(use-package password-store
+    :if (executable-find "pass")
+    :ensure t
+    :load-path "/usr/local/share/emacs/site-lisp/pass")
+
+;; --- deft
+
+(use-package deft
+    :ensure t
+    :bind ([f8] . deft)
+    :config
+    (setq deft-extension "text")
+    (setq deft-directory "~/Projects/notes")
+    (when (locate-library "markdown-mode")
+      (setq deft-text-mode 'markdown-mode)))
 
 
 ;; ===[ C U S T O M I Z A T I O N ]===
@@ -356,73 +475,13 @@
            ("C-c e f" . eglot-format)
            ("C-c e r" . eglot-rename)))
 
-;; ===[ U S E D   P A C K A G E S ]===
-
-(use-package diminish
-    :ensure t)
-
-(use-package ace-jump-mode
-    :ensure t
-    :bind ("C-c j c" . ace-jump-char-mode)
-    :config (ace-jump-mode-enable-mark-sync))
-
-(use-package smex
-    :ensure t
-    :bind
-    (("M-x" . smex)
-     ("M-X" . smex-major-mode-commands))
-    :config
-    (setq smex-save-file (expand-file-name "smex" emacs-state-dir)))
-
-(use-package undo-tree
-    :ensure t
-    :config
-    (global-undo-tree-mode 1)
-    (setq undo-tree-mode-lighter "")
-    (setq undo-tree-history-directory-alist
-          (list (cons "" (expand-file-name "undo-tree" emacs-state-dir)))))
-
-(use-package company
-    :ensure t
-    :defer t
-    :diminish
-    :config (global-company-mode 1))
-
-(use-package expand-region
-    :ensure t
-    :bind ("C-\\" . 'er/expand-region))
-
-(use-package golden-ratio
-    :ensure t
-    :diminish
-    :init (golden-ratio-mode 1))
-
-(use-package ido-completing-read+
-    :ensure t
-    :defer t
-    :config (ido-ubiquitous-mode 1))
-
-
-(use-package ido-at-point
-    :ensure t
-    :defer t
-    :config (ido-at-point-mode 1))
-
-(use-package flx-ido
-    :ensure t
-    :defer t
-    :config
-    (flx-ido-mode 1)
-    (setq ido-use-faces nil))
-
-(use-package elisp-slime-nav
-    :ensure t
-    :defer t
-    :diminish)
+;; --- Shell
 
 (use-package fish-mode
     :ensure t
     :defer t)
+
+;; --- Configuration formats
 
 (use-package hcl-mode
     :ensure t
@@ -432,53 +491,40 @@
     :ensure t
     :defer t)
 
-(use-package company-elisp
-    :after (company elisp-mode)
-    :config
-    (push 'company-elisp company-backends))
-
-(use-package tex
-    :ensure auctex
-    :defer t)
-
-(use-package deft
-    :ensure t
-    :bind ([f8] . deft)
-    :config
-    (setq deft-extension "text")
-    (setq deft-directory "~/Projects/notes")
-    (when (locate-library "markdown-mode")
-      (setq deft-text-mode 'markdown-mode)))
-
 (use-package dockerfile-mode
     :ensure t
     :defer t)
 
-(use-package magit
-    :ensure t
-    :bind (("C-x g" . magit-status)
-           ("C-x G" . magit-status-with-prefix))
-    :config
-    (setq magit-completing-read-function 'magit-ido-completing-read))
+;; --- Markup
 
 (use-package markdown-mode
     :ensure t
     :defer t)
 
-(use-package editorconfig
-  :ensure t
-  :config
-  (editorconfig-mode 1)
-  :diminish ec)
+(use-package tex
+    :ensure auctex
+    :defer t)
+
+;; --- Lisp
 
 (use-package paredit
     :ensure t
     :defer t
     :diminish "ped")
 
-(use-package rg
+;; --- Emacs Lisp
+
+(use-package elisp-slime-nav
     :ensure t
-    :defer t)
+    :defer t
+    :diminish)
+
+(use-package company-elisp
+    :after (company elisp-mode)
+    :config
+    (push 'company-elisp company-backends))
+
+;; --- Common Lisp
 
 (use-package slime
     :if (executable-find "sbcl")
@@ -487,6 +533,8 @@
     :config
     (setq inferior-lisp-program "sbcl")
     (setq slime-contribs '(slime-fancy)))
+
+;; --- Clojure
 
 (when (executable-find "clojure")
   (use-package clojure-mode
@@ -512,18 +560,3 @@
       :config
       (projectile-mode 1))
   (add-hook 'clojure-mode-hook #'paredit-mode))
-
-(use-package password-store
-    :if (executable-find "pass")
-    :ensure t
-    :load-path "/usr/local/share/emacs/site-lisp/pass")
-
-(use-package auto-package-update
-    :ensure t
-    :config
-    (setq auto-package-update-delete-old-versions t
-          auto-package-update-interval 15)
-    (auto-package-update-maybe))
-
-(use-package xclip
-    :ensure t)
