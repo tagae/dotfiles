@@ -13,6 +13,8 @@ autocrlf = input
 template = ~/.gitconfig.d/commit-template
 
 [alias]
+# ---[ fetch ]---
+f = fetch
 # ---[ worktree ]---
 co = checkout
 wt = worktree
