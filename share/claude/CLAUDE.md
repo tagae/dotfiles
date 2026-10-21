@@ -6,6 +6,8 @@ If this is not the case, propose to rename the remote.
 
 I need to touch my YubiKey for commits to be signed, and for pushes to succeed.
 
+Never add Co-Authored-By Git commit message trailers.
+
 Markdown
 --------
 
