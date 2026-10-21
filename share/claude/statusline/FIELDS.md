@@ -2,12 +2,12 @@
 
 Every field Claude Code passes to a status line command on stdin, as documented at
 <https://code.claude.com/docs/en/statusline#available-data>. Fields marked "absent" or `null` are
-skipped by the scripts here rather than printed empty.
+skipped by the script here rather than printed empty.
 
 - **Short name**: a label for display, short enough for a one-line status line.
 - Timestamps are Unix epoch seconds. Token counts are integers. Percentages are 0 to 100, ratios 0 to 1.
 
-MAINTENANCE RULE: when a script here starts or stops showing a field, update this file in the same commit.
+MAINTENANCE RULE: when the script here starts or stops showing a field, update this file in the same commit.
 
 ## Session
 
