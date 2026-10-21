@@ -6,7 +6,7 @@ the prompt cache will cost, what the session has cost, and how much quota is lef
 calls and is coloured for dark terminals.
 
 ```
-Sonnet 5.5·h in: 295K/1M (+1.7K, ttl: 59m) out: 393 $0.12 ⊂ $3.62 up: 2h00 api: 15m 5h: ↑32% ↻56m 7d: ↑56% ↻1d2h
+Sonnet 5.5·h | in: 295K/1M (+1.7K, ttl: 59m) out: 393 | $0.12 ⊂ $3.62 | up: 2h00 api: 15m | 5h: ↑32% ↻56m 7d: ↑56% ↻1d2h
 ```
 
 Reading the line
@@ -24,7 +24,9 @@ Reading the line
 | `5h: ↑32% ↻56m`     | Five-hour quota used, and the time until it resets.                                                                                                |
 | `7d: ↑56% ↻1d2h`    | Weekly quota used, and the time until it resets.                                                                                                   |
 
-Durations read `45s`, `12m`, `3h05` or `2d4h`. A part with no data is left out.
+A `|` divides the model and effort from the input, the output from the cost, the cost from the times,
+and the times from the quotas. Durations read `45s`, `12m`, `3h05` or `2d4h`. A part with no data
+is left out.
 
 The prompt cache
 ----------------

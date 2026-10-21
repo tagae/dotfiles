@@ -2,7 +2,7 @@
 # shellcheck disable=SC3043  # `local` is not POSIX, but dash, bash and ash all have it
 
 # Claude Code status line, lean edition:
-#   "Opus 5.5·xh in: 87K/200K (+478, ttl: 42m, miss: 202K ttl_expired_5m) out: 340 $0.12 ⊂ $1.23 up: 12m api: 4m 5h: ↑37% ↻2h10 7d: ↗48% ↻4d3h"
+#   "Opus 5.5·xh | in: 87K/200K (+478, ttl: 42m, miss: 202K ttl_expired_5m) out: 340 | $0.12 ⊂ $1.23 | up: 12m api: 4m | 5h: ↑37% ↻2h10 7d: ↗48% ↻4d3h"
 #
 # MAINTENANCE RULE: README.md next to this script describes what it shows. Change both in the
 # same commit. What follows is only what the code does not make obvious.
@@ -282,7 +282,7 @@ case "$effort" in
   *) effort_abbr=$effort ;;
 esac
 
-line="${model:-Claude}${effort_abbr:+·$effort_abbr}"
+line="${model:-Claude}${effort_abbr:+·$effort_abbr} |"
 if [ -n "$tok_in" ]; then
   line="$line in: $(pct "$ctx_used" "$(shorten "$tok_in")" "$ctx_yellow_from")"
   [ -z "$ctx_size" ] || line="$line/$(shorten "$ctx_size")"
@@ -331,16 +331,18 @@ bracket=
 [ -n "$countdown" ] && bracket="${bracket:+$bracket, }ttl: $countdown"
 [ -n "$miss_str" ] && bracket="${bracket:+$bracket, }$miss_str"
 [ -n "$bracket" ] && line="$line ($bracket)"
-[ -n "$tok_out" ] && line="$line out: $(shorten "$tok_out")"
+[ -n "$tok_out" ] && line="$line out: $(shorten "$tok_out") |"
 if [ -n "$cost" ]; then
   if [ "$turn_micro" -gt 0 ]; then line="$line $(micro_to_usd "$turn_micro") ⊂ $(micro_to_usd "$cost_micro")"
   else line="$line $(micro_to_usd "$cost_micro")"
   fi
 fi
-[ -n "$wall_ms" ] && line="$line up: $(duration $((wall_ms / ms_per_sec)))"
+[ -n "$wall_ms" ] && line="$line | up: $(duration $((wall_ms / ms_per_sec)))"
 [ -n "$api_ms" ] && line="$line api: $(duration $((api_ms / ms_per_sec)))"
 five_left=; [ -z "$five_reset" ] || five_left=$((five_reset - now))
 week_left=; [ -z "$week_reset" ] || week_left=$((week_reset - now))
-line="$line$(quota 5h "$five_used" "$five_left" "$quota_5h_secs" "$stale")"
+five_str=$(quota 5h "$five_used" "$five_left" "$quota_5h_secs" "$stale")
+[ -z "$five_str" ] || line="$line |$five_str"
 line="$line$(quota 7d "$week_used" "$week_left" "$quota_7d_secs" "$stale")"
-printf '%s\n' "$line"
+# A divider with nothing after it (a bare name, or the last parts missing) is dropped.
+printf '%s\n' "${line% |}"

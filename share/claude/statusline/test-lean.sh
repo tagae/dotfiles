@@ -134,8 +134,13 @@ assert_equals "script: an empty payload is just a name" "$(printf '{}' | sh "$sc
 reset_payload
 out=$(render_line order)
 assert_equals "line: the full example, in order" "$out" \
-  'Sonnet 5.5·h in: 234K/1M (+1.9K, ttl: 50m) out: 842 $3.62 up: 2h00 api: 15m 5h: ↗32% ↻2h30 7d: 56% ↻3d12h'
+  'Sonnet 5.5·h | in: 234K/1M (+1.9K, ttl: 50m) out: 842 | $3.62 | up: 2h00 api: 15m | 5h: ↗32% ↻2h30 7d: 56% ↻3d12h'
 assert_not_contains "line: no session name (Claude shows it elsewhere)" "$out" "Sha tweak"
+
+# A divider is only there to separate: none dangles at the end.
+reset_payload; cost_usd=null; wall_ms=null; api_ms=null; five_used=null; week_used=null
+assert_equals "line: no divider dangles at the end" "$(render_line dangle)" \
+  'Sonnet 5.5·h | in: 234K/1M (+1.9K, ttl: 50m) out: 842'
 
 # --- Model and effort ----------------------------------------------------------------------
 for pair in 'low:·l' 'medium:·m' 'high:·h' 'xhigh:·xh' 'max:·x'; do
