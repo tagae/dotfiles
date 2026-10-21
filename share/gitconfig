@@ -20,6 +20,7 @@ wt = worktree
 co = checkout
 cop = checkout --patch
 # ---[ staging ]---
+a = add
 ap = add --patch
 # ---[ commit ]---
 c = commit -v
