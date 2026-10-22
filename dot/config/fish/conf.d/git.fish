@@ -126,6 +126,7 @@ abbr -a --command git up   "rev-parse --abbrev-ref '@{upstream}'"
 
 # --- Tags --------------------------------------------------------------------
 abbr -a --command git t   tag
+abbr -a --command git tc  tag --contains
 abbr -a --command git tl  tag --list --sort=-creatordate
 
 # --- Cleaning ----------------------------------------------------------------
