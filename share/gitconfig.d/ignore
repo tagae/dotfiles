@@ -1,2 +1,4 @@
 .envrc
 settings.local.json
+
+**/.claude/.cc-writes/
