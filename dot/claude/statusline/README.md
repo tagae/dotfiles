@@ -68,4 +68,4 @@ Needs `jq`. The countdowns only tick if the status line refreshes: set `refreshI
 cause 2.1.260.
 
 The turn's cost and the staleness check need a little memory between renders: one small file per
-session, `/tmp/claude-statusline-lean-<session id>.txt`. `./test-lean.sh` runs the tests.
+session, `/tmp/claude-statusline-clear-<session id>.txt`. `./test-clear.sh` runs the tests.

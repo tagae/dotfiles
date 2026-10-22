@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC3043  # `local` is not POSIX, but dash, bash and ash all have it
 
-# Claude Code status line, lean edition:
+# Claude Code status line, clear edition:
 #   "Opus 5.5·xh | in: 87K/200K (+478, ttl: 42m, miss: 202K ttl_expired_5m) out: 340 | $0.12 ⊂ $1.23 | up: 12m api: 4m | 5h: ↑37% ↻2h10 7d: ↗48% ↻4d3h"
 #
 # MAINTENANCE RULE: README.md next to this script describes what it shows. Change both in the
@@ -64,6 +64,14 @@ duration() {
 
 # colour N TEXT -> TEXT in 256-colour number N, then back to the default.
 colour() { printf '%s[38;5;%sm%s%s[0m' "$esc" "$1" "$2" "$esc"; }
+
+# lighten TEXT -> TEXT in light grey, unless it is already coloured (it starts with an escape).
+lighten() {
+  case $1 in
+    "$esc"*) printf '%s' "$1" ;;
+    *) colour "$colour_light_grey" "$1" ;;
+  esac
+}
 
 # pct PERCENT TEXT YELLOW [ORANGE [RED]] -> TEXT coloured by how high PERCENT is: plain
 # below YELLOW, yellow from there, orange from ORANGE (default pct_orange_from), red from
@@ -138,9 +146,9 @@ quota() {
       else arrow=$(colour "$colour_red" "↓")
       fi
     fi
-    printf ' %s: %s%s' "$1" "$arrow" "$(pct "$used" "${used}%" "$quota_yellow_from")"
+    printf ' %s: %s%s' "$1" "$arrow" "$(lighten "$(pct "$used" "${used}%" "$quota_yellow_from")")"
   fi
-  if [ "${3:-0}" -gt 0 ]; then printf ' ↻%s' "$(duration "$3")"; fi
+  if [ "${3:-0}" -gt 0 ]; then printf ' ↻%s' "$(colour "$colour_light_grey" "$(duration "$3")")"; fi
 }
 
 # --- Constants -------------------------------------------------------------------------------
@@ -170,6 +178,7 @@ readonly colour_light_orange=215
 readonly colour_orange=208
 readonly colour_red=196
 readonly colour_grey=245
+readonly colour_light_grey=249
 
 # Percentage scales (pct): from where each colour starts, as a percentage.
 readonly pct_orange_from=80
@@ -233,7 +242,7 @@ case "$stale_secs" in ''|*[!0-9]*) stale_secs=$stale_default_secs ;; esac
 readonly stale_secs
 
 # --- State: the turn so far, and how long ago this session last heard from the API ------
-state="/tmp/claude-statusline-lean-${session_id:-default}.txt"
+state="/tmp/claude-statusline-clear-${session_id:-default}.txt"
 readonly state
 turn_micro=0; turn_miss=0; stale=; dirty=
 s_prompt=; s_base=; s_prev=; s_miss=; s_rl=; s_rl_at=
@@ -282,9 +291,10 @@ case "$effort" in
   *) effort_abbr=$effort ;;
 esac
 
-line="${model:-Claude}${effort_abbr:+·$effort_abbr} |"
+line="$(colour "$colour_light_grey" "${model:-Claude}")${effort_abbr:+·$effort_abbr} |"
 if [ -n "$tok_in" ]; then
-  line="$line in: $(pct "$ctx_used" "$(shorten "$tok_in")" "$ctx_yellow_from")"
+  # pct leaves the figure plain below the first threshold, or with no percentage yet: light grey then.
+  line="$line in: $(lighten "$(pct "$ctx_used" "$(shorten "$tok_in")" "$ctx_yellow_from")")"
   [ -z "$ctx_size" ] || line="$line/$(shorten "$ctx_size")"
 fi
 # The cache's figures in one bracket: what the last response wrote, the lifetime left and,
@@ -333,8 +343,9 @@ bracket=
 [ -n "$bracket" ] && line="$line ($bracket)"
 [ -n "$tok_out" ] && line="$line out: $(shorten "$tok_out") |"
 if [ -n "$cost" ]; then
-  if [ "$turn_micro" -gt 0 ]; then line="$line $(micro_to_usd "$turn_micro") ⊂ $(micro_to_usd "$cost_micro")"
-  else line="$line $(micro_to_usd "$cost_micro")"
+  session_cost=$(colour "$colour_light_grey" "$(micro_to_usd "$cost_micro")")
+  if [ "$turn_micro" -gt 0 ]; then line="$line $(micro_to_usd "$turn_micro") ⊂ $session_cost"
+  else line="$line $session_cost"
   fi
 fi
 [ -n "$wall_ms" ] && line="$line | up: $(duration $((wall_ms / ms_per_sec)))"

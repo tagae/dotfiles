@@ -2,25 +2,25 @@
 # shellcheck disable=SC3043  # `local` is not POSIX, but dash, bash and ash all have it
 # shellcheck disable=SC2016  # the dollar amounts in the expectations are literal
 
-# Regression tests for statusline-lean.sh: feed it sample JSON payloads (what Claude Code hands
+# Regression tests for statusline-clear.sh: feed it sample JSON payloads (what Claude Code hands
 # a status line on stdin) and assert on the rendered line. Colours are asserted on the raw
 # escape codes, with "<208>text</>" standing for ESC[38;5;208m text ESC[0m.
 #
 # POSIX sh, like the script. Names are lowercase (uppercase is reserved for the environment),
 # and functions keep their variables `local`, except the ones that set up the fixture on purpose.
 # The script keeps one state file per session in /tmp, keyed by session_id (HOME is not
-# involved); every session id here starts with "lean-test-", and cleanup removes them.
+# involved); every session id here starts with "clear-test-", and cleanup removes them.
 #
-#   ./test-lean.sh
+#   ./test-clear.sh
 
 set -o errexit -o nounset
 
 cd "$(dirname "$0")" || exit 2
 
-script="$PWD/statusline-lean.sh"
+script="$PWD/statusline-clear.sh"
 self="$PWD/$(basename "$0")"
 
-cleanup() { rm -rf /tmp/claude-statusline-lean-lean-test-*.txt 2>/dev/null; }
+cleanup() { rm -rf /tmp/claude-statusline-clear-clear-test-*.txt 2>/dev/null; }
 
 trap cleanup EXIT INT TERM
 cleanup
@@ -101,14 +101,14 @@ render_line() {
     cache_json=$(printf ',"prompt_cache":{"ttl":"%s","expires_at":%s,"miss_recache_tokens":%s,"last_miss_cause":{"causes":["ttl_expired_5m"]}}' \
       "$cache_ttl_label" "$expires_at" "$miss_total")
   fi
-  printf '{"session_id":"lean-test-%s","prompt_id":"%s","model":{"display_name":"%s"},"effort":{"level":%s},"context_window":{"used_percentage":%s,"context_window_size":%s,"total_input_tokens":%s,"current_usage":{"cache_creation_input_tokens":%s,"output_tokens":%s}},"cost":{"total_cost_usd":%s,"total_duration_ms":%s,"total_api_duration_ms":%s},"rate_limits":{"five_hour":{"used_percentage":%s,"resets_at":%s},"seven_day":{"used_percentage":%s,"resets_at":%s}}%s,"session_name":%s}' \
+  printf '{"session_id":"clear-test-%s","prompt_id":"%s","model":{"display_name":"%s"},"effort":{"level":%s},"context_window":{"used_percentage":%s,"context_window_size":%s,"total_input_tokens":%s,"current_usage":{"cache_creation_input_tokens":%s,"output_tokens":%s}},"cost":{"total_cost_usd":%s,"total_duration_ms":%s,"total_api_duration_ms":%s},"rate_limits":{"five_hour":{"used_percentage":%s,"resets_at":%s},"seven_day":{"used_percentage":%s,"resets_at":%s}}%s,"session_name":%s}' \
     "$1-$$" "$prompt_id" "$model" "$effort_json" "$context_used" "$context_size" "$input_tokens" \
     "$cache_write_tokens" "$output_tokens" "$cost_usd" "$wall_ms" "$api_ms" \
     "$five_used" "$((now + five_resets_in))" "$week_used" "$((now + week_resets_in))" \
     "$cache_json" "$session_name_json" | sh "$script" || printf '[the script exited with status %s]' "$?"
 }
 
-state_file_of() { echo "/tmp/claude-statusline-lean-lean-test-$1-$$.txt"; }
+state_file_of() { echo "/tmp/claude-statusline-clear-clear-test-$1-$$.txt"; }
 # age_state_file SESSION SECONDS: pretend this session's last response was that long ago.
 age_state_file() {
   awk -v t=$(($(date +%s) - $2)) 'NR == 6 { print t; next } { print }' "$(state_file_of "$1")" \
@@ -136,6 +136,8 @@ out=$(render_line order)
 assert_equals "line: the full example, in order" "$out" \
   'Sonnet 5.5·h | in: 234K/1M (+1.9K, ttl: 50m) out: 842 | $3.62 | up: 2h00 api: 15m | 5h: ↗32% ↻2h30 7d: 56% ↻3d12h'
 assert_not_contains "line: no session name (Claude shows it elsewhere)" "$out" "Sha tweak"
+assert_coloured "model: the name is light grey, the effort is not" "$out" "<249>Sonnet 5.5</>·h |"
+assert_coloured "cost: the session total is light grey" "$out" "<249>\$3.62</> |"
 
 # A divider is only there to separate: none dangles at the end.
 reset_payload; cost_usd=null; wall_ms=null; api_ms=null; five_used=null; week_used=null
@@ -191,18 +193,14 @@ assert_not_contains "types: a string quota is left out"      "$(render_line type
 reset_payload; input_tokens=234000.7
 assert_contains     "types: a fractional count is rounded down" "$(render_line types)" "in: 234K/1M"
 
-# --- Context colour: plain, yellow from 60, orange from 80, red from 90 -------------------------
-for pair in '59:plain' '60:220' '79:220' '80:208' '89:208' '90:196'; do
+# --- Context colour: light grey, yellow from 60, orange from 80, red from 90 -------------------
+for pair in '59:249' '60:220' '79:220' '80:208' '89:208' '90:196'; do
   reset_payload; context_used=${pair%%:*}
   out=$(render_line context)
-  if [ "${pair#*:}" = plain ]; then
-    assert_not_contains "context ${pair%%:*}%: plain" "$(printf '%s' "$out" | sed -n "s/in: ${esc}\[38;5;[0-9]*m234K/COLOUR/p")" "COLOUR"
-  else
-    assert_coloured "context ${pair%%:*}%: colour ${pair#*:}" "$out" "in: <${pair#*:}>234K</>/1M"
-  fi
+  assert_coloured "context ${pair%%:*}%: colour ${pair#*:}" "$out" "in: <${pair#*:}>234K</>/1M"
 done
 reset_payload; context_used=null
-assert_not_contains "context: unknown share is plain" "$(render_line context | sed "s/${esc}\[0m//")" "${esc}[38;5;"
+assert_coloured "context: unknown share is light grey" "$(render_line context)" "in: <249>234K</>/1M"
 
 # --- Cost: the turn, then the session ---------------------------------------------------------
 reset_payload; cost_usd=1.00
@@ -333,16 +331,14 @@ done
 reset_payload; week_used=50
 assert_contains "7d pace: on pace, calendar time left" "$(render_line pace7)" "7d: 50% ↻3d12h"
 
-# Colour of the figure itself: plain below 70, yellow from 70, orange from 80, red from 90.
-for pair in '69:plain' '70:220' '79:220' '80:208' '90:196'; do
+# Colour of the figure itself: light grey below 70, yellow from 70, orange from 80, red from 90.
+for pair in '69:249' '70:220' '79:220' '80:208' '90:196'; do
   reset_payload; five_used=${pair%%:*}; five_resets_in=17000
   out=$(render_line quota)
-  if [ "${pair#*:}" = plain ]; then
-    assert_not_contains "5h colour ${pair%%:*}%: plain" "$(printf '%s' "$out" | sed -n "s/.*\\(${esc}\\[38;5;[0-9]*m${pair%%:*}%\\).*/COLOUR/p")" COLOUR
-  else
-    assert_coloured "5h colour ${pair%%:*}%: ${pair#*:}" "$out" "<${pair#*:}>${pair%%:*}%</>"
-  fi
+  assert_coloured "5h colour ${pair%%:*}%: ${pair#*:}" "$out" "<${pair#*:}>${pair%%:*}%</>"
 done
+reset_payload; five_resets_in=9030
+assert_coloured "5h: the reset time is light grey" "$(render_line quota)" "↻<249>2h30</>"
 reset_payload; five_used=null
 assert_not_contains "quota: absent when not reported" "$(render_line quota)" "5h:"
 reset_payload; five_resets_in=-30
