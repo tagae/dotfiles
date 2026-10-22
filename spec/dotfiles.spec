@@ -181,6 +181,53 @@ Thus using a directory succeeds
 And the symlink ~/.a-directory points to ~/.dotfiles/dot/a-directory
 
 
+Feature - forcing the use of a dotfile
+######################################
+
+Given a file ~/.dotfiles/dot/an-unforced-dotfile
+Given a file ~/elsewhere
+Given a symlink ~/.an-unforced-dotfile pointing to ~/elsewhere
+
+    ! dotfiles use ~/.dotfiles/dot/an-unforced-dotfile
+
+Thus using a dotfile whose destination links elsewhere fails without force
+
+    test "$(realpath ~/.an-unforced-dotfile)" = "$(realpath ~/elsewhere)"
+
+Thus the existing symlink is left untouched
+
+###
+
+Given a file ~/.dotfiles/dot/a-forced-dotfile
+Given a file ~/elsewhere
+Given a symlink ~/.a-forced-dotfile pointing to ~/elsewhere
+
+    dotfiles use -f ~/.dotfiles/dot/a-forced-dotfile
+
+Thus forcing the use of a dotfile whose destination links elsewhere succeeds
+
+    test "$(realpath ~/.a-forced-dotfile)" = "$(realpath ~/.dotfiles/dot/a-forced-dotfile)"
+
+Thus the symlink points to the managed dotfile
+
+    test -f ~/elsewhere
+
+Thus the previous target of the symlink is left untouched
+
+###
+
+Given a file ~/.dotfiles/dot/a-plain-dotfile
+Given a file ~/.a-plain-dotfile with content 'precious'
+
+    ! dotfiles use -f ~/.dotfiles/dot/a-plain-dotfile
+
+Thus forcing the use of a dotfile whose destination is a plain file fails
+
+    ! test -L ~/.a-plain-dotfile && test "$(< ~/.a-plain-dotfile)" = 'precious'
+
+Thus the plain file is left untouched
+
+
 Feature - handling of invalid uses
 ##################################
 

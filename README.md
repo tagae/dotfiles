@@ -57,6 +57,13 @@ To use a dotfile from the repository, do
 
 This will create a `~/.file` symlink pointing to `~/.dotfiles/dot/file`.
 
+If `~/.file` is already a symlink pointing somewhere else, `dotfiles use` fails.
+Pass `-f` to replace that symlink:
+
+    dotfiles use -f ~/.dotfiles/dot/file
+
+A `~/.file` that is not a symlink is never overwritten, with or without `-f`.
+
 
 Ejecting dotfiles
 -----------------

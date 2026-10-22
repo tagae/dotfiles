@@ -47,14 +47,25 @@ EOM
 }
 
 use_dotfiles() {
+    local force=false
+    while (( $# > 0 )); do
+        case "$1" in
+            -f|--force) force=true; shift ;;
+            -*) error "unknown option '$1'" ;;
+            *) break ;;
+        esac
+    done
     if (( $# == 0 )); then
         cat >&2 <<EOM
-Usage: $(basename "$0") use ~/$(from-home "$DOTFILES")/FILE...
+Usage: $(basename "$0") use [-f|--force] ~/$(from-home "$DOTFILES")/FILE...
+
+With -f, a symlink that already exists at the destination but points elsewhere
+is replaced. A destination that is not a symlink is never overwritten.
 EOM
         exit 1
     fi
     while (( $# > 0 )); do
-        use_dotfile "$1"
+        use_dotfile "$1" "$force"
         shift
     done
 }
