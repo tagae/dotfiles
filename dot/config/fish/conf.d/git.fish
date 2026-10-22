@@ -137,7 +137,8 @@ abbr -a --command git clX clean -dxf --exclude .idea/ --exclude .env.local --exc
 
 # --- Dynamic: branch and remote names ----------------------------------------
 # `g push origin @`  -> current branch
-# `g switch @@`      -> default branch (<remote>/HEAD, falls back to main)
+# `g switch @@`      -> default branch (<remote>/HEAD, else asked of the remote)
+# `g swm`            -> switch --detach <remote>/<default branch>
 # `g pu`             -> push --set-upstream <remote> HEAD
 #
 # <remote> is `remote.pushDefault` if set, else `origin` or `github` (in that
@@ -164,11 +165,21 @@ end
 function __git_abbr_default_branch
     set -l remote (__git_abbr_remote)
     set -l ref (git symbolic-ref --short refs/remotes/$remote/HEAD 2>/dev/null)
+    if test -z "$ref"
+        # <remote>/HEAD is unset (e.g. a remote added without cloning): ask the
+        # remote for its default branch, which also records it for next time.
+        git remote set-head $remote --auto >/dev/null 2>&1
+        set ref (git symbolic-ref --short refs/remotes/$remote/HEAD 2>/dev/null)
+    end
     if test -n "$ref"
         string replace $remote/ '' -- $ref
     else
         echo main
     end
+end
+
+function __git_abbr_switch_default
+    echo switch --detach (__git_abbr_remote)/(__git_abbr_default_branch)
 end
 
 function __git_abbr_push_upstream
@@ -177,6 +188,7 @@ end
 
 abbr -a --command git @  --function __git_abbr_branch
 abbr -a --command git @@ --function __git_abbr_default_branch
+abbr -a --command git swm --function __git_abbr_switch_default
 
 # --- Outside git: jump to repo root ------------------------------------------
 abbr -a gcd 'cd (git rev-parse --show-toplevel)'
