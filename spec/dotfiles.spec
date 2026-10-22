@@ -43,15 +43,15 @@ Thus importing a dotfile from the home directory succeeds
 
 Thus the imported dotfile is replaced by a symlink
 
-    test -f ~/.dotfiles/share/a-dotfile
+    test -f ~/.dotfiles/dot/a-dotfile
 
 Thus the imported dotfile is moved to the dotfiles repository
 
-    test "$(< ~/.dotfiles/share/a-dotfile)" = 'some content'
+    test "$(< ~/.dotfiles/dot/a-dotfile)" = 'some content'
 
 Thus the content of the imported dotfile is preserved
 
-    test "$(git -C ~/.dotfiles show HEAD:share/a-dotfile)" = 'some content'
+    test "$(git -C ~/.dotfiles show HEAD:dot/a-dotfile)" = 'some content'
 
 Thus the imported dotfile is checked into version control
 
@@ -73,7 +73,7 @@ Thus importing a file that resides in a dot-directory succeeds
 
 Thus the imported dotfile is replaced by a symlink in the original directory
 
-    test -f ~/.dotfiles/share/directory/file
+    test -f ~/.dotfiles/dot/directory/file
 
 Thus the dotfile is imported preserving the directory hierarchy
 
@@ -114,7 +114,7 @@ Thus importing a symlink fails
 
 ###
 
-Given a file ~/.dotfiles/share/a-managed-dotfile
+Given a file ~/.dotfiles/dot/a-managed-dotfile
 Given a file ~/.a-managed-dotfile
 
     ! dotfiles import ~/.a-managed-dotfile
@@ -141,52 +141,52 @@ Thus importing a dotfile that is not a child of a dot-directory fails
 Feature - using a dotfile
 #########################
 
-Given file ~/.dotfiles/share/a-dotfile
+Given file ~/.dotfiles/dot/a-dotfile
 
     rm ~/.a-dotfile # make sure the dotfile is not used
 
-    dotfiles use ~/.dotfiles/share/a-dotfile
+    dotfiles use ~/.dotfiles/dot/a-dotfile
 
 Thus using a dotfile succeeds
-And the symlink ~/.a-dotfile points to ~/.dotfiles/share/a-dotfile
+And the symlink ~/.a-dotfile points to ~/.dotfiles/dot/a-dotfile
 
-    dotfiles use ~/.dotfiles/share/a-dotfile
+    dotfiles use ~/.dotfiles/dot/a-dotfile
 
 Thus using an already used dotfile succeeds
-And the symlink ~/.a-dotfile points to ~/.dotfiles/share/a-dotfile
+And the symlink ~/.a-dotfile points to ~/.dotfiles/dot/a-dotfile
 
 
 Feature - using a dotfile in a directory
 ########################################
 
-Given a file ~/.dotfiles/share/a-directory/a-dotfile
+Given a file ~/.dotfiles/dot/a-directory/a-dotfile
 
-    dotfiles use ~/.dotfiles/share/a-directory/a-dotfile
+    dotfiles use ~/.dotfiles/dot/a-directory/a-dotfile
 
 Thus using a dotfile in a directory succeeds
-And the symlink ~/.a-directory/a-dotfile points to ~/.dotfiles/share/a-directory/a-dotfile
+And the symlink ~/.a-directory/a-dotfile points to ~/.dotfiles/dot/a-directory/a-dotfile
 
 
 Feature - using a dot-directory
 ###############################
 
-Given a file ~/.dotfiles/share/a-directory/a-dotfile
-Given a file ~/.dotfiles/share/a-directory/another-dotfile
+Given a file ~/.dotfiles/dot/a-directory/a-dotfile
+Given a file ~/.dotfiles/dot/a-directory/another-dotfile
 
     rm -rf ~/.a-directory # make sure the dot-directory is not used
 
-    dotfiles use ~/.dotfiles/share/a-directory
+    dotfiles use ~/.dotfiles/dot/a-directory
 
 Thus using a directory succeeds
-And the symlink ~/.a-directory points to ~/.dotfiles/share/a-directory
+And the symlink ~/.a-directory points to ~/.dotfiles/dot/a-directory
 
 
 Feature - handling of invalid uses
 ##################################
 
-Given that file ~/.dotfiles/share/non-existent does not exist
+Given that file ~/.dotfiles/dot/non-existent does not exist
 
-    ! dotfiles use ~/.dotfiles/share/non-existent
+    ! dotfiles use ~/.dotfiles/dot/non-existent
 
 Thus using a non-existent file fails
 
@@ -202,8 +202,8 @@ Thus using an unmanaged file fails
 Feature - ejection of a dotfile '(inverse of importing)'
 ########################################################
 
-Given a file ~/.dotfiles/share/a-dotfile with content 'some content'
-Given a symlink ~/.a-dotfile pointing to ~/.dotfiles/share/a-dotfile
+Given a file ~/.dotfiles/dot/a-dotfile with content 'some content'
+Given a symlink ~/.a-dotfile pointing to ~/.dotfiles/dot/a-dotfile
 
     dotfiles eject ~/.a-dotfile
 
@@ -213,7 +213,7 @@ Thus ejection of a used dotfile succeeds
 
 Thus the symlink is replaced by the ejected dotfile
 
-    ! test -e ~/.dotfiles/share/a-dotfile
+    ! test -e ~/.dotfiles/dot/a-dotfile
 
 Thus the managed copy of the dotfile is removed
 
@@ -221,7 +221,7 @@ Thus the managed copy of the dotfile is removed
 
 Thus the content of the ejected dotfile is preserved
 
-    ! git -C ~/.dotfiles ls-files --error-unmatch share/a-dotfile 1>/dev/null 2>/dev/null
+    ! git -C ~/.dotfiles ls-files --error-unmatch dot/a-dotfile 1>/dev/null 2>/dev/null
 
 Thus the dotfile is no longer tracked by version control
 
@@ -233,9 +233,9 @@ Thus the last commit message mentions the ejection of the dotfile
 Feature - ejection of a file in a dot-directory
 ###############################################
 
-Given a file ~/.dotfiles/share/directory/file
-Given a symlink ~/.directory/file pointing to ~/.dotfiles/share/directory/file
-Given that ~/.dotfiles/share/directory contains 1 file
+Given a file ~/.dotfiles/dot/directory/file
+Given a symlink ~/.directory/file pointing to ~/.dotfiles/dot/directory/file
+Given that ~/.dotfiles/dot/directory contains 1 file
 
     dotfiles eject ~/.directory/file
 
@@ -245,11 +245,11 @@ Thus ejecting a file that resides in a dot-directory succeeds
 
 Thus the symlink is replaced by the ejected dotfile
 
-    ! test -e ~/.dotfiles/share/directory/file
+    ! test -e ~/.dotfiles/dot/directory/file
 
 Thus the managed copy of the dotfile is removed
 
-    ! test -e ~/.dotfiles/share/directory
+    ! test -e ~/.dotfiles/dot/directory
 
 Thus the empty directory that contained the managed file is removed
 

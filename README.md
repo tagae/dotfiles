@@ -53,9 +53,9 @@ Using dotfiles
 
 To use a dotfile from the repository, do
 
-    dotfiles use ~/.dotfiles/share/file
+    dotfiles use ~/.dotfiles/dot/file
 
-This will create a `~/.file` symlink pointing to `~/.dotfiles/share/file`.
+This will create a `~/.file` symlink pointing to `~/.dotfiles/dot/file`.
 
 
 Ejecting dotfiles

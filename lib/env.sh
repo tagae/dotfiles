@@ -6,4 +6,4 @@ BIN="$(absolute_dirname "$0")"
 LIB="$(absolute_dirname "$ENV_LIB")"
 BASE="$(dirname "$LIB")"
 
-DOTFILES="$BASE/share"
+DOTFILES="$BASE/dot"

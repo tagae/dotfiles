@@ -1,4 +1,4 @@
-# Note that Fish sources conf.d/ before this file.
+# Fish sources conf.d/ before this file.
 
 # Personal and third-party binaries.
 
