@@ -8,8 +8,9 @@
 #
 # POSIX sh, like the script. Names are lowercase (uppercase is reserved for the environment),
 # and functions keep their variables `local`, except the ones that set up the fixture on purpose.
-# The script keeps one state file per session in /tmp, keyed by session_id (HOME is not
-# involved); every session id here starts with "clear-test-", and cleanup removes them.
+# The script keeps one state file per session in $TMPDIR/claude (the sandbox allows writes
+# there, not in /tmp; CLAUDE_STATUSLINE_STATE_DIR points it there), keyed by session_id
+# (HOME is not involved); every session id here starts with "clear-test-", and cleanup removes them.
 #
 #   ./test-clear.sh
 
@@ -20,7 +21,12 @@ cd "$(dirname "$0")" || exit 2
 script="$PWD/statusline-clear.sh"
 self="$PWD/$(basename "$0")"
 
-cleanup() { rm -rf /tmp/claude-statusline-clear-clear-test-*.txt 2>/dev/null; }
+state_dir="${TMPDIR:-/tmp}/claude"
+mkdir -p "$state_dir"
+CLAUDE_STATUSLINE_STATE_DIR=$state_dir
+export CLAUDE_STATUSLINE_STATE_DIR
+
+cleanup() { rm -rf "$state_dir"/claude-statusline-clear-clear-test-*.txt 2>/dev/null; }
 
 trap cleanup EXIT INT TERM
 cleanup
@@ -108,7 +114,7 @@ render_line() {
     "$cache_json" "$session_name_json" | sh "$script" || printf '[the script exited with status %s]' "$?"
 }
 
-state_file_of() { echo "/tmp/claude-statusline-clear-clear-test-$1-$$.txt"; }
+state_file_of() { echo "$state_dir/claude-statusline-clear-clear-test-$1-$$.txt"; }
 # age_state_file SESSION SECONDS: pretend this session's last response was that long ago.
 age_state_file() {
   awk -v t=$(($(date +%s) - $2)) 'NR == 6 { print t; next } { print }' "$(state_file_of "$1")" \

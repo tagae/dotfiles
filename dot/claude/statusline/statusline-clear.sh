@@ -12,8 +12,8 @@
 #     the input grew with the last response; after a cache miss it is the rebuild instead.
 #   - `prompt_cache.warm` is not used: it stays true past the expiry until the next response.
 #   - The payload has only running totals. A turn's cost and cache miss are their growth since
-#     the prompt began, so one small file per session in /tmp keeps the prompt id, the session
-#     cost and the miss tokens at the start of the turn, the cost of the turn before, and the
+#     the prompt began, so one small file per session in /tmp (or in CLAUDE_STATUSLINE_STATE_DIR) keeps the
+#     prompt id, the session cost and the miss tokens at the start of the turn, the cost of the turn before, and the
 #     last response's cost and quota with when they changed. It is rewritten only when
 #     something in it changes.
 #   - A quota figure is what this session saw at its last response; other sessions spend the
@@ -24,7 +24,8 @@
 #     stops at orange.
 #
 # Conventions: POSIX sh. Names are lowercase, since uppercase is reserved for the environment
-# (CLAUDE_QUOTA_STALE_SECS is the one variable read from it). A number with a meaning has a
+# (CLAUDE_QUOTA_STALE_SECS and CLAUDE_STATUSLINE_STATE_DIR, where the state file goes and
+# the tests point away from /tmp, are the two read from it). A number with a meaning has a
 # named constant; only 0, 1, 10 and 100 (a percentage, a decimal digit) stay as they are.
 # Functions keep their variables `local` (not in POSIX, but dash, bash and ash all have it)
 # and hand back what they compute by printing it, never through a global.
@@ -242,7 +243,7 @@ case "$stale_secs" in ''|*[!0-9]*) stale_secs=$stale_default_secs ;; esac
 readonly stale_secs
 
 # --- State: the turn so far, and how long ago this session last heard from the API ------
-state="/tmp/claude-statusline-clear-${session_id:-default}.txt"
+state="${CLAUDE_STATUSLINE_STATE_DIR:-/tmp}/claude-statusline-clear-${session_id:-default}.txt"
 readonly state
 turn_micro=0; turn_miss=0; stale=; dirty=
 s_prompt=; s_base=; s_prev=; s_miss=; s_rl=; s_rl_at=
@@ -278,6 +279,7 @@ if [ -n "$five_used$week_used" ]; then
   fi
 fi
 if [ -n "$dirty" ]; then
+  mkdir -p "${state%/*}" 2>/dev/null || :
   printf '%s\n%s\n%s\n%s\n%s\n%s\n' "$s_prompt" "$s_base" "$s_prev" "$s_miss" "$s_rl" "$s_rl_at" \
     2>/dev/null > "$state" || :
 fi

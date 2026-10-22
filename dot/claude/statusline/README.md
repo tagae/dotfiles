@@ -59,6 +59,8 @@ The quota belongs to the account, and other sessions spend it. This session only
 figure when it gets a response, so after 15 minutes without one it turns grey, gains a `?` and
 loses its arrow (`5h: 32%? ↻56m`); so does a figure whose window has ended.
 `CLAUDE_QUOTA_STALE_SECS` changes the 15 minutes.
+`CLAUDE_STATUSLINE_STATE_DIR` changes the directory of the state file (see below), `/tmp` by default;
+the script creates it when it is missing.
 
 Setup
 -----
@@ -68,4 +70,5 @@ Needs `jq`. The countdowns only tick if the status line refreshes: set `refreshI
 cause 2.1.260.
 
 The turn's cost and the staleness check need a little memory between renders: one small file per
-session, `/tmp/claude-statusline-clear-<session id>.txt`. `./test-clear.sh` runs the tests.
+session, `/tmp/claude-statusline-clear-<session id>.txt` (in `CLAUDE_STATUSLINE_STATE_DIR` instead,
+if set). `./test-clear.sh` runs the tests.
