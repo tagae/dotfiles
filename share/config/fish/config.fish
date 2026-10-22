@@ -1,55 +1,10 @@
-#---[ V A R S ]---
+# Note that Fish sources conf.d/ before this file.
 
-set -g fish_greeting ''
-
-# https://specifications.freedesktop.org/basedir-spec/latest/
-
-set -q XDG_CONFIG_HOME    || set -gx XDG_CONFIG_HOME "$HOME/.config"
-set -q XDG_CACHE_HOME     || set -gx XDG_CACHE_HOME "$HOME/.cache"
-set -q XDG_DATA_HOME      || set -gx XDG_DATA_HOME "$HOME/.local/share"
-set -q XDG_STATE_HOME     || set -gx XDG_STATE_HOME "$HOME/.local/state"
-
-
-#---[ P A T H S ]---
+# Personal and third-party binaries.
 
 fish_add_path $HOME/.local/bin
-fish_add_path --path $HOME/.rd/bin
 
-#---[ T O O L S ]---
-
-if test -x /opt/homebrew/bin/brew
-    /opt/homebrew/bin/brew shellenv | source
-
-    fish_add_path --path --move (brew --prefix git)/bin
-    fish_add_path --path --move (brew --prefix coreutils)/libexec/gnubin
-    fish_add_path --path --move (brew --prefix findutils)/libexec/gnubin
-    fish_add_path --path --move (brew --prefix gnu-sed)/libexec/gnubin
-    fish_add_path --path --move (brew --prefix gpatch)/libexec/gnubin
-    fish_add_path --path --move (brew --prefix make)/libexec/gnubin
-    fish_add_path --path --move (brew --prefix m4)/bin
-    fish_add_path --path --move (brew --prefix bison)/bin
-    fish_add_path --path --move (brew --prefix gpatch)/bin
-    fish_add_path --path --move (brew --prefix gawk)/libexec/gnubin
-
-    test -d (brew --prefix bison)/lib
-    and set -gx LDFLAGS -L(brew --prefix bison)/lib
-
-    test -d (brew --prefix libiconv)/lib
-    and set -gx LDFLAGS -L/opt/homebrew/opt/libiconv/lib $LDFLAGS
-    and set -gx CPPFLAGS -I/opt/homebrew/opt/libiconv/include $CPPFLAGS
-
-    test -d (brew --prefix go)/libexec
-    and set -x GOROOT (brew --prefix go)/libexec
-
-    test -d ~/Library/pnpm
-    and set -x PNPM_HOME $HOME/Library/pnpm
-    and fish_add_path --path --move $PNPM_HOME/bin
-end
-
-fish_add_path /opt/local/bin
-fish_add_path $HOME/.dotfiles/bin
-fish_add_path ~/.krew/bin
-fish_add_path ~/.roswell/bin
+# Default programs.
 
 command -sq emacs
 and set -x EDITOR 'emacs -nw'
@@ -57,71 +12,7 @@ and set -x EDITOR 'emacs -nw'
 command -sq less
 and set -x PAGER less
 
-command -sq direnv
-and direnv hook fish | source
-
-command -sq rbenv
-and rbenv init - | source
-
-fish_add_path $HOME/.pyenv/bin
-
-command -sq pyenv
-and set -x PYENV_ROOT $HOME/.pyenv
-and pyenv init - | source
-
-command -sq go
-and set -x GOPATH $HOME/Applications/opt/go
-and set PATH $PATH $GOPATH/bin
-
-#---[ A L I A S E S ]---
-
-command -sq git
-and abbr g git
-
-if command -sq kubectl
-    abbr k kubectl
-end
-
-if command -sq kubecolor
-    alias kubectl kubecolor
-end
-
-abbr gw ./gradlew
-
-#---[ A P P E A R A N C E ]---
-
-if status is-interactive
-  command -sq vivid
-  and set -x LS_COLORS (vivid --color-mode 8-bit generate snazzy)
-
-  command -sq k9s
-  and set -x K9S_SKIN snazzy
-
-  command -sq starship
-  and starship init fish | source
-
-  command -sq jump
-  and jump shell fish | source
-end
-
-#---[ P R I V A C Y ]---
-
-command -sq gpgconf
-and begin
-    test -S (gpgconf --list-dirs agent-socket)
-    or gpgconf --launch gpg-agent
-end
-
-if test -S ~/.ssh/agent.sock
-    # A forwarded agent takes precedence.
-    set -q SSH_CONNECTION
-    and set -q SSH_AUTH_SOCK
-    or set -gx SSH_AUTH_SOCK ~/.ssh/agent.sock
-else if command -sq keychain
-    keychain --quiet --eval | source
-end
-
-#---[ L O C A L ]---
-
-test -f ~/.config/fish/secrets.fish
-and source ~/.config/fish/secrets.fish
+# Machine-specific settings and secrets.
+set -l secrets ~/.config/fish/secrets.fish
+test -f $secrets
+and source $secrets

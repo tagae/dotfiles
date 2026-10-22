@@ -34,6 +34,7 @@ abbr -a --command git a   add
 abbr -a --command git aa  add --all
 abbr -a --command git ap  add --patch
 abbr -a --command git au  add --update
+abbr -a --command git an  add --intent-to-add
 
 # --- Committing --------------------------------------------------------------
 abbr -a --command git c     commit

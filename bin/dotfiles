@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$0")"/../lib/base.sh
+source "$(dirname "$(realpath "$0")")"/../lib/base.sh
 
 require_module command message path import use eject
 

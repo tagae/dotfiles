@@ -1,0 +1,3 @@
+# Gradle.
+
+abbr gw ./gradlew
