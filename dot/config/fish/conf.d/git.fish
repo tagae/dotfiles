@@ -21,7 +21,7 @@
 #   cl    clean           r     rebase     sw    switch
 #   co    checkout        rem   remote     t     tag
 #   cp    cherry-pick     rese  reset      wt    worktree
-#   d     diff            rest  restore
+#   d     diff            res   restore
 #   f     fetch           rl    reflog
 #   g     grep
 
@@ -116,8 +116,8 @@ abbr -a --command git rts1 reset --soft HEAD~1
 abbr -a --command git rtH1 reset --hard HEAD~1
 
 # --- Restoring ---------------------------------------------------------------
-abbr -a --command git rest  restore
-abbr -a --command git rests restore --staged
+abbr -a --command git res  restore
+abbr -a --command git ress restore --staged
 
 # --- Reflog ------------------------------------------------------------------
 abbr -a --command git rl reflog
