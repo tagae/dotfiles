@@ -12,7 +12,7 @@
 #     same size by JetBrains Mono (◐ and ◑ are not in it, and come bigger from another font).
 #   - The model's initial is white (colour_white). The rest of its name, the session's cost, the input tokens and the quota figures and reset times
 #     are light grey (colour_light_grey) while they have no warning colour of their own.
-#   - test-compact.sh covers it. README.md describes the clear edition only, not this one yet.
+#   - test-compact.sh covers it. README.md describes what it shows; change both in the same commit.
 #
 # MAINTENANCE RULE: the rest of the notes below is as in the clear edition. What follows is only
 # what the code does not make obvious.
