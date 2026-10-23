@@ -9,7 +9,7 @@ Two editions show the same facts. Use whichever reads better to you.
 
 ```
 clear    Opus 5.5·xh | in: 87K/200K (+478, ttl: 42m, miss: 202K ttl_expired_5m) out: 340 | $0.12 ⊂ $1.23 | up: 12m api: 4m | 5h: ↑37% ↻2h10 7d: ↗48% ↻4d3h
-compact  O5.5xh ↑87K/200K (+478, ◕42m, miss: 202K ttl_expired_5m) ↓340 $0.12 ⊂ $1.23 ⚙4m/12m ⧖ 37%↑ ↻2h10 ▦ 48%↗ ↻4d3h
+compact  O5.5xh ↑87K/200K (+478, 󰪤42m, miss: 202K ttl_expired_5m) ↓340 $0.12 ⊂ $1.23 ⚙4m/12m ⧖ 37%↑ ↻2h10 ▦ 48%↗ ↻4d3h
 ```
 
 Clear spells everything out with labels and `|` dividers. Compact swaps the labels for icons, drops
@@ -44,9 +44,10 @@ The countdown changes colour as the lifetime runs out:
 - Clear stays plain while half the lifetime or more is left, then steps through light yellow, yellow
   and light orange (below 50%, 38% and 26% left) to orange below 15%. It never reaches red. Once
   expired it shows by how much, in orange: `ttl: -3m`.
-- Compact fades it, as described below. Once expired it shows by how much, in red: `○-3m`.
+- Compact fades it, as described below. Once expired it shows by how much, in red: `󰝦-3m`.
 
-Compact also draws a pie before the countdown that empties as the cache runs out: `●` `◕` `◔` `○`.
+Compact also draws a pie before the countdown that empties as the cache runs out, in eighths: `󰪥` down to `󰝦`. They
+are Nerd Font glyphs, so the terminal's font must have them.
 
 A turn that rebuilt part of the cache adds `miss: 11K ttl_expired_5m` to the bracket: the tokens
 re-cached, and the likely cause. It shows on that turn only, and is never plain: yellow, orange from

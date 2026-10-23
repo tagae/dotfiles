@@ -140,7 +140,7 @@ assert_equals "script: an empty payload is just a name" "$(printf '{}' | sh "$sc
 reset_payload
 out=$(render_line order)
 assert_equals "line: the full example, in order" "$out" \
-  'S5.5h ↑234K/1M (+1.9K, ◕50m) ↓842 $3.62 ⚙15m/2h00 ⧖ 32%↗ ↻2h30 ▦ 56% ↻3d12h'
+  'S5.5h ↑234K/1M (+1.9K, 󰪤50m) ↓842 $3.62 ⚙15m/2h00 ⧖ 32%↗ ↻2h30 ▦ 56% ↻3d12h'
 assert_not_contains "line: no session name (Claude shows it elsewhere)" "$out" "Sha tweak"
 assert_coloured "model: the initial is white, the version light grey, the effort plain" "$out" "<255>S</><249>5.5</>h ↑"
 assert_coloured "cost: the session total is light grey" "$out" "<249>\$3.62</> ⚙"
@@ -171,7 +171,7 @@ reset_payload
 out=$(render_line tokens)
 assert_contains     "tokens: input with the window size"        "$out" "↑234K/1M"
 assert_contains     "tokens: output"                            "$out" "↓842"
-assert_contains     "tokens: growth is the cache write"         "$out" "(+1.9K, ◕50m)"
+assert_contains     "tokens: growth is the cache write"         "$out" "(+1.9K, 󰪤50m)"
 assert_not_contains "tokens: no cache read"                     "$out" "r232K"
 assert_not_contains "tokens: no fresh input"                    "$out" "f2"
 assert_not_contains "tokens: no cold-start figure"              "$out" "→"
@@ -185,7 +185,7 @@ assert_contains "tokens: a 1.5M window" "$(render_line tokens)" "↑234K/1.5M"
 reset_payload; context_size=200000
 assert_contains     "tokens: a 200K window"                     "$(render_line tokens)" "↑234K/200K"
 reset_payload; cache_write_tokens=null
-assert_contains     "bracket: only the ttl when nothing was written" "$(render_line tokens)" "↑234K/1M (◕50m) ↓842"
+assert_contains     "bracket: only the ttl when nothing was written" "$(render_line tokens)" "↑234K/1M (󰪤50m) ↓842"
 reset_payload; has_cache=
 assert_contains     "bracket: only the growth without a cache"       "$(render_line tokens)" "↑234K/1M (+1.9K) ↓842"
 reset_payload; cache_write_tokens=null; has_cache=
@@ -253,7 +253,7 @@ check_miss 79pct 79000 208 79K
 check_miss 80pct 80000 196 80K
 check_miss 150pct 150000 196 150K
 reset_payload; input_tokens=100000; render_line miss-pos >/dev/null; miss_total=11000
-assert_contains "miss: inside the bracket, after the ttl" "$(render_line miss-pos)" "(+1.9K, ◕50m, miss: 11K ttl_expired_5m) ↓842"
+assert_contains "miss: inside the bracket, after the ttl" "$(render_line miss-pos)" "(+1.9K, 󰪤50m, miss: 11K ttl_expired_5m) ↓842"
 reset_payload; input_tokens=100000; render_line miss-gone >/dev/null; miss_total=11000; render_line miss-gone >/dev/null
 prompt_id=p2; out=$(render_line miss-gone)
 assert_not_contains "miss: gone when the next prompt starts" "$out" "miss:"
@@ -265,18 +265,18 @@ assert_coloured "miss: yellow when the context size is unknown" "$out" "<220>mis
 # --- Prompt cache countdown (ttl) -----------------------------------------------------------------------
 reset_payload
 out=$(render_line ttl)
-assert_contains "ttl: time left" "$out" "◕50m"
+assert_contains "ttl: time left" "$out" "󰪤50m"
 # Plain while the share left is high (3600 s lifetime), then a fade that speeds up: the step of
 # fade_colours is 12 times the cube of the share run out over 95%, so red comes with 5% left. The colour
 # changes at 58%, 47%, 40%, 34%, and so on, each time sooner after the one before.
 reset_payload; cache_expires_in=3630
 case $(render_line ttl) in
-  *"●1h00"*) report_pass "ttl: plain at the start of the lifetime" ;;
+  *"󰪥1h00"*) report_pass "ttl: plain at the start of the lifetime" ;;
   *) report_fail "ttl: plain at the start of the lifetime" "got: $(render_line ttl | cat -v)" ;;
 esac
 reset_payload; cache_expires_in=2134                  # 59%: still plain
 case $(render_line ttl) in
-  *"◕35m"*) report_pass "ttl: plain at 59%" ;;
+  *"󰪢35m"*) report_pass "ttl: plain at 59%" ;;
   *) report_fail "ttl: plain at 59%" "got: $(render_line ttl | cat -v)" ;;
 esac
 # Each row: share left (%), colour, text. The seconds left are 36 per cent of the hour, plus 10,
@@ -294,17 +294,18 @@ for row in '1:196' '0:196'; do
     *) report_fail "ttl: ${row#*:} at ${row%%:*}% left" "got: $(render_line ttl | cat -v)" ;;
   esac
 done
-# The pie, by the share of the lifetime left (3600 s): ● from 88%, ◕ from 50%, ◔ from 13%, ○ below.
-for row in '3600:●' '3178:●' '3164:◕' '1810:◕' '1796:◔' '478:◔' '464:○' '0:○'; do
+# The pie, by the share of the lifetime left (3600 s), in the nearest eighth: the full circle from 94%,
+# then one eighth less from 82%, 69%, 57%, 44%, 32%, 19% and 7%, and the empty circle below. Each edge is tried 10 s either side.
+for row in '3600:󰪥' '3394:󰪥' '3374:󰪤' '2962:󰪤' '2942:󰪣' '2494:󰪣' '2474:󰪢' '2062:󰪢' '2042:󰪡' '1594:󰪡' '1574:󰪠' '1162:󰪠' '1142:󰪟' '694:󰪟' '674:󰪞' '262:󰪞' '242:󰝦' '0:󰝦'; do
   reset_payload; cache_expires_in=${row%%:*}
   assert_contains "ttl icon: ${row#*:} with ${row%%:*} s left" "$(render_line ttl)" "(+1.9K, ${row#*:}"
 done
 reset_payload; cache_expires_in=-150
 out=$(render_line ttl)
 assert_coloured "ttl: past the expiry is red, like the last step" "$out" "<196>-2m</>"
-assert_contains "ttl: past the expiry, by how much" "$out" "○-2m"
+assert_contains "ttl: past the expiry, by how much" "$out" "󰝦-2m"
 reset_payload; cache_expires_in=-7230
-assert_contains "ttl: hours past" "$(render_line ttl)" "○-2h00"
+assert_contains "ttl: hours past" "$(render_line ttl)" "󰝦-2h00"
 # Not red anywhere before the last 5% (250 s is 6%).
 for secs_left in 250 400 700 1000 1400 1800 2400 3000 3300; do
   reset_payload; cache_expires_in=$secs_left
@@ -314,18 +315,18 @@ for secs_left in 250 400 700 1000 1400 1800 2400 3000 3300; do
   esac
 done
 reset_payload; cache_expires_in=null
-assert_contains "ttl: no expiry in the payload" "$(render_line ttl)" "○expired"
+assert_contains "ttl: no expiry in the payload" "$(render_line ttl)" "󰝦expired"
 assert_coloured "ttl: expired is the same red as the overdue time" "$(render_line ttl)" "<196>expired</>"
 
 # The lifetime label is read, not looked up: any "<number><s|m|h|d>" gives the steps.
 reset_payload; cache_ttl_label=30m; cache_expires_in=390       # 21% of 1800 s
-assert_coloured "ttl label: 30m is read" "$(render_line ttl)" "◔<227>6m</>"
+assert_coloured "ttl label: 30m is read" "$(render_line ttl)" "󰪟<227>6m</>"
 reset_payload; cache_ttl_label=2h; cache_expires_in=2430       # 33% of 7200 s
-assert_coloured "ttl label: 2h is read" "$(render_line ttl)" "◔<229>40m</>"
+assert_coloured "ttl label: 2h is read" "$(render_line ttl)" "󰪠<229>40m</>"
 for label in forever 0m 05m 2h30m 3h05 2d4h 1x ''; do
   reset_payload; cache_ttl_label=$label; cache_expires_in=450
   case $(render_line ttl) in
-    *"●7m"*) report_pass "ttl label: '$label' is not understood, the countdown stays plain" ;;
+    *"󰪥7m"*) report_pass "ttl label: '$label' is not understood, the countdown stays plain" ;;
     *) report_fail "ttl label: '$label' is not understood, the countdown stays plain" "got: $(render_line ttl | cat -v)" ;;
   esac
 done

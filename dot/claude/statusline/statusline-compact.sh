@@ -8,8 +8,9 @@
 #   - ↑ and ↓ are the input and output tokens; ⚙ is the time on the API, then the session's time
 #     after a slash, which contains it; ⧖ and ▦ are the 5-hour and 7-day quotas; ↻ is the time
 #     until a quota resets.
-#   - The ttl is a pie that empties with the cache's lifetime: ● ◕ ◔ ○. These four are drawn at the
-#     same size by JetBrains Mono (◐ and ◑ are not in it, and come bigger from another font).
+#   - The ttl is a pie that empties with the cache's lifetime, in eighths: 󰪥󰪤󰪣󰪢󰪡󰪠󰪟󰪞 down to 󰝦. They are
+#     Nerd Font glyphs (Material Design circle slices), so the terminal needs one. The plain
+#     Unicode pies would not do: ◐ and ◑ are not in JetBrains Mono, and come bigger from another font.
 #   - The model's initial is white (colour_white). The rest of its name, the session's cost, the input tokens and the quota figures and reset times
 #     are light grey (colour_light_grey) while they have no warning colour of their own.
 #   - test-compact.sh covers it. README.md describes what it shows; change both in the same commit.
@@ -123,6 +124,16 @@ fade() {
   if [ -n "$code" ]; then colour "$code" "$2"; else printf '%s' "$2"; fi
 }
 
+# pie SHARE -> the icon for SHARE percent of a lifetime left: the ttl_icons fill nearest to it,
+# from the empty circle to the full one.
+pie() {
+  local level
+  level=$((($1 * (ttl_icon_count - 1) + 50) / 100))
+  set -- $ttl_icons   # unquoted on purpose: the list splits into its icons
+  shift "$level"
+  printf '%s' "$1"
+}
+
 # duration_to_secs TEXT -> the seconds that a number and one unit name: "30s", "5m", "1h", "2d".
 # Nothing for anything else, including the compound forms `duration` prints ("3h05", "2d4h");
 # no leading zero, so no octal surprises, and never zero.
@@ -229,10 +240,10 @@ readonly fade_steps=12
 # The share of the range run out where the fade reaches red, and stays there.
 readonly fade_red_at=95
 
-# The cache countdown's icon, by the share of the lifetime left: the fill nearest to what is left.
-readonly ttl_icon_full_from=88
-readonly ttl_icon_three_quarters_from=50
-readonly ttl_icon_quarter_from=13
+# The cache countdown's icons, from the empty circle to the full one, by the share of the lifetime
+# left: the fill nearest to what is left (see pie).
+readonly ttl_icons="󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥"
+readonly ttl_icon_count=9
 
 # Pace arrows: the share of quota left over the share of the window left, times 100.
 readonly pace_far_ahead_from=150
@@ -359,19 +370,14 @@ if [ -n "$has_cache" ]; then
     [ -n "$cache_ttl_secs" ] && share=$(( left * 100 / cache_ttl_secs ))
     countdown_colour=$(fade_colour $((100 - share)))
     [ -z "$countdown_colour" ] || countdown=$(colour "$countdown_colour" "$countdown")
-    # A pie that empties with the lifetime, in the four fills that are drawn at one size.
-    if [ "$share" -ge "$ttl_icon_full_from" ]; then ttl_icon=●
-    elif [ "$share" -ge "$ttl_icon_three_quarters_from" ]; then ttl_icon=◕
-    elif [ "$share" -ge "$ttl_icon_quarter_from" ]; then ttl_icon=◔
-    else ttl_icon=○
-    fi
+    ttl_icon=$(pie "$share")   # a pie that empties with the lifetime
   else
     # Past the expiry: by how much, in red like the last step of the fade. Without an expiry in
     # the payload there is nothing to count.
     overdue=expired
     [ -n "$expires_at" ] && overdue="-$(duration $((0 - left)))"
     countdown=$(colour "$colour_red" "$overdue")
-    ttl_icon=○
+    ttl_icon=$(pie 0)
   fi
 fi
 # Only when this turn's requests re-processed cacheable content: its tokens and likely
