@@ -30,8 +30,8 @@
 #     same quota unseen. Every response bills something, so a cost or quota that moved means
 #     one landed; the quota alone would not do, as it can sit at one percent through many.
 #   - The countdowns (ttl, quota resets) only tick if the status line has a refreshInterval.
-#   - Colours are for dark terminals. Red is kept for the hard limits, so the ttl countdown
-#     stops at orange.
+#   - Colours are for dark terminals. Red is kept for the hard limits and for the end of the ttl
+#     countdown.
 #
 # Conventions: POSIX sh. Names are lowercase, since uppercase is reserved for the environment
 # (CLAUDE_QUOTA_STALE_SECS and CLAUDE_STATUSLINE_STATE_DIR, where the state file goes and
@@ -97,6 +97,17 @@ pct() {
   else code=$colour_red
   fi
   colour "$code" "$2"
+}
+
+# ttl_colour SHARE -> the countdown's colour from ttl_fade, for SHARE percent of its lifetime left:
+# nothing while the share is full, then one step per 1/ttl_fade_steps of the lifetime run out.
+ttl_colour() {
+  local step
+  step=$(((100 - $1) * ttl_fade_steps / 100))
+  [ "$step" -gt 0 ] || return 0
+  set -- $ttl_fade   # unquoted on purpose: the list splits into its colours
+  shift $((step - 1))
+  printf '%s' "$1"
 }
 
 # duration_to_secs TEXT -> the seconds that a number and one unit name: "30s", "5m", "1h", "2d".
@@ -185,9 +196,7 @@ readonly stale_default_secs=$((15 * sec_per_min))
 
 # 256-colour numbers.
 readonly colour_light_green=114
-readonly colour_light_yellow=229
 readonly colour_yellow=220
-readonly colour_light_orange=215
 readonly colour_orange=208
 readonly colour_red=196
 readonly colour_grey=245
@@ -203,12 +212,11 @@ readonly miss_yellow_from=0
 readonly miss_orange_from=50
 readonly miss_red_from=80
 
-# The cache countdown, by the share of the lifetime left: each colour up to where the next starts.
-readonly ttl_orange_below=15
-readonly ttl_light_orange_below=26
-readonly ttl_yellow_below=38
-readonly ttl_light_yellow_below=50
-# And its icon, by the same share: the fill nearest to what is left.
+# The cache countdown fades from plain to red as the lifetime runs out: the 256-colour numbers
+# from white through yellow and orange to red, one step each (see ttl_colour).
+readonly ttl_fade="255 231 230 229 228 227 226 220 214 208 202 196"
+readonly ttl_fade_steps=12
+# And its icon, by the share of the lifetime left: the fill nearest to what is left.
 readonly ttl_icon_full_from=88
 readonly ttl_icon_three_quarters_from=50
 readonly ttl_icon_quarter_from=13
@@ -331,19 +339,13 @@ if [ -n "$has_cache" ]; then
   [ -n "$expires_at" ] && left=$((expires_at - now))
   if [ "$left" -gt 0 ]; then
     countdown=$(duration "$left")
-    # Coloured in steps as the lifetime runs out, and never red: red is for the hard limits,
-    # and a missed cache is costly but the work goes on. Without a known TTL there is no share
-    # to colour by, and it stays plain.
+    # Faded from plain to red as the lifetime runs out. Without a known TTL there is no share to
+    # fade by, and it stays plain.
     cache_ttl_secs=$(duration_to_secs "$cache_ttl")
     share=100
     [ -n "$cache_ttl_secs" ] && share=$(( left * 100 / cache_ttl_secs ))
-    step_colour=
-    if [ "$share" -lt "$ttl_orange_below" ]; then step_colour=$colour_orange
-    elif [ "$share" -lt "$ttl_light_orange_below" ]; then step_colour=$colour_light_orange
-    elif [ "$share" -lt "$ttl_yellow_below" ]; then step_colour=$colour_yellow
-    elif [ "$share" -lt "$ttl_light_yellow_below" ]; then step_colour=$colour_light_yellow
-    fi
-    [ -z "$step_colour" ] || countdown=$(colour "$step_colour" "$countdown")
+    countdown_colour=$(ttl_colour "$share")
+    [ -z "$countdown_colour" ] || countdown=$(colour "$countdown_colour" "$countdown")
     # A pie that empties with the lifetime, in the four fills that are drawn at one size.
     if [ "$share" -ge "$ttl_icon_full_from" ]; then ttl_icon=●
     elif [ "$share" -ge "$ttl_icon_three_quarters_from" ]; then ttl_icon=◕
@@ -351,11 +353,11 @@ if [ -n "$has_cache" ]; then
     else ttl_icon=○
     fi
   else
-    # Past the expiry: by how much, in orange like the last step. Without an expiry in the
-    # payload there is nothing to count.
+    # Past the expiry: by how much, in red like the last step of the fade. Without an expiry in
+    # the payload there is nothing to count.
     overdue=expired
     [ -n "$expires_at" ] && overdue="-$(duration $((0 - left)))"
-    countdown=$(colour "$colour_orange" "$overdue")
+    countdown=$(colour "$colour_red" "$overdue")
     ttl_icon=○
   fi
 fi
