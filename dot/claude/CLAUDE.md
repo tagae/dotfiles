@@ -5,6 +5,8 @@ If a remote is based on github.com, the remote name will be `github`, not `origi
 If this is not the case, propose to rename the remote.
 
 I need to touch my YubiKey for commits to be signed, and for pushes to succeed.
+If a commit or push fails, present a dialog to ask whether to retry.
+Avoid reporting on the failed attempts and retries. I know they happened.
 
 Tool Use
 --------
