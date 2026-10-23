@@ -205,8 +205,9 @@ assert_not_contains "types: a string quota is left out"      "$(render_line type
 reset_payload; input_tokens=234000.7
 assert_contains     "types: a fractional count is rounded down" "$(render_line types)" "↑234K/1M"
 
-# --- Context colour: light grey, yellow from 60, orange from 80, red from 90 -------------------
-for pair in '59:249' '60:220' '79:220' '80:208' '89:208' '90:196'; do
+# --- Context colour: light grey, then the fade (see the countdown), red from 95 ----------------
+# Each pair: percent used, colour; the first and last percent of every step.
+for pair in '41:249' '42:255' '52:255' '53:231' '59:231' '60:230' '65:230' '66:229' '70:229' '71:228' '75:228' '76:227' '79:227' '80:226' '82:226' '83:220' '86:220' '87:214' '89:214' '90:208' '92:208' '93:202' '94:202' '95:196' '100:196'; do
   reset_payload; context_used=${pair%%:*}
   out=$(render_line context)
   assert_coloured "context ${pair%%:*}%: colour ${pair#*:}" "$out" "↑<${pair#*:}>234K</>/1M"
@@ -265,27 +266,28 @@ assert_coloured "miss: yellow when the context size is unknown" "$out" "<220>mis
 reset_payload
 out=$(render_line ttl)
 assert_contains "ttl: time left" "$out" "◕50m"
-# Plain while the share left is full (3600 s lifetime), then a fade: one step of ttl_fade per 1/12
-# of the lifetime run out, so the colour changes at 92%, 84%, 83%, 76%, and so on down to 0%.
+# Plain while the share left is high (3600 s lifetime), then a fade that speeds up: the step of
+# fade_colours is 12 times the cube of the share run out over 95%, so red comes with 5% left. The colour
+# changes at 58%, 47%, 40%, 34%, and so on, each time sooner after the one before.
 reset_payload; cache_expires_in=3630
 case $(render_line ttl) in
   *"●1h00"*) report_pass "ttl: plain at the start of the lifetime" ;;
   *) report_fail "ttl: plain at the start of the lifetime" "got: $(render_line ttl | cat -v)" ;;
 esac
-reset_payload; cache_expires_in=3322                  # 92%: still plain
+reset_payload; cache_expires_in=2134                  # 59%: still plain
 case $(render_line ttl) in
-  *"●55m"*) report_pass "ttl: plain at 92%" ;;
-  *) report_fail "ttl: plain at 92%" "got: $(render_line ttl | cat -v)" ;;
+  *"◕35m"*) report_pass "ttl: plain at 59%" ;;
+  *) report_fail "ttl: plain at 59%" "got: $(render_line ttl | cat -v)" ;;
 esac
 # Each row: share left (%), colour, text. The seconds left are 36 per cent of the hour, plus 10,
 # so that the share is exact; the text is minutes, which a second or two of drift keeps.
-for row in '91:255:54m' '84:255:50m' '83:231:49m' '76:231:45m' '75:230:45m' '67:230:40m' '66:229:39m' '59:229:35m' '58:228:34m' '51:228:30m' '50:227:30m' '42:227:25m' '41:226:24m' '34:226:20m' '33:220:19m' '26:220:15m' '25:214:15m' '17:214:10m' '16:208:9m' '9:208:5m' '8:202:4m'; do
+for row in '58:255:34m' '48:255:28m' '47:231:28m' '41:231:24m' '40:230:24m' '35:230:21m' '34:229:20m' '30:229:18m' '29:228:17m' '25:228:15m' '24:227:14m' '21:227:12m' '20:226:12m' '18:226:10m' '17:220:10m' '14:220:8m' '13:214:7m' '11:214:6m' '10:208:6m' '8:208:4m' '7:202:4m' '6:202:3m' '5:196:3m'; do
   share=${row%%:*}; rest=${row#*:}; colour_of=${rest%%:*}; text=${rest#*:}
   reset_payload; cache_expires_in=$((36 * share + 10))
   assert_coloured "ttl: $colour_of at $share% left" "$(render_line ttl)" "<$colour_of>$text</>"
 done
-# The last two steps are in seconds, which drift by a second or two: only their colour is checked.
-for row in '1:202' '0:196'; do
+# The last moments are in seconds, which drift by a second or two: only the colour is checked.
+for row in '1:196' '0:196'; do
   reset_payload; cache_expires_in=$((36 * ${row%%:*} + 10))
   case $(render_line ttl) in
     *"${esc}[38;5;${row#*:}m"*) report_pass "ttl: ${row#*:} at ${row%%:*}% left" ;;
@@ -293,7 +295,7 @@ for row in '1:202' '0:196'; do
   esac
 done
 # The pie, by the share of the lifetime left (3600 s): ● from 88%, ◕ from 50%, ◔ from 13%, ○ below.
-for row in '3600:●' '3168:●' '3164:◕' '1800:◕' '1796:◔' '468:◔' '464:○' '0:○'; do
+for row in '3600:●' '3178:●' '3164:◕' '1810:◕' '1796:◔' '478:◔' '464:○' '0:○'; do
   reset_payload; cache_expires_in=${row%%:*}
   assert_contains "ttl icon: ${row#*:} with ${row%%:*} s left" "$(render_line ttl)" "(+1.9K, ${row#*:}"
 done
@@ -303,8 +305,8 @@ assert_coloured "ttl: past the expiry is red, like the last step" "$out" "<196>-
 assert_contains "ttl: past the expiry, by how much" "$out" "○-2m"
 reset_payload; cache_expires_in=-7230
 assert_contains "ttl: hours past" "$(render_line ttl)" "○-2h00"
-# Not red anywhere before the share is gone (60 s is still 1%).
-for secs_left in 60 150 400 700 1000 1400 1800 2400 3000 3300; do
+# Not red anywhere before the last 5% (250 s is 6%).
+for secs_left in 250 400 700 1000 1400 1800 2400 3000 3300; do
   reset_payload; cache_expires_in=$secs_left
   case $(render_line ttl) in
     *"${esc}[38;5;196m"*) report_fail "ttl: not red, $secs_left s left" "a red span at $secs_left s" ;;
@@ -316,10 +318,10 @@ assert_contains "ttl: no expiry in the payload" "$(render_line ttl)" "○expired
 assert_coloured "ttl: expired is the same red as the overdue time" "$(render_line ttl)" "<196>expired</>"
 
 # The lifetime label is read, not looked up: any "<number><s|m|h|d>" gives the steps.
-reset_payload; cache_ttl_label=30m; cache_expires_in=450       # 25% of 1800 s
-assert_coloured "ttl label: 30m is read" "$(render_line ttl)" "◔<214>7m</>"
+reset_payload; cache_ttl_label=30m; cache_expires_in=390       # 21% of 1800 s
+assert_coloured "ttl label: 30m is read" "$(render_line ttl)" "◔<227>6m</>"
 reset_payload; cache_ttl_label=2h; cache_expires_in=2430       # 33% of 7200 s
-assert_coloured "ttl label: 2h is read" "$(render_line ttl)" "◔<220>40m</>"
+assert_coloured "ttl label: 2h is read" "$(render_line ttl)" "◔<229>40m</>"
 for label in forever 0m 05m 2h30m 3h05 2d4h 1x ''; do
   reset_payload; cache_ttl_label=$label; cache_expires_in=450
   case $(render_line ttl) in
@@ -354,11 +356,16 @@ done
 reset_payload; week_used=50
 assert_contains "7d pace: on pace, calendar time left" "$(render_line pace7)" "▦ 50% ↻3d12h"
 
-# Colour of the figure itself: light grey below 70, yellow from 70, orange from 80, red from 90.
-for pair in '69:249' '70:220' '79:220' '80:208' '90:196'; do
+# Colour of the figure itself: light grey, then the same fade as the context's, red from 95.
+for pair in '41:249' '42:255' '53:231' '60:230' '66:229' '71:228' '76:227' '80:226' '83:220' '87:214' '90:208' '93:202' '95:196' '100:196'; do
   reset_payload; five_used=${pair%%:*}; five_resets_in=17000
   out=$(render_line quota)
   assert_coloured "5h colour ${pair%%:*}%: ${pair#*:}" "$out" "<${pair#*:}>${pair%%:*}%</>"
+done
+for pair in '41:249' '60:230' '90:208' '95:196'; do
+  reset_payload; week_used=${pair%%:*}
+  out=$(render_line quota)
+  assert_coloured "7d colour ${pair%%:*}%: ${pair#*:}" "$out" "▦ <${pair#*:}>${pair%%:*}%</>"
 done
 reset_payload; five_resets_in=9030
 assert_coloured "5h: the reset time is light grey" "$(render_line quota)" "↻<249>2h30</>"

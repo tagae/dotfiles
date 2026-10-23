@@ -1,8 +1,8 @@
 #!/bin/sh
 # shellcheck disable=SC3043  # `local` is not POSIX, but dash, bash and ash all have it
 
-# Claude Code status line, compact edition: statusline-clear.sh with icons for the labels, no
-# dividers, and the model by its initial.
+# Claude Code status line, compact edition: icons for the labels, no dividers, and the model by
+# its initial.
 #   "O5.5xh ↑87K/200K (+478, ◕42m, miss: 202K ttl_expired_5m) ↓340 $0.12 ⊂ $1.23 ⚙4m/12m ⧖ 37%↑ ↻2h10 ▦ 48%↗ ↻4d3h"
 #
 #   - ↑ and ↓ are the input and output tokens; ⚙ is the time on the API, then the session's time
@@ -14,8 +14,7 @@
 #     are light grey (colour_light_grey) while they have no warning colour of their own.
 #   - test-compact.sh covers it. README.md describes what it shows; change both in the same commit.
 #
-# MAINTENANCE RULE: the rest of the notes below is as in the clear edition. What follows is only
-# what the code does not make obvious.
+# MAINTENANCE RULE: the notes below are only what the code does not make obvious.
 #
 #   - Not shown: the fresh, uncached input (with caching on it is always 2 tokens) and the
 #     cache read (it is the rest of the input). (+478) is the cache write, which is how much
@@ -30,8 +29,9 @@
 #     same quota unseen. Every response bills something, so a cost or quota that moved means
 #     one landed; the quota alone would not do, as it can sit at one percent through many.
 #   - The countdowns (ttl, quota resets) only tick if the status line has a refreshInterval.
-#   - Colours are for dark terminals. Red is kept for the hard limits and for the end of the ttl
-#     countdown.
+#   - Colours are for dark terminals. One fade (fade_colour) colours the ttl countdown, the input
+#     tokens and the 5h and 7d percentages: plain at first, then brighter, then yellow, orange
+#     and red. Nothing else uses it; the miss and the pace arrows have their own colours.
 #
 # Conventions: POSIX sh. Names are lowercase, since uppercase is reserved for the environment
 # (CLAUDE_QUOTA_STALE_SECS and CLAUDE_STATUSLINE_STATE_DIR, where the state file goes and
@@ -84,30 +84,43 @@ lighten() {
   esac
 }
 
-# pct PERCENT TEXT YELLOW [ORANGE [RED]] -> TEXT coloured by how high PERCENT is: plain
-# below YELLOW, yellow from there, orange from ORANGE (default pct_orange_from), red from
-# RED (default pct_red_from). Plain too when PERCENT is empty (not reported yet).
+# pct PERCENT TEXT YELLOW ORANGE RED -> TEXT coloured by how high PERCENT is: plain below
+# YELLOW, yellow from there, orange from ORANGE, red from RED. Plain too when PERCENT is empty
+# (not reported yet).
 pct() {
   local rounded code
   [ -n "$1" ] || { printf '%s' "$2"; return 0; }
   rounded=$(printf '%.0f' "$1")
   if [ "$rounded" -lt "$3" ]; then printf '%s' "$2"; return 0; fi
-  if [ "$rounded" -lt "${4:-$pct_orange_from}" ]; then code=$colour_yellow
-  elif [ "$rounded" -lt "${5:-$pct_red_from}" ]; then code=$colour_orange
+  if [ "$rounded" -lt "$4" ]; then code=$colour_yellow
+  elif [ "$rounded" -lt "$5" ]; then code=$colour_orange
   else code=$colour_red
   fi
   colour "$code" "$2"
 }
 
-# ttl_colour SHARE -> the countdown's colour from ttl_fade, for SHARE percent of its lifetime left:
-# nothing while the share is full, then one step per 1/ttl_fade_steps of the lifetime run out.
-ttl_colour() {
+# fade_colour DONE -> the colour from fade_colours for DONE percent of a range run out (a lifetime,
+# a window). The step grows with the cube of DONE and reaches the last one, red, at fade_red_at, so
+# the figure stays plain and grey for a good while, and the yellow, orange and red steps come faster
+# and faster towards the end. Nothing while the first step is not reached.
+fade_colour() {
   local step
-  step=$(((100 - $1) * ttl_fade_steps / 100))
+  [ "$1" -gt 0 ] || return 0
+  step=$(($1 * $1 * $1 * fade_steps / (fade_red_at * fade_red_at * fade_red_at)))
+  [ "$step" -le "$fade_steps" ] || step=$fade_steps
   [ "$step" -gt 0 ] || return 0
-  set -- $ttl_fade   # unquoted on purpose: the list splits into its colours
+  set -- $fade_colours   # unquoted on purpose: the list splits into its colours
   shift $((step - 1))
   printf '%s' "$1"
+}
+
+# fade PERCENT TEXT -> TEXT in the fade colour for PERCENT of a range used. Plain while the fade has
+# not started, and when PERCENT is empty (not reported yet).
+fade() {
+  local code
+  [ -n "$1" ] || { printf '%s' "$2"; return 0; }
+  code=$(fade_colour "$(printf '%.0f' "$1")")
+  if [ -n "$code" ]; then colour "$code" "$2"; else printf '%s' "$2"; fi
 }
 
 # duration_to_secs TEXT -> the seconds that a number and one unit name: "30s", "5m", "1h", "2d".
@@ -170,7 +183,7 @@ quota() {
       else arrow=$(colour "$colour_red" "↓")
       fi
     fi
-    printf ' %s %s%s' "$1" "$(lighten "$(pct "$used" "${used}%" "$quota_yellow_from")")" "$arrow"
+    printf ' %s %s%s' "$1" "$(lighten "$(fade "$used" "${used}%")")" "$arrow"
   fi
   if [ "${3:-0}" -gt 0 ]; then printf ' ↻%s' "$(colour "$colour_light_grey" "$(duration "$3")")"; fi
 }
@@ -203,20 +216,20 @@ readonly colour_grey=245
 readonly colour_light_grey=249
 readonly colour_white=255
 
-# Percentage scales (pct): from where each colour starts, as a percentage.
-readonly pct_orange_from=80
-readonly pct_red_from=90
-readonly ctx_yellow_from=60
-readonly quota_yellow_from=70
+# Percentage scale of the miss (pct): from where each colour starts, as a percentage.
 readonly miss_yellow_from=0
 readonly miss_orange_from=50
 readonly miss_red_from=80
 
-# The cache countdown fades from plain to red as the lifetime runs out: the 256-colour numbers
-# from white through yellow and orange to red, one step each (see ttl_colour).
-readonly ttl_fade="255 231 230 229 228 227 226 220 214 208 202 196"
-readonly ttl_fade_steps=12
-# And its icon, by the share of the lifetime left: the fill nearest to what is left.
+# The fade from plain to red, for the cache countdown as the lifetime runs out and for the input
+# tokens and quota percentages as they fill: the 256-colour numbers from white through yellow and
+# orange to red, one step each (see fade_colour).
+readonly fade_colours="255 231 230 229 228 227 226 220 214 208 202 196"
+readonly fade_steps=12
+# The share of the range run out where the fade reaches red, and stays there.
+readonly fade_red_at=95
+
+# The cache countdown's icon, by the share of the lifetime left: the fill nearest to what is left.
 readonly ttl_icon_full_from=88
 readonly ttl_icon_three_quarters_from=50
 readonly ttl_icon_quarter_from=13
@@ -326,8 +339,8 @@ case $model in
 esac
 line="$model_abbr${effort_abbr}"
 if [ -n "$tok_in" ]; then
-  # pct leaves the figure plain below the first threshold, or with no percentage yet: light grey then.
-  line="$line ↑$(lighten "$(pct "$ctx_used" "$(shorten "$tok_in")" "$ctx_yellow_from")")"
+  # fade leaves the figure plain until its first step, or with no percentage yet: light grey then.
+  line="$line ↑$(lighten "$(fade "$ctx_used" "$(shorten "$tok_in")")")"
   [ -z "$ctx_size" ] || line="$line/$(shorten "$ctx_size")"
 fi
 # The cache's figures in one bracket: what the last response wrote, the lifetime left and,
@@ -344,7 +357,7 @@ if [ -n "$has_cache" ]; then
     cache_ttl_secs=$(duration_to_secs "$cache_ttl")
     share=100
     [ -n "$cache_ttl_secs" ] && share=$(( left * 100 / cache_ttl_secs ))
-    countdown_colour=$(ttl_colour "$share")
+    countdown_colour=$(fade_colour $((100 - share)))
     [ -z "$countdown_colour" ] || countdown=$(colour "$countdown_colour" "$countdown")
     # A pie that empties with the lifetime, in the four fills that are drawn at one size.
     if [ "$share" -ge "$ttl_icon_full_from" ]; then ttl_icon=●
