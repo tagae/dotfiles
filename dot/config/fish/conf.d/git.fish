@@ -7,22 +7,20 @@
 #
 # Every abbreviation starts with the stem of its subcommand. A one-word
 # subcommand takes the shortest prefix that no other stem shares. A two-word
-# subcommand (check-out, cherry-pick, work-tree, ref-log, short-log,
-# rev-parse) takes a letter from each word (`co`, `cp`, `wt`, `rl`, `sl`,
-# `rp`). A subcommand used very often may claim a shorter stem than that
-# (`c` for commit, `s` for status). Letters after the stem select flags
-# (`cm` = commit --message). Adding a subcommand may lengthen an existing
-# stem. Stems:
+# subcommand (check-out, cherry-pick, work-tree, rev-parse) takes a letter from
+# each word (`co`, `cp`, `wt`, `rp`). A subcommand used very often may claim a
+# shorter stem than that (`c` for commit, `s` for status). Letters after the
+# stem select flags (`cm` = commit --message). Adding a subcommand may lengthen
+# an existing stem. Stems:
 #
 #   a     add             l     log        rp    rev-parse
-#   bl    blame           m     merge      s     status
-#   br    branch          p     push       sh    show
-#   c     commit          pl    pull       sl    shortlog
-#   cl    clean           r     rebase     sw    switch
-#   co    checkout        rem   remote     t     tag
-#   cp    cherry-pick     rese  reset      wt    worktree
-#   d     diff            res   restore
-#   f     fetch           rl    reflog
+#   b     branch          m     merge      s     status
+#   c     commit          p     push       sh    show
+#   cl    clean           pl    pull       t     tag
+#   co    checkout        r     rebase     wt    worktree
+#   cp    cherry-pick     rem   remote
+#   d     diff            rese  reset
+#   f     fetch
 #   g     grep
 
 status is-interactive; or return
@@ -37,9 +35,9 @@ abbr -a --command git au add --update
 abbr -a --command git an add --intent-to-add
 
 # --- Branches ----------------------------------------------------------------
-abbr -a --command git br  branch --verbose
-abbr -a --command git brd branch --delete
-abbr -a --command git brD branch --delete --force
+abbr -a --command git b  branch --verbose
+abbr -a --command git bd branch --delete
+abbr -a --command git bD branch --delete --force
 
 # --- Committing --------------------------------------------------------------
 abbr -a --command git c    commit
@@ -61,6 +59,7 @@ abbr -a --command git clX clean -d -x --force --exclude .idea/ --exclude .env.lo
 # --- Checking out ------------------------------------------------------------
 abbr -a --command git co  checkout
 abbr -a --command git cop checkout --patch
+abbr -a --command git hm  --function __git_abbr_detach_to_remote_default # switch to headless main
 
 # --- Cherry-picking ----------------------------------------------------------
 abbr -a --command git cp  cherry-pick
@@ -96,7 +95,7 @@ abbr -a --command git pF push --force
 abbr -a --command git pt push --tags
 
 # --- Pulling -----------------------------------------------------------------
-abbr -a --command git pl pull
+abbr -a --command git pl pull --ff-only
 
 # --- Rebasing ----------------------------------------------------------------
 abbr -a --command git r  rebase
@@ -110,37 +109,22 @@ abbr -a --command git rema  remote add
 abbr -a --command git remn  --set-cursor 'remote rename origin %'
 abbr -a --command git remng remote rename origin github
 
+# --- Repository paths --------------------------------------------------------
+abbr -a --command git rpt rev-parse --show-toplevel
+abbr -a --command git rpu "rev-parse --abbrev-ref '@{upstream}'"
+
 # --- Resetting ---------------------------------------------------------------
 abbr -a --command git rt1 reset HEAD~1
 abbr -a --command git rts1 reset --soft HEAD~1
 abbr -a --command git rtH1 reset --hard HEAD~1
 
-# --- Restoring ---------------------------------------------------------------
-abbr -a --command git res  restore
-abbr -a --command git ress restore --staged
-
-# --- Reflog ------------------------------------------------------------------
-abbr -a --command git rl reflog
-
-# --- Repository paths --------------------------------------------------------
-abbr -a --command git rpt rev-parse --show-toplevel
-abbr -a --command git rpu "rev-parse --abbrev-ref '@{upstream}'"
-
-# --- Show --------------------------------------------------------------------
-abbr -a --command git sh  show
-abbr -a --command git shn show --name-only
-
-# --- Shortlog ----------------------------------------------------------------
-abbr -a --command git sl shortlog --summary --numbered
-
 # --- Status ------------------------------------------------------------------
 abbr -a --command git s  status
 abbr -a --command git ss status --short --branch
 
-# --- Switching ---------------------------------------------------------------
-abbr -a --command git sw  switch
-abbr -a --command git swc switch --create
-abbr -a --command git hm  --function __git_abbr_detach_to_remote_default # switch to headless main
+# --- Show --------------------------------------------------------------------
+abbr -a --command git sh  show
+abbr -a --command git shn show --name-only
 
 # --- Tags --------------------------------------------------------------------
 abbr -a --command git t  tag
