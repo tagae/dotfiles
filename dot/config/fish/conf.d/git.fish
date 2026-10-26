@@ -106,8 +106,8 @@ abbr -a --command git ra rebase --abort
 # --- Remotes -----------------------------------------------------------------
 abbr -a --command git rem   remote --verbose
 abbr -a --command git rema  remote add
-abbr -a --command git remn  --set-cursor 'remote rename origin %'
-abbr -a --command git remng remote rename origin github
+abbr -a --command git remn  remote rename origin
+abbr -a --command git remp  remote prune
 
 # --- Repository paths --------------------------------------------------------
 abbr -a --command git rpt rev-parse --show-toplevel
