@@ -236,9 +236,10 @@ assert_not_contains "cost: the turn never exceeds the session" "$out" '$0.13 ⊂
 reset_payload; cost_usd=null
 assert_not_contains "cost: absent when not reported"            "$(render_line cost3)" '$'
 
-# --- Cache miss: per turn, never plain, coloured by the share of the context re-cached ------------
-# check_miss LABEL MISS_TOKENS COLOUR TEXT, with 100K input tokens: 11K, 50K and 80K re-cached
-# are 11%, 50% and 80% of the context.
+# --- Cache miss: per turn, never plain, coloured by the share of the context window re-cached ------------
+# check_miss LABEL MISS_TOKENS COLOUR TEXT, with a 1M window: 11K, 180K, 350K, 530K and 700K
+# re-cached are 1%, 18%, 35%, 53% and 70% of it, the start of each of the five steps of the
+# gradient, whatever the input so far.
 check_miss() {
   local out
   reset_payload; input_tokens=100000; miss_total=0
@@ -246,12 +247,14 @@ check_miss() {
   miss_total=$2; out=$(render_line "miss-$1")
   assert_coloured "miss: $1" "$out" "<$3>miss: $4 ttl_expired_5m</>"
 }
-check_miss 11pct 11000 220 11K
-check_miss 49pct 49000 220 49K
-check_miss 50pct 50000 208 50K
-check_miss 79pct 79000 208 79K
-check_miss 80pct 80000 196 80K
-check_miss 150pct 150000 196 150K
+check_miss 1pct 11000 220 11K
+check_miss 17pct 179000 220 179K
+check_miss 18pct 180000 214 180K
+check_miss 35pct 350000 208 350K
+check_miss 53pct 530000 202 530K
+check_miss 69pct 699000 202 699K
+check_miss 70pct 700000 196 700K
+check_miss 90pct 900000 196 900K
 reset_payload; input_tokens=100000; render_line miss-pos >/dev/null; miss_total=11000
 assert_contains "miss: inside the bracket, after the ttl" "$(render_line miss-pos)" "(+1.9K, 50m, miss: 11K ttl_expired_5m) ↓842"
 reset_payload; input_tokens=100000; render_line miss-gone >/dev/null; miss_total=11000; render_line miss-gone >/dev/null
@@ -259,7 +262,7 @@ prompt_id=p2; out=$(render_line miss-gone)
 assert_not_contains "miss: gone when the next prompt starts" "$out" "miss:"
 reset_payload; miss_total=11000; out=$(render_line miss-none)
 assert_not_contains "miss: the session's earlier total is not a miss" "$out" "miss:"
-reset_payload; input_tokens=null; render_line miss-unknown >/dev/null; miss_total=11000; out=$(render_line miss-unknown)
+reset_payload; context_size=null; render_line miss-unknown >/dev/null; miss_total=11000; out=$(render_line miss-unknown)
 assert_coloured "miss: yellow when the context size is unknown" "$out" "<220>miss: 11K ttl_expired_5m</>"
 
 # --- Prompt cache countdown (ttl) -----------------------------------------------------------------------

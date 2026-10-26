@@ -29,7 +29,8 @@
 #   - The countdowns (ttl, quota resets) only tick if the status line has a refreshInterval.
 #   - Colours are for dark terminals. One fade (fade_colour) colours the ttl countdown, the input
 #     tokens and the 5h and 7d percentages: plain at first, then brighter, then yellow, orange
-#     and red. Nothing else uses it; the miss and the pace arrows have their own colours.
+#     and red. Nothing else uses it; the miss (a linear yellow-to-red gradient
+#     of the share of the window re-cached) and the pace arrows have their own colours.
 #
 # Conventions: POSIX sh. Names are lowercase, since uppercase is reserved for the environment
 # (CLAUDE_QUOTA_STALE_SECS and CLAUDE_STATUSLINE_STATE_DIR, where the state file goes and
@@ -82,19 +83,16 @@ lighten() {
   esac
 }
 
-# pct PERCENT TEXT YELLOW ORANGE RED -> TEXT coloured by how high PERCENT is: plain below
-# YELLOW, yellow from there, orange from ORANGE, red from RED. Plain too when PERCENT is empty
-# (not reported yet).
-pct() {
-  local rounded code
-  [ -n "$1" ] || { printf '%s' "$2"; return 0; }
-  rounded=$(printf '%.0f' "$1")
-  if [ "$rounded" -lt "$3" ]; then printf '%s' "$2"; return 0; fi
-  if [ "$rounded" -lt "$4" ]; then code=$colour_yellow
-  elif [ "$rounded" -lt "$5" ]; then code=$colour_orange
-  else code=$colour_red
-  fi
-  colour "$code" "$2"
+# miss_colour SHARE -> the colour from miss_colours for SHARE percent of the context window
+# re-cached. Linear, from the first colour at no miss to the last, red, at miss_red_at and above;
+# never plain.
+miss_colour() {
+  local step
+  step=$(($1 * (miss_steps - 1) / miss_red_at))
+  [ "$step" -lt "$miss_steps" ] || step=$((miss_steps - 1))
+  set -- $miss_colours   # unquoted on purpose: the list splits into its colours
+  shift "$step"
+  printf '%s' "$1"
 }
 
 # fade_colour DONE -> the colour from fade_colours for DONE percent of a range run out (a lifetime,
@@ -208,16 +206,17 @@ readonly stale_default_secs=$((15 * sec_per_min))
 # 256-colour numbers.
 readonly colour_light_green=114
 readonly colour_yellow=220
-readonly colour_orange=208
 readonly colour_red=196
 readonly colour_grey=245
 readonly colour_light_grey=249
 readonly colour_white=255
 
-# Percentage scale of the miss (pct): from where each colour starts, as a percentage.
-readonly miss_yellow_from=0
-readonly miss_orange_from=50
-readonly miss_red_from=80
+# The miss's own gradient, linear in the share of the context window re-cached (not of the input
+# so far: a miss of 10K in a 1M window is mild, one of 700K is not): the 256-colour numbers from
+# yellow through orange to red, reaching red at miss_red_at percent.
+readonly miss_colours="220 214 208 202 196"
+readonly miss_steps=5
+readonly miss_red_at=70
 
 # The fade from plain to red, for the cache countdown as the lifetime runs out and for the input
 # tokens and quota percentages as they fill: the 256-colour numbers from white through yellow and
@@ -361,13 +360,12 @@ if [ -n "$has_cache" ]; then
 fi
 # Only when this turn's requests re-processed cacheable content: its tokens and likely
 # cause. Never plain, to stand out among the calm figures: coloured by the share of the
-# context re-cached (yellow too when that is unknown).
+# context window re-cached (yellow too when the window's size is unknown).
 miss_str=
 if [ "$turn_miss" -gt 0 ]; then
   miss_share=0
-  [ "${tok_in:-0}" -gt 0 ] && miss_share=$((turn_miss * 100 / tok_in))
-  miss_str=$(pct "$miss_share" "miss: $(shorten "$turn_miss")${miss_cause:+ $miss_cause}" \
-    "$miss_yellow_from" "$miss_orange_from" "$miss_red_from")
+  [ "${ctx_size:-0}" -gt 0 ] && miss_share=$((turn_miss * 100 / ctx_size))
+  miss_str=$(colour "$(miss_colour "$miss_share")" "miss: $(shorten "$turn_miss")${miss_cause:+ $miss_cause}")
 fi
 bracket=
 [ -n "$tok_write" ] && bracket="+$(shorten "$tok_write")"

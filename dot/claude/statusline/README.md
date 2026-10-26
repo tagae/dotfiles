@@ -47,8 +47,9 @@ The countdown changes colour as the lifetime runs out:
 - Compact fades it, as described below. Once expired it shows by how much, in red: `-3m`.
 
 A turn that rebuilt part of the cache adds `miss: 11K ttl_expired_5m` to the bracket: the tokens
-re-cached, and the likely cause. It shows on that turn only, and is never plain: yellow, orange from
-50% of the context re-cached, red from 80%.
+re-cached, and the likely cause. It shows on that turn only, and is never plain: it goes from
+yellow through orange to red in even steps as the share of the context window re-cached grows,
+and is red from 70%.
 
 The compact fade
 ----------------
