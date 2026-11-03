@@ -35,7 +35,7 @@ abbr -a --command git au add --update
 abbr -a --command git an add --intent-to-add
 
 # --- Branches ----------------------------------------------------------------
-abbr -a --command git b  branch --verbose
+abbr -a --command git b  branch
 abbr -a --command git bd branch --delete
 abbr -a --command git bD branch --delete --force
 
