@@ -406,9 +406,7 @@
 (use-package magit
     :ensure t
     :bind (("C-x g" . magit-status)
-           ("C-x G" . magit-status-with-prefix))
-    :config
-    (setq magit-completing-read-function 'magit-ido-completing-read))
+           ("C-x G" . magit-status-with-prefix)))
 
 ;; --- ripgrep
 
