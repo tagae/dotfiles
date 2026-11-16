@@ -2,3 +2,5 @@
 settings.local.json
 
 **/.claude/.cc-writes/
+
+**/.claude/settings.local.json
