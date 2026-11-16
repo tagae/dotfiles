@@ -45,6 +45,7 @@ abbr -a --command git cm   --set-cursor "commit --message '%'"
 abbr -a --command git cma  --set-cursor "commit --message '%' --all"
 abbr -a --command git ca   commit --amend
 abbr -a --command git can  commit --amend --no-edit
+abbr -a --command git canp  commit --amend --no-edit --patch
 abbr -a --command git cana commit --amend --no-edit --all
 abbr -a --command git canr commit --amend --no-edit --reset-author
 abbr -a --command git cf   commit --fixup
@@ -102,6 +103,7 @@ abbr -a --command git r  rebase
 abbr -a --command git ri rebase --interactive
 abbr -a --command git rc rebase --continue
 abbr -a --command git ra rebase --abort
+abbr -a --command git rg rebase github/main
 
 # --- Remotes -----------------------------------------------------------------
 abbr -a --command git rem   remote --verbose
