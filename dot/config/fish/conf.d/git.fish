@@ -51,6 +51,10 @@ abbr -a --command git canr commit --amend --no-edit --reset-author
 abbr -a --command git cf   commit --fixup
 abbr -a --command git cfa  --set-cursor "commit --fixup % --all"
 
+abbr -a --command git wip  commit --message wip --all
+abbr -a --command git fix  commit --amend --no-edit
+abbr -a --command git fup  commit --fixup
+
 # --- Cleaning ----------------------------------------------------------------
 abbr -a --command git cld clean -d --dry-run --exclude .idea/ --exclude .env.local --exclude .envrc --exclude .env
 abbr -a --command git clx clean -d -x --dry-run --exclude .idea/ --exclude .env.local --exclude .envrc --exclude .env
