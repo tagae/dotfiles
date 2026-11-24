@@ -460,13 +460,14 @@
 
 ;; Servers are started by the `*-mode-hook' files (see the `hooks' directory).
 ;; Eglot already knows `bash-language-server' (diagnostics through ShellCheck,
-;; formatting through shfmt), so only `fish-lsp' needs registering.
+;; formatting through shfmt), so only `fish-lsp' and `tcl-ls' need registering.
 (use-package eglot
     :custom
     (eglot-autoshutdown t)
     (eglot-events-buffer-config '(:size 0))
     :config
     (add-to-list 'eglot-server-programs '(fish-mode . ("fish-lsp" "start")))
+    (add-to-list 'eglot-server-programs '(tcl-mode . ("tcl-ls")))
     :bind (:map eglot-mode-map
            ("C-c e a" . eglot-code-actions)
            ("C-c e d" . flymake-show-buffer-diagnostics)
