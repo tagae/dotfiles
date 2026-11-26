@@ -19,3 +19,11 @@ Markdown
 Prefer ASCII art:
 * H1 and H2 titles must be underlined with `=` and `-` (avoid `#` and `##`).
 * Format tables so that column markers align across rows.
+
+Subagents
+---------
+
+I ask you to use subagents, in every session, without waiting for me to say so. In the main
+session, delegate any task that matches the description of `designer`, `coder`, `cleaner`,
+`optimizer`, `styler`, `hardener`, `documenter` or `tester` to that agent, including where the
+description applies after a change. A subagent does its task itself and spawns no other.
